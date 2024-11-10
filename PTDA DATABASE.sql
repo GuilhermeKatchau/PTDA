@@ -18,8 +18,8 @@ num INTEGER PRIMARY KEY
 CREATE TABLE bag(
 num_Ticket INTEGER
 REFERENCES ticket(num),
-size INTEGER,
-weight INTEGER,
+size2 INTEGER,
+weight2 INTEGER,
 quantity INTEGER
 );
 
