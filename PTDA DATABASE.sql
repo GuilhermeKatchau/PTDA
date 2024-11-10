@@ -47,8 +47,8 @@ id_plane INTEGER
 REFERENCES airplane(id),
 id INTEGER,
 maxPassangers INTEGER,
-timeTakeOf INTEGER,
-timeLanding INTEGER,
+timeTakeOf DATE,
+timeLanding DATE,
 destination CHAR(40),
 source1 CHAR(40), 
 codename CHAR(40)
@@ -60,7 +60,7 @@ REFERENCES ticket(num),
 num_flight INTEGER
 REFERENCES flight(num),
 checkIn CHAR(20) PRIMARY KEY,
-TimeCheckIn INTEGER
+TimeCheckIn DATE
 ); 
 
 CREATE TABLE crew(
