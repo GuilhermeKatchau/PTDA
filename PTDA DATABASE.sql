@@ -18,6 +18,7 @@ num INTEGER PRIMARY KEY
 CREATE TABLE bag(
 num_Ticket INTEGER
 REFERENCES ticket(num),
+--os dois são por causa que não estava a dar com size e weight,
 size2 INTEGER,
 weight2 INTEGER,
 quantity INTEGER
@@ -26,6 +27,7 @@ quantity INTEGER
 CREATE TABLE airplane(
 id INTEGER PRIMARY KEY,
 destination CHAR(40),
+-- mesma coisa aqui,
 source1 CHAR(40)
 );
 
@@ -50,6 +52,7 @@ maxPassangers INTEGER,
 timeTakeOf DATE,
 timeLanding DATE,
 destination CHAR(40),
+--same
 source1 CHAR(40), 
 codename CHAR(40)
 );
