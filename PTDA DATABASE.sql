@@ -1,4 +1,4 @@
-USE exerciciosql;
+USE PTDA24_BD_05;
 /*DROP TABLE IF EXISTS passenger,ticket,bag,airplane,flight,seat,service,checkin,crew,assistant,pilot;*/
 
 CREATE TABLE passenger (
