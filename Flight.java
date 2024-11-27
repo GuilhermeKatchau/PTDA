@@ -106,3 +106,7 @@ public class Flight {
     }
 }
 
+public void addFlight(Flight flight) {
+    flight = new Flight()
+}
+
