@@ -85,7 +85,7 @@ CREATE TABLE pilot (
 );
 
 
-/*DELIMITER //
+DELIMITER //
 CREATE PROCEDURE addPlane(
 IN id INTEGER,
 IN destination VARCHAR(40),
@@ -93,7 +93,7 @@ IN source1 VARCHAR(40)
 )
 BEGIN 
 INSERT INTO airplane(id,destination,source1)
-VALUES (id_airplane,destination_airplane,source1_airplane);
+VALUES (id_plane,destination_airplane,source1_airplane);
 END //
 DELIMITER ;
 
@@ -112,10 +112,29 @@ BEGIN
 INSERT INTO flight(id_plane,id,maxPassengers,timeTakeOff,timeLanding,destination,source1,codename)
 VALUES (id_plane_flight,id_flight,maxPassengers_flight,timeTakeOff_flight,timeLanding_flight,destination_flight,source1_flight,codename_flight);
 END //
-DELIMITER ;*/
+DELIMITER ;
+DELIMITER //
+CREATE TRIGGER add_flight_to_airplane BEFORE INSERT ON flight 
+FOR EACH ROW 
+BEGIN 
+IF NOT EXISTS (
+    SELECT 1 FROM flight WHERE id_plane = NEW.id_plane) THEN 
+(
+SET NEW.id_plane =(SELECT id FROM airplane WHERE id NOT IN (SELECT id_plane FROM flight )
+LIMIT 1)
+);
+END IF;
+
+IF NEW.id_plane IS NULL THEN
+SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No planes available';
+END IF;
+END//
+DELIMITER;
+
+
+
 SELECT * FROM flight;
 SELECT * FROM airplane;
 SELECT * FROM passenger;
 SELECT * FROM ticket;
-
 
