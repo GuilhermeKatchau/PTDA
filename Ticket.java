@@ -5,6 +5,9 @@ public class Ticket {
     private String source;
     private double price;
     private boolean refundable;
+    private boolean automatic;
+    ArrayList<Ticket> tickets = new ArrayList<Ticket>();
+
 
     public Ticket(String destination, String source, int id_Ticket, double price) {
         setId_Ticket(id_Ticket);
@@ -12,6 +15,7 @@ public class Ticket {
         setDestination(destination);
         setPrice(price);
         refundable = true;
+        automatic = true;
     }
 
     public void setId_Ticket(int id_Ticket) {
@@ -61,4 +65,5 @@ public class Ticket {
     public double getPrice() {
         return price;
     }
+
 }

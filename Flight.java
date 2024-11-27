@@ -8,9 +8,10 @@ public class Flight {
     private String destination;
     private String source;
     private String codeName;
+    ArrayList<Flight> flights = new ArrayList<Flight>();
 
 
-    Public Flight(int id_Flight,int nCompany, int maxPassengers, int hTakeoff,
+    Public Flight(int id_Flight, int nCompany, int maxPassengers, int hTakeoff,
                   int hLanding, String destination, String source, String codeName) {
         setNPassengers(nPassengers);
         setid_Flight(id_Flight);
@@ -21,7 +22,7 @@ public class Flight {
         nCompany = 0;
     }
 
-        Public void setMaxPassengers(int maxPassengers) {
+    Public void setMaxPassengers(int maxPassengers) {
         if (maxPassengers > 0 && maxPassengers <= 900) {
             this.maxPassengers = maxPassengers;
         } else {
@@ -33,61 +34,65 @@ public class Flight {
         return maxPassengers;
     }
 
-    Public void setId_Flight (int id_Flight){
-            if (id_Flight > 100000000 && id_Flight <= 999999999) {
-                this.id_Flight = id_Flight;
-            } else {
-                throw new IllegalArgumentException("ID de Voo inválido");
-            }
+    Public void setId_Flight(int id_Flight) {
+        if (id_Flight > 100000000 && id_Flight <= 999999999) {
+            this.id_Flight = id_Flight;
+        } else {
+            throw new IllegalArgumentException("ID de Voo inválido");
         }
+    }
 
     public int getId_Flight() {
         return id_Flight;
     }
 
-    Public void setHTakeoff (int hTakeoff){
-            if (hTakeoff > 0 && hTakeoff <= 24) {
-                this.hTakeoff = hTakeoff;
-            } else {
-                throw new IllegalArgumentException("Hora de decolagem inválida");
-            }
+    Public
+
+    void setHTakeoff(int hTakeoff) {
+        if (hTakeoff > 0 && hTakeoff <= 24) {
+            this.hTakeoff = hTakeoff;
+        } else {
+            throw new IllegalArgumentException("Hora de decolagem inválida");
         }
+    }
 
     public int gethTakeoff() {
         return hTakeoff;
     }
 
-    Public void setHLanding (int hLanding){
-                    if (hLanding > 0 && hLanding <= 24) {
-                        this.hLanding = hLanding;
-                    } else {
-                        throw new IllegalArgumentException("Hora de aterragem inválida");
-                    }
-                }
+    Public
+
+    void setHLanding(int hLanding) {
+        if (hLanding > 0 && hLanding <= 24) {
+            this.hLanding = hLanding;
+        } else {
+            throw new IllegalArgumentException("Hora de aterragem inválida");
+        }
+    }
 
     public void sethLanding(int hLanding) {
         this.hLanding = hLanding;
     }
 
-    public void setDestination (String destination){
-            if (destination != null && !destination.trim().isEmpty()) {
-                this.destination = destination;
-            } else {
-                throw new IllegalArgumentException("Destino de Voo não pode ser vazio");
-            }
+    public void setDestination(String destination) {
+        if (destination != null && !destination.trim().isEmpty()) {
+            this.destination = destination;
+        } else {
+            throw new IllegalArgumentException("Destino de Voo não pode ser vazio");
         }
+    }
 
     public String getDestination() {
         return destination;
     }
 
-    public void setSource (String source){
-            if (source != null && !source.trim().isEmpty()) {
-                this.source = source;
-            } else {
-                throw new IllegalArgumentException("Origem de Voo não pode ser vazia");
-            }
+    public void setSource(String source) {
+        if (source != null && !source.trim().isEmpty()) {
+            this.source = source;
+        } else {
+            throw new IllegalArgumentException("Origem de Voo não pode ser vazia");
         }
+    }
 
     public String getSource() {
         return source;
@@ -106,7 +111,15 @@ public class Flight {
     }
 }
 
+
+// adiciona voos á lista
 public void addFlight(Flight flight) {
-    flight = new Flight()
+    flights.add(flight);
+    id_Flight++;
+}
+// remove voos da lista
+public  void removeFlight(Flight flight){
+    flights.remove(flight);
+    id_Flight--;
 }
 

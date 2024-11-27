@@ -1,14 +1,18 @@
+import java.util.*;
+
 public class Airplane {
 
     private int id_Airplane;
     private String destination;
     private String source;
+    ArrayList<Airplane> airplanes = new ArrayList<>();
 
     public Airplane(int id_Airplane, String destination, String source) {
         setId_Airplane(id_Airplane);
         setSource(source);
         setDestination(destination);
     }
+
 
     public void setDestination(String destination) {
         if (destination != null && !destination.trim().isEmpty()) {
@@ -44,5 +48,17 @@ public class Airplane {
 
     public String getSource() {
         return source;
+    }
+
+
+    // adiciona aviões á lista
+    public void addAirplane(Airplane airplane) {
+        airplanes.add(airplane);
+        id_Airplane++;
+    }
+    //remove aviões da lista
+    public  void removeAirplane(Airplane airplane){
+        airplanes.remove(airplane);
+        id_Airplane--;
     }
 }
