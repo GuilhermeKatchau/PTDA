@@ -1,4 +1,7 @@
+package org.example;
+
 public class Bag {
+
     // Atributos para armazenar informações sobre a mala
     private int size; // Tamanho da mala (exemplo: dimensões aproximadas em cm)
     private double weight; // Peso da mala (em quilogramas)
@@ -15,35 +18,35 @@ public class Bag {
 
     // Métodos getters e setters para aceder e alterar os valores dos atributos
 
-    public int getSize() { 
+    public int getSize() {
         return size; // Retorna o tamanho da mala
     }
 
-    public void setSize(int size) { 
+    public void setSize(int size) {
         this.size = size; // Define ou altera o tamanho da mala
     }
 
-    public double getWeight() { 
+    public double getWeight() {
         return weight; // Retorna o peso da mala
     }
 
-    public void setWeight(double weight) { 
+    public void setWeight(double weight) {
         this.weight = weight; // Define ou altera o peso da mala
     }
 
-    public int getQuantity() { 
+    public int getQuantity() {
         return quantity; // Retorna a quantidade de malas
     }
 
-    public void setQuantity(int quantity) { 
+    public void setQuantity(int quantity) {
         this.quantity = quantity; // Define ou altera a quantidade de malas
     }
 
-    public int getTicketId() { 
+    public int getTicketId() {
         return ticketId; // Retorna o identificador do bilhete associado
     }
 
-    public void setTicketId(int ticketId) { 
+    public void setTicketId(int ticketId) {
         this.ticketId = ticketId; // Define ou altera o identificador do bilhete
     }
 
@@ -58,4 +61,5 @@ public class Bag {
     public String toString() {
         return "Bag [Tamanho: " + size + ", Peso: " + weight + "kg, Quantidade: " + quantity + ", ID Bilhete: " + ticketId + "]";
     }
+
 }

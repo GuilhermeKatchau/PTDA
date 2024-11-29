@@ -1,3 +1,7 @@
+package org.example;
+
+import java.util.ArrayList;
+
 public class Passenger {
 
     private int id_Passenger; // --> id_Passenger = id adicionar á classe Main
@@ -8,8 +12,8 @@ public class Passenger {
     private int id_Ticket;
     private String destination;
     private String source;
-    Ticket ticket = new Ticket(destination, source, id_Passenger, priceTicket);
-    this.id_Ticket = ticket.getId_Ticket();
+    private boolean automatic;
+    ArrayList<Passenger> passengers = new ArrayList<>();
 
 
     public Passenger(int id_Passenger, int age, String name, String email) {
@@ -17,6 +21,7 @@ public class Passenger {
         setName(name);
         setAge(age);
         setEmail(email);
+        automatic = true;
     }
 
     public void setId_Passenger(int id_Passenger) {
@@ -68,26 +73,29 @@ public class Passenger {
     }
 
     public void addPassenger(Passenger passenger) {
-        passengers.addPassenger(passenger);
+        passengers.add(passenger);
         id_Passenger++;
     }
-    public void removePassenger(Passenger passenger){
+
+    public void removePassenger(Passenger passenger) {
         passengers.remove(passenger);
         id_Passenger--;
     }
 
-    public boolean buyTicket(Ticket ticket){
-        private boolean checkIn = false;
-        private double hCheckIn;
-        if(automatic == true){
+  /*  public boolean buyTicket(Ticket ticket) {
+        boolean checkIn = false;
+        double hCheckIn;
+        if (automatic) {
             checkIn = true;
-            hCheckIn = hTakeoff - 1.00;
-        }else{
+            hCheckIn = Flight.gethTakeoff() - 1.00;
+        } else if (checkIn == false && hCheck < hTakeoff - 1.00) {
+            System.out.println("Passageiro ausente");
+        } else {
             checkIn = false;
             System.out.println("Check-in não efetuado");
-            }
-        }else if(checkIn == false && hCheck < hTakeoff - 1.00){
-            System.out.println("Passageiro ausente");
         }
         return checkIn;
+    }
+
+   */
 }

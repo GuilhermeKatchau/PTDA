@@ -1,3 +1,7 @@
+package org.example;
+
+import java.util.ArrayList;
+
 public class Flight {
 
     private int id_Flight;
@@ -11,18 +15,18 @@ public class Flight {
     ArrayList<Flight> flights = new ArrayList<Flight>();
 
 
-    Public Flight(int id_Flight, int nCompany, int maxPassengers, int hTakeoff,
+    public Flight(int id_Flight, int nCompany, int maxPassengers, int hTakeoff,
                   int hLanding, String destination, String source, String codeName) {
-        setNPassengers(nPassengers);
-        setid_Flight(id_Flight);
+        setMaxPassengers(maxPassengers);
+        setId_Flight(id_Flight);
         setHTakeoff(hTakeoff);
         setHLanding(hLanding);
-        setTrip(trip);
+        setSource(source);
         setDestination(destination);
         nCompany = 0;
     }
 
-    Public void setMaxPassengers(int maxPassengers) {
+    public void setMaxPassengers(int maxPassengers) {
         if (maxPassengers > 0 && maxPassengers <= 900) {
             this.maxPassengers = maxPassengers;
         } else {
@@ -34,7 +38,7 @@ public class Flight {
         return maxPassengers;
     }
 
-    Public void setId_Flight(int id_Flight) {
+    public void setId_Flight(int id_Flight) {
         if (id_Flight > 100000000 && id_Flight <= 999999999) {
             this.id_Flight = id_Flight;
         } else {
@@ -46,9 +50,7 @@ public class Flight {
         return id_Flight;
     }
 
-    Public
-
-    void setHTakeoff(int hTakeoff) {
+    public void setHTakeoff(int hTakeoff) {
         if (hTakeoff > 0 && hTakeoff <= 24) {
             this.hTakeoff = hTakeoff;
         } else {
@@ -60,9 +62,7 @@ public class Flight {
         return hTakeoff;
     }
 
-    Public
-
-    void setHLanding(int hLanding) {
+    public void setHLanding(int hLanding) {
         if (hLanding > 0 && hLanding <= 24) {
             this.hLanding = hLanding;
         } else {
@@ -109,17 +109,18 @@ public class Flight {
     public String getCodeName() {
         return codeName;
     }
+
+    // adiciona voos á lista
+    public void addFlight(Flight flight) {
+        flights.add(flight);
+        id_Flight++;
+    }
+    // remove voos da lista
+    public  void removeFlight(Flight flight){
+        flights.remove(flight);
+        id_Flight--;
+    }
 }
 
 
-// adiciona voos á lista
-public void addFlight(Flight flight) {
-    flights.add(flight);
-    id_Flight++;
-}
-// remove voos da lista
-public  void removeFlight(Flight flight){
-    flights.remove(flight);
-    id_Flight--;
-}
 

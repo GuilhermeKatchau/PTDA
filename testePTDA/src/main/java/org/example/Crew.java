@@ -1,3 +1,5 @@
+package org.example;
+
 public class Crew {
 
     private int id_Crew;
@@ -5,6 +7,14 @@ public class Crew {
     private int phoneNumber;
     private String shift;
     private int experience;
+
+    public Crew(int id_Crew, String name, int phoneNumber, String shift, int experience) {
+        setId_Crew(id_Crew);
+        setName(name);
+        setPhoneNumber(phoneNumber);
+        setShift(shift);
+        setExperience(experience);
+    }
 
     public void setId_Crew(int id_Crew) {
         if (id_Crew > 100000000 && id_Crew <= 999999999) {
@@ -43,12 +53,12 @@ public class Crew {
     }
 
     public void setShift(String shift) {
-            if (shift != null && !shift.trim().isEmpty()) {
-                this.shift = shift;
-            } else {
-                throw new IllegalArgumentException("Turno não pode ser vazio");
+        if (shift != null && !shift.trim().isEmpty()) {
+            this.shift = shift;
+        } else {
+            throw new IllegalArgumentException("Turno não pode ser vazio");
+        }
     }
-}
 
     public String getShift() {
         return shift;
@@ -61,35 +71,39 @@ public class Crew {
             throw new IllegalArgumentException("Anos de experiência inválidos");
         }
     }
-    public void getExperience() {
+    public int getExperience() {
         return experience;
     }
 
     class Assistant extends Crew {
 
-    public Assistant() {
-        super(id_Crew, name, phoneNumber, shift,experience)
+        public Assistant(int id_Crew, String name, int phoneNumber, String shift, int experience) {
+            super(id_Crew, name, phoneNumber, shift,experience);
+        }
     }
-}
 
     class Pilot extends Crew {
         private String rank;
-    }
 
-    public void setRank(String rank) {
-        if (rank != null && !rank.trim().isEmpty()) {
-            this.rank = rank;
-        } else {
-            throw new IllegalArgumentException("Cargo não pode ser vazio");
-        }
-        public void getRank () {
-            return rank;
-        }
-        public Pilot() {
-            super(id_Crew, name, phoneNumber, shift, experience)
+        public Pilot(int id_Crew, String name, int phoneNumber, String shift, int experience) {
+            super(id_Crew, name, phoneNumber, shift, experience);
             setRank(rank);
         }
 
+        public void setRank(String rank) {
+            if (rank != null && !rank.trim().isEmpty()) {
+                this.rank = rank;
+            } else {
+                throw new IllegalArgumentException("Cargo não pode ser vazio");
+            }
+        }
+
+        public String getRank() {
+            return rank;
+        }
+
     }
+
+
 
 }

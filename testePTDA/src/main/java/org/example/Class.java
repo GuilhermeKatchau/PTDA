@@ -1,4 +1,7 @@
+package org.example;
+
 public class Class {
+
     // Atributos para armazenar informações sobre a classe do voo
     private String className; // Nome da classe (exemplo: "Primeira", "Económica")
     private double price; // Preço associado à classe
@@ -58,4 +61,5 @@ public class Class {
     public String toString() {
         return "Class [Nome: " + className + ", Preço: " + price + ", Capacidade: " + seatCapacity + ", Serviços: " + services + "]";
     }
+
 }

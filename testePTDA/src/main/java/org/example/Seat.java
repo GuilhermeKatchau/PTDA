@@ -1,3 +1,5 @@
+package org.example;
+
 public class Seat {
 
     private int id_Seat;
@@ -39,4 +41,5 @@ public class Seat {
     public double getPrice() {
         return price;
     }
+
 }

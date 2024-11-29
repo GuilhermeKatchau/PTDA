@@ -1,3 +1,7 @@
+package org.example;
+
+import java.util.ArrayList;
+
 public class Ticket {
 
     private int id_Ticket;
