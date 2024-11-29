@@ -49,7 +49,7 @@ public class Main {
         }
 
         // Conexão com a base de dados e inserção de dados
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/exerciciosql", "root", "123456789")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             connection.setAutoCommit(false); // Transações manuais para consistência
 
             // Obtém o próximo ID

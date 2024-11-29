@@ -1,5 +1,5 @@
 USE PTDA24_BD_05;
-/*DROP TABLE IF EXISTS passenger,ticket,bag,airplane,flight,seat,service,checkin,crew,assistant,pilot;*/
+DROP TABLE IF EXISTS passenger,ticket,bag,airplane,flight,seat,service,checkin,crew,assistant,pilot;
 
 CREATE TABLE passenger (
 name_passenger VARCHAR(40),
@@ -31,6 +31,7 @@ id INTEGER PRIMARY KEY,
 destination VARCHAR(40),
 source1 VARCHAR(40)
 );
+
 
 CREATE TABLE seat(
 id_Ticket INTEGER
@@ -87,32 +88,35 @@ CREATE TABLE pilot (
 
 DELIMITER //
 CREATE PROCEDURE addPlane(
-IN id INTEGER,
-IN destination VARCHAR(40),
-IN source1 VARCHAR(40)
+    IN id INTEGER,
+    IN destination VARCHAR(40),
+    IN source1 VARCHAR(40)
 )
 BEGIN 
-INSERT INTO airplane(id,destination,source1)
-VALUES (id_plane,destination_airplane,source1_airplane);
+    INSERT INTO airplane(id, destination, source1)
+    VALUES (id, destination, source1);
 END //
+DELIMITER ;
+
 DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE addFlight(
-IN id_plane INTEGER,
-IN id INTEGER,
-IN maxPassengers INTEGER,
-IN timeTakeOff INTEGER,
-IN timeLanding INTEGER,
-IN destination VARCHAR(40),
-IN source1 VARCHAR(40), 
-IN codename VARCHAR(40)
+    IN id_plane INTEGER,
+    IN id INTEGER,
+    IN maxPassengers INTEGER,
+    IN timeTakeOff INTEGER,
+    IN timeLanding INTEGER,
+    IN destination VARCHAR(40),
+    IN source1 VARCHAR(40), 
+    IN codename VARCHAR(40)
 )
 BEGIN 
-INSERT INTO flight(id_plane,id,maxPassengers,timeTakeOff,timeLanding,destination,source1,codename)
-VALUES (id_plane_flight,id_flight,maxPassengers_flight,timeTakeOff_flight,timeLanding_flight,destination_flight,source1_flight,codename_flight);
+    INSERT INTO flight(id_plane, id, maxPassengers, timeTakeOff, timeLanding, destination, source1, codename)
+    VALUES (id_plane, id, maxPassengers, timeTakeOff, timeLanding, destination, source1, codename);
 END //
 DELIMITER ;
+
 DELIMITER //
 CREATE TRIGGER add_flight_to_airplane BEFORE INSERT ON flight 
 FOR EACH ROW 
@@ -130,6 +134,8 @@ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No planes available';
 END IF;
 END//
 DELIMITER;
+
+
 
 
 
