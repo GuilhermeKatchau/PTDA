@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Service {
 
@@ -57,7 +58,19 @@ public class Service {
         id_Service--;
     }
 
-    public Service defineService(Service service){
+    public void newService() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Qual é o nome do serviço?");
+        String name = scan.nextLine();
+        System.out.println("Qual é o Id do novo serviço?");
+        int Id_Service = scan.nextInt();
+        System.out.println("Qual é a descrição do novo serviço?");
+        String description = scan.nextLine();
+        Service newService = new Service(name,Id_Service,description);
+        services.add(newService);
+    }
+
+    public Service displayService(Service service){
         System.out.println("Nome do Serviço: " + name);
         System.out.println("ID do Serviço: " + id_Service);
         System.out.println("Descrição: " + description);

@@ -10,6 +10,9 @@ public class Ticket {
     private double price;
     private boolean refundable;
     private boolean automatic;
+    private Passenger passenger;
+    private Class flightClass;
+    private Flight flight;
     ArrayList<Ticket> tickets = new ArrayList<Ticket>();
 
 
@@ -20,6 +23,14 @@ public class Ticket {
         setPrice(price);
         refundable = true;
         automatic = true;
+    }
+
+    public Class getFlightClass() {
+        return flightClass;
+    }
+
+    public Passenger getPassenger() {
+        return passenger;
     }
 
     public void setId_Ticket(int id_Ticket) {
@@ -68,6 +79,25 @@ public class Ticket {
 
     public double getPrice() {
         return price;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void displayPassengerServices() {
+        System.out.println("Passageiro: " + passenger.getName());
+        System.out.println("Id: " + passenger.getId_Passenger());
+        System.out.println("Classe: " + flightClass.getClassName());
+        System.out.println("Serviços disponíveis: ");
+         for (Service service : flightClass.getServices()) {
+             System.out.println("- " + service.getName());
+         }
+        System.out.println();
     }
 
 }

@@ -82,20 +82,24 @@ public class Passenger {
         id_Passenger--;
     }
 
-  /*  public boolean buyTicket(Ticket ticket) {
-        boolean checkIn = false;
-        double hCheckIn;
+   public boolean buyTicket(Ticket ticket) {
+
+       if (ticket == null) {
+           throw new IllegalArgumentException("O bilhete não pode ser nulo.");
+       }
+       Flight flight = ticket.getFlight();
+       boolean checkIn = false;
+       double hCheckIn = flight.gethTakeoff() -1.00;
+
         if (automatic) {
             checkIn = true;
-            hCheckIn = Flight.gethTakeoff() - 1.00;
-        } else if (checkIn == false && hCheck < hTakeoff - 1.00) {
+        } else if (!checkIn && hCheckIn < System.currentTimeMillis() / 3600000.0) {
             System.out.println("Passageiro ausente");
         } else {
-            checkIn = false;
             System.out.println("Check-in não efetuado");
         }
         return checkIn;
     }
 
-   */
+
 }

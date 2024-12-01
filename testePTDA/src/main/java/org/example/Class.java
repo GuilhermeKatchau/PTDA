@@ -1,15 +1,19 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Class {
 
     // Atributos para armazenar informações sobre a classe do voo
-    private String className; // Nome da classe (exemplo: "Primeira", "Económica")
-    private double price; // Preço associado à classe
-    private int seatCapacity; // Capacidade total de lugares nessa classe
-    private String services; // Descrição dos serviços disponíveis para a classe
+    private String className;
+    private double price;
+    private int seatCapacity;
+    ArrayList<Class> classes;
+    ArrayList<Service> services;
 
     // Construtor para inicializar os atributos da classe
-    public Class(String className, double price, int seatCapacity, String services) {
+    public Class(String className, double price, int seatCapacity,  ArrayList<Service> services) {
         this.className = className;
         this.price = price;
         this.seatCapacity = seatCapacity;
@@ -19,35 +23,35 @@ public class Class {
     // Métodos getters e setters para aceder e alterar os valores dos atributos
 
     public String getClassName() {
-        return className; // Retorna o nome da classe
+        return className;
     }
 
     public void setClassName(String className) {
-        this.className = className; // Define ou altera o nome da classe
+        this.className = className;
     }
 
     public double getPrice() {
-        return price; // Retorna o preço da classe
+        return price;
     }
 
     public void setPrice(double price) {
-        this.price = price; // Define ou altera o preço da classe
+        this.price = price;
     }
 
     public int getSeatCapacity() {
-        return seatCapacity; // Retorna a capacidade total de lugares
+        return seatCapacity;
     }
 
     public void setSeatCapacity(int seatCapacity) {
-        this.seatCapacity = seatCapacity; // Define ou altera a capacidade de lugares
+        this.seatCapacity = seatCapacity;
     }
 
-    public String getServices() {
-        return services; // Retorna os serviços disponíveis na classe
+    public ArrayList<Service> getServices() {
+        return services;
     }
 
-    public void setServices(String services) {
-        this.services = services; // Define ou altera os serviços disponíveis
+    public void setServices(ArrayList<Service> services) {
+        this.services = services;
     }
 
     // Método para verificar se há lugares disponíveis
@@ -60,6 +64,47 @@ public class Class {
     @Override
     public String toString() {
         return "Class [Nome: " + className + ", Preço: " + price + ", Capacidade: " + seatCapacity + ", Serviços: " + services + "]";
+    }
+
+    public ArrayList<Class> getClasses() {
+        return classes;
+    }
+
+    public void newClass() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Qual é o nome da nova classe?");
+        String className = scan.nextLine();
+        System.out.println("Qual é o preço da nova classe?");
+        int price = scan.nextInt();
+        System.out.println("Qual é a capacidade de assentos do novo serviço?");
+        int seatCapacity = scan.nextInt();
+        ArrayList<Service> services = new ArrayList<>();
+        System.out.println("Deseja adicionar serviços à nova classe? (sim/não)");
+        String response = scan.nextLine();
+        
+        while (response.equals("sim")) {
+            System.out.println("Qual é o nome do serviço?");
+            String serviceName = scan.nextLine();
+            System.out.println("Qual é o ID do serviço?");
+            int serviceId = scan.nextInt();
+            scan.nextLine();
+            System.out.println("Qual é a descrição do serviço?");
+            String serviceDescription = scan.nextLine();
+            Service service = new Service(serviceName, serviceId, serviceDescription);
+            services.add(service);
+            System.out.println("Deseja adicionar outro serviço? (sim/não)");
+            response = scan.nextLine();
+        }
+
+        Class newClass = new Class(className,price,seatCapacity,services);
+        classes.add(newClass);
+    }
+
+    public void addClass(Class classe) {
+        classes.add(classe);
+    }
+    public void removeClass(Class classe) {
+        classes.remove(classe);
     }
 
 }
