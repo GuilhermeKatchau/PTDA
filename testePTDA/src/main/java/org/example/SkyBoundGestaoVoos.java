@@ -122,6 +122,7 @@ public class SkyBoundGestaoVoos extends JFrame {
                 + " | Limite: " + limitePassageiros.getText();
 
         listaVoos.addElement(voo);
+        JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         limparCampos();
     }
 
@@ -130,6 +131,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         int selectedIndex = voosCadastrados.getSelectedIndex();
         if (selectedIndex != -1) {
             listaVoos.remove(selectedIndex);
+            JOptionPane.showMessageDialog(this, "Voo removido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
