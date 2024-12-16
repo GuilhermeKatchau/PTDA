@@ -108,6 +108,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     private void adicionarVoo() {
         if (idAviao.getText().isEmpty() || idVoo.getText().isEmpty() || codeName.getText().isEmpty()
                 || origem.getText().isEmpty() || destino.getText().isEmpty() || limitePassageiros.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
