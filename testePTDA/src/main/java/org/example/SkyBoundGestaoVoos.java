@@ -2,10 +2,13 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.NumberFormat;
 
 public class SkyBoundGestaoVoos extends JFrame {
+
     // Declaração dos campos do formulário
-    private final JTextField idAviao, idVoo, codeName, origem, destino, limitePassageiros;
+    private final JTextField idAviao, idVoo, codeName, origem, destino;
+    private final JFormattedTextField limitePassageiros;
     private final JSpinner tempoPartida, tempoChegada;
     private final DefaultListModel<String> listaVoos;
     private final JList<String> voosCadastrados;
@@ -23,7 +26,11 @@ public class SkyBoundGestaoVoos extends JFrame {
         codeName = new JTextField();
         origem = new JTextField();
         destino = new JTextField();
-        limitePassageiros = new JTextField();
+
+        // Campo numérico para Limite de Passageiros
+        NumberFormat numberFormat = NumberFormat.getIntegerInstance();
+        limitePassageiros = new JFormattedTextField(numberFormat);
+        limitePassageiros.setValue(0);
 
         // Inicializa os campos de data e hora
         tempoPartida = new JSpinner(new SpinnerDateModel());
@@ -107,8 +114,21 @@ public class SkyBoundGestaoVoos extends JFrame {
     // Método para adicionar um voo
     private void adicionarVoo() {
         if (idAviao.getText().isEmpty() || idVoo.getText().isEmpty() || codeName.getText().isEmpty()
-                || origem.getText().isEmpty() || destino.getText().isEmpty() || limitePassageiros.getText().isEmpty()) {
+                || origem.getText().isEmpty() || destino.getText().isEmpty() || limitePassageiros.getValue() == null) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validação numérica do limite de passageiros
+        int limite;
+        try {
+            limite = Integer.parseInt(limitePassageiros.getValue().toString());
+            if (limite <= 0) {
+                JOptionPane.showMessageDialog(this, "Limite de passageiros deve ser um número positivo!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Limite de passageiros inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -119,7 +139,7 @@ public class SkyBoundGestaoVoos extends JFrame {
                 + " | Destino: " + destino.getText()
                 + " | Partida: " + tempoPartida.getValue()
                 + " | Chegada: " + tempoChegada.getValue()
-                + " | Limite: " + limitePassageiros.getText();
+                + " | Limite: " + limite;
 
         listaVoos.addElement(voo);
         JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -144,7 +164,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         codeName.setText("");
         origem.setText("");
         destino.setText("");
-        limitePassageiros.setText("");
+        limitePassageiros.setValue(0);
         tempoPartida.setValue(new java.util.Date());
         tempoChegada.setValue(new java.util.Date());
     }
