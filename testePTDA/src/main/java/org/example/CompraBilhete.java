@@ -20,9 +20,16 @@ public class CompraBilhete extends JFrame {
         criarAbaDestinoOrigemData();
         criarAbaHoraVoo();
         criarAbaClasseServicos();
+        criarAbaInformacaoPassageiro();
 
         add(tabbedPane);
         setVisible(true);
+    }
+
+    // Método auxiliar para adicionar componentes ao painel
+    private void adicionarComponenteAoPainel(JPanel painel, Component componente1, Component componente2) {
+        painel.add(componente1);
+        painel.add(componente2);
     }
 
     private void criarAbaDestinoOrigemData() {
@@ -39,22 +46,17 @@ public class CompraBilhete extends JFrame {
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
 
-        // Criação do botão utilizando o método separado
         JButton btnProximo = criarBotaoProximoAba1(comboOrigem, comboDestino, fieldData);
 
-        panelDestinoOrigemData.add(labelOrigem);
-        panelDestinoOrigemData.add(comboOrigem);
-        panelDestinoOrigemData.add(labelDestino);
-        panelDestinoOrigemData.add(comboDestino);
-        panelDestinoOrigemData.add(labelData);
-        panelDestinoOrigemData.add(fieldData);
-        panelDestinoOrigemData.add(new JLabel());
-        panelDestinoOrigemData.add(btnProximo);
+        // Usar método auxiliar para adicionar componentes
+        adicionarComponenteAoPainel(panelDestinoOrigemData, labelOrigem, comboOrigem);
+        adicionarComponenteAoPainel(panelDestinoOrigemData, labelDestino, comboDestino);
+        adicionarComponenteAoPainel(panelDestinoOrigemData, labelData, fieldData);
+        adicionarComponenteAoPainel(panelDestinoOrigemData, new JLabel(), btnProximo);
 
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
-    // Método separado para criar o botão Próximo da Aba 1
     private JButton criarBotaoProximoAba1(JComboBox<String> comboOrigem, JComboBox<String> comboDestino, JFormattedTextField fieldData) {
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
@@ -64,7 +66,7 @@ public class CompraBilhete extends JFrame {
                 JOptionPane.showMessageDialog(this, "Dados Validados:\nOrigem: " + comboOrigem.getSelectedItem() +
                         "\nDestino: " + comboDestino.getSelectedItem() +
                         "\nData: " + fieldData.getText(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                tabbedPane.setSelectedIndex(1); // Avança para a próxima aba
+                tabbedPane.setSelectedIndex(1);
             }
         });
         return btnProximo;
@@ -112,7 +114,7 @@ public class CompraBilhete extends JFrame {
         JPanel panelClasseServicos = new JPanel(new GridLayout(7, 1, 10, 10));
 
         JLabel labelClasse = new JLabel("Escolha a Classe:");
-        String[] classes = {"Primeira (200€)", "Segunda (150€)", "Terceira (100€)"};
+        String[] classes = {"Luxuosa (200€)", "Intermédia (150€)", "Normal (100€)"};
         JComboBox<String> comboClasse = new JComboBox<>(classes);
 
         JLabel labelServicos = new JLabel("Serviços Adicionais:");
@@ -146,6 +148,60 @@ public class CompraBilhete extends JFrame {
         panelClasseServicos.add(btnProximo);
 
         tabbedPane.addTab("Classe e Serviços", panelClasseServicos);
+    }
+
+    private void criarAbaInformacaoPassageiro() {
+        JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
+
+        JLabel labelNome = new JLabel("Nome:");
+        JTextField fieldNome = new JTextField();
+
+        JLabel labelIdade = new JLabel("Idade:");
+        JSpinner spinnerIdade = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
+
+        JLabel labelEmail = new JLabel("Email:");
+        JTextField fieldEmail = new JTextField();
+
+        JLabel labelCheckIn = new JLabel("Check-in:");
+        JRadioButton radioAutomatico = new JRadioButton("Automático");
+        JRadioButton radioManual = new JRadioButton("Manual");
+        ButtonGroup groupCheckIn = new ButtonGroup();
+        groupCheckIn.add(radioAutomatico);
+        groupCheckIn.add(radioManual);
+
+        JButton btnProximo = new JButton("Próximo");
+        btnProximo.addActionListener(e -> {
+            String nome = fieldNome.getText().trim();
+            int idade = (int) spinnerIdade.getValue();
+            String email = fieldEmail.getText().trim();
+            String checkIn = radioAutomatico.isSelected() ? "Automático" : "Manual";
+
+            if (nome.isEmpty() || email.isEmpty() || groupCheckIn.getSelection() == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else if (!email.contains("@")) {
+                JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Informações do Passageiro:\nNome: " + nome +
+                                "\nIdade: " + idade + "\nEmail: " + email + "\nCheck-in: " + checkIn,
+                        "Resumo - Informação do Passageiro", JOptionPane.INFORMATION_MESSAGE);
+                tabbedPane.setSelectedIndex(4);
+            }
+        });
+
+        panelPassageiro.add(labelNome);
+        panelPassageiro.add(fieldNome);
+        panelPassageiro.add(labelIdade);
+        panelPassageiro.add(spinnerIdade);
+        panelPassageiro.add(labelEmail);
+        panelPassageiro.add(fieldEmail);
+        panelPassageiro.add(labelCheckIn);
+        panelPassageiro.add(radioAutomatico);
+        panelPassageiro.add(new JLabel());
+        panelPassageiro.add(radioManual);
+        panelPassageiro.add(new JLabel());
+        panelPassageiro.add(btnProximo);
+
+        tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
     }
 
     public static void main(String[] args) {
