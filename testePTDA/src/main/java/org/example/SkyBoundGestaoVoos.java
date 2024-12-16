@@ -3,6 +3,7 @@ package org.example;
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
+import java.util.Date;
 
 public class SkyBoundGestaoVoos extends JFrame {
 
@@ -132,13 +133,21 @@ public class SkyBoundGestaoVoos extends JFrame {
             return;
         }
 
+        // Validação de datas
+        Date partida = (Date) tempoPartida.getValue();
+        Date chegada = (Date) tempoChegada.getValue();
+        if (partida.after(chegada)) {
+            JOptionPane.showMessageDialog(this, "A data de partida deve ser anterior à data de chegada!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         String voo = "ID Avião: " + idAviao.getText()
                 + " | ID Voo: " + idVoo.getText()
                 + " | Code Name: " + codeName.getText()
                 + " | Origem: " + origem.getText()
                 + " | Destino: " + destino.getText()
-                + " | Partida: " + tempoPartida.getValue()
-                + " | Chegada: " + tempoChegada.getValue()
+                + " | Partida: " + partida
+                + " | Chegada: " + chegada
                 + " | Limite: " + limite;
 
         listaVoos.addElement(voo);
