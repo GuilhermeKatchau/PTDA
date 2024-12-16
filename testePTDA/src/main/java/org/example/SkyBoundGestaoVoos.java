@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*; // Importa GridLayout e BorderLayout
 
 public class SkyBoundGestaoVoos extends JFrame {
+    // Declaração das variáveis globais
+    private JTextField idAviao, origem, destino;
+    private DefaultListModel<String> listaVoos;
+
     public SkyBoundGestaoVoos() {
         // Configurações da janela
         setTitle("Gestão de Voos");
@@ -13,8 +17,14 @@ public class SkyBoundGestaoVoos extends JFrame {
 
         // Criação painel do formulário
         JPanel formPanel = new JPanel(new GridLayout(4, 4, 10, 10));
+
+        // Inicializa os campos de texto
+        idAviao = new JTextField();
+        origem = new JTextField();
+        destino = new JTextField();
+
         formPanel.add(new JLabel("ID do Avião:"));
-        formPanel.add(new JTextField());
+        formPanel.add(idAviao);
 
         formPanel.add(new JLabel("ID do Voo:"));
         formPanel.add(new JTextField());
@@ -23,10 +33,10 @@ public class SkyBoundGestaoVoos extends JFrame {
         formPanel.add(new JTextField());
 
         formPanel.add(new JLabel("Cidade de Origem:"));
-        formPanel.add(new JTextField());
+        formPanel.add(origem);
 
         formPanel.add(new JLabel("Cidade de Destino:"));
-        formPanel.add(new JTextField());
+        formPanel.add(destino);
 
         formPanel.add(new JLabel("Limite de Passageiros:"));
         formPanel.add(new JTextField());
@@ -46,26 +56,39 @@ public class SkyBoundGestaoVoos extends JFrame {
         formPanel.add(new JLabel("Tempo de Chegada:"));
         formPanel.add(tempoChegada);
 
+        // Botão de submissão de voos
+        JButton btnAdicionar = new JButton("Adicionar Voo");
+        formPanel.add(btnAdicionar);
+
         // Adiciona o painel ao topo da janela
         add(formPanel, BorderLayout.NORTH);
 
-        // Torna a janela visível
-        setVisible(true);
-
-        //Botão de submissão de voos
-        JButton btnAdicionar = new JButton("Adicionar Voo");
-        btnAdicionar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Voo Adicionado!"));
-        formPanel.add(btnAdicionar);
-
-        //Mostra a lista dos voos cadastrados
-        DefaultListModel<String> listaVoos = new DefaultListModel<>();
+        // Inicializa a lista de voos
+        listaVoos = new DefaultListModel<>();
         JList<String> voosCadastrados = new JList<>(listaVoos);
         JScrollPane scrollPane = new JScrollPane(voosCadastrados);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Voos Cadastrados"));
 
         add(scrollPane, BorderLayout.CENTER);
 
+        // Evento do botão
+        btnAdicionar.addActionListener(e -> {
+            String voo = "ID: " + idAviao.getText() +
+                    " | Origem: " + origem.getText() +
+                    " | Destino: " + destino.getText();
+            listaVoos.addElement(voo);
+            limparCampos();
+        });
 
+        // Torna a janela visível
+        setVisible(true);
+    }
+
+    // Método para limpar os campos
+    private void limparCampos() {
+        idAviao.setText("");
+        origem.setText("");
+        destino.setText("");
     }
 
     public static void main(String[] args) {
