@@ -5,8 +5,10 @@ import java.awt.*; // Importa GridLayout e BorderLayout
 
 public class SkyBoundGestaoVoos extends JFrame {
     // Declaração das variáveis globais
-    private JTextField idAviao, origem, destino;
-    private DefaultListModel<String> listaVoos;
+    private final JTextField idAviao;
+    private final JTextField origem;
+    private final JTextField destino;
+    private final DefaultListModel<String> listaVoos;
 
     public SkyBoundGestaoVoos() {
         // Configurações da janela
@@ -79,6 +81,19 @@ public class SkyBoundGestaoVoos extends JFrame {
             listaVoos.addElement(voo);
             limparCampos();
         });
+
+        // Botão de remoção de voos
+        JButton btnRemover = new JButton("Remover Voo");
+        btnRemover.addActionListener(e -> {
+            int selectedIndex = voosCadastrados.getSelectedIndex();
+            if (selectedIndex != -1) {
+                listaVoos.remove(selectedIndex);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um voo para remover.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        add(btnRemover, BorderLayout.SOUTH);
+
 
         // Torna a janela visível
         setVisible(true);
