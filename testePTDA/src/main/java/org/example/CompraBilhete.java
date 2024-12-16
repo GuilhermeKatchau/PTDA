@@ -7,51 +7,57 @@ import java.util.Date;
 import java.util.Objects;
 
 public class CompraBilhete extends JFrame {
-    private JTabbedPane tabbedPane;
+    private final JTabbedPane tabbedPane;
 
     public CompraBilhete() {
-        // Configurações da Janela Principal
         setTitle("Compra de Bilhete");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a janela
+        setLocationRelativeTo(null);
 
-        // Criação do TabbedPane
         tabbedPane = new JTabbedPane();
 
-        // Adicionar páginas ao TabbedPane
         criarAbaDestinoOrigemData();
         criarAbaHoraVoo();
+        criarAbaClasseServicos();
 
-        // Adicionar o TabbedPane à Janela Principal
         add(tabbedPane);
-
-        // Exibir a Janela
         setVisible(true);
     }
 
-    // Aba 1: Seleção de Destino, Origem e Data
     private void criarAbaDestinoOrigemData() {
         JPanel panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
 
-        // Labels
         JLabel labelOrigem = new JLabel("Origem:");
         JLabel labelDestino = new JLabel("Destino:");
         JLabel labelData = new JLabel("Data (dd/MM/yyyy):");
 
-        // ComboBox para Origem e Destino
         String[] locais = {"Lisboa", "Porto", "Madrid", "Londres", "Paris"};
         JComboBox<String> comboOrigem = new JComboBox<>(locais);
         JComboBox<String> comboDestino = new JComboBox<>(locais);
 
-        // Campo formatado para Data
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
-        fieldData.setValue(new Date()); // Preenche com a data atual
+        fieldData.setValue(new Date());
 
-        // Botão Próximo
+        // Criação do botão utilizando o método separado
+        JButton btnProximo = criarBotaoProximoAba1(comboOrigem, comboDestino, fieldData);
+
+        panelDestinoOrigemData.add(labelOrigem);
+        panelDestinoOrigemData.add(comboOrigem);
+        panelDestinoOrigemData.add(labelDestino);
+        panelDestinoOrigemData.add(comboDestino);
+        panelDestinoOrigemData.add(labelData);
+        panelDestinoOrigemData.add(fieldData);
+        panelDestinoOrigemData.add(new JLabel());
+        panelDestinoOrigemData.add(btnProximo);
+
+        tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
+    }
+
+    // Método separado para criar o botão Próximo da Aba 1
+    private JButton criarBotaoProximoAba1(JComboBox<String> comboOrigem, JComboBox<String> comboDestino, JFormattedTextField fieldData) {
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
-            // Validação simples
             if (Objects.equals(comboOrigem.getSelectedItem(), comboDestino.getSelectedItem())) {
                 JOptionPane.showMessageDialog(this, "Origem e Destino não podem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -61,26 +67,11 @@ public class CompraBilhete extends JFrame {
                 tabbedPane.setSelectedIndex(1); // Avança para a próxima aba
             }
         });
-
-        // Adicionar componentes ao painel
-        panelDestinoOrigemData.add(labelOrigem);
-        panelDestinoOrigemData.add(comboOrigem);
-        panelDestinoOrigemData.add(labelDestino);
-        panelDestinoOrigemData.add(comboDestino);
-        panelDestinoOrigemData.add(labelData);
-        panelDestinoOrigemData.add(fieldData);
-        panelDestinoOrigemData.add(new JLabel()); // Espaço vazio
-        panelDestinoOrigemData.add(btnProximo);
-
-        // Adicionar a aba ao TabbedPane
-        tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
+        return btnProximo;
     }
 
-    // Aba 2: Seleção de Hora e Voo
     private void criarAbaHoraVoo() {
         JPanel panelHoraVoo = new JPanel(new BorderLayout());
-
-        // Tabela com a lista de voos disponíveis
         String[] colunas = {"Hora", "Origem", "Destino"};
         Object[][] voos = {
                 {"10:00", "Lisboa", "Porto"},
@@ -91,8 +82,15 @@ public class CompraBilhete extends JFrame {
         };
         JTable tableVoos = new JTable(voos, colunas);
         JScrollPane scrollPane = new JScrollPane(tableVoos);
+        JButton btnProximo = criarBotaoProximo(tableVoos);
 
-        // Botão Próximo
+        panelHoraVoo.add(scrollPane, BorderLayout.CENTER);
+        panelHoraVoo.add(btnProximo, BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Hora e Voo", panelHoraVoo);
+    }
+
+    private JButton criarBotaoProximo(JTable tableVoos) {
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
             int linhaSelecionada = tableVoos.getSelectedRow();
@@ -104,16 +102,50 @@ public class CompraBilhete extends JFrame {
                 String destino = (String) tableVoos.getValueAt(linhaSelecionada, 2);
                 JOptionPane.showMessageDialog(this, "Voo Selecionado:\nHora: " + hora +
                         "\nOrigem: " + origem + "\nDestino: " + destino, "Voo Confirmado", JOptionPane.INFORMATION_MESSAGE);
-                // Avançar para a próxima aba (será adicionada mais tarde)
+                tabbedPane.setSelectedIndex(2);
             }
         });
+        return btnProximo;
+    }
 
-        // Adicionar componentes à aba
-        panelHoraVoo.add(scrollPane, BorderLayout.CENTER);
-        panelHoraVoo.add(btnProximo, BorderLayout.SOUTH);
+    private void criarAbaClasseServicos() {
+        JPanel panelClasseServicos = new JPanel(new GridLayout(7, 1, 10, 10));
 
-        // Adicionar a aba ao TabbedPane
-        tabbedPane.addTab("Hora e Voo", panelHoraVoo);
+        JLabel labelClasse = new JLabel("Escolha a Classe:");
+        String[] classes = {"Primeira (200€)", "Segunda (150€)", "Terceira (100€)"};
+        JComboBox<String> comboClasse = new JComboBox<>(classes);
+
+        JLabel labelServicos = new JLabel("Serviços Adicionais:");
+        JCheckBox checkBagagem = new JCheckBox("Bagagem Extra (20€)");
+        JCheckBox checkPrioridade = new JCheckBox("Prioridade de Embarque (10€)");
+        JCheckBox checkRefeicao = new JCheckBox("Refeição Especial (15€)");
+
+        JButton btnProximo = new JButton("Próximo");
+        btnProximo.addActionListener(e -> {
+            String classeSelecionada = (String) comboClasse.getSelectedItem();
+            StringBuilder servicosSelecionados = new StringBuilder();
+
+            if (checkBagagem.isSelected()) servicosSelecionados.append("Bagagem Extra, ");
+            if (checkPrioridade.isSelected()) servicosSelecionados.append("Prioridade de Embarque, ");
+            if (checkRefeicao.isSelected()) servicosSelecionados.append("Refeição Especial");
+
+            String servicos = servicosSelecionados.toString().replaceAll(", $", "");
+            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + classeSelecionada +
+                            "\nServiços Adicionais: " + (servicos.isEmpty() ? "Nenhum" : servicos),
+                    "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
+
+            tabbedPane.setSelectedIndex(3);
+        });
+
+        panelClasseServicos.add(labelClasse);
+        panelClasseServicos.add(comboClasse);
+        panelClasseServicos.add(labelServicos);
+        panelClasseServicos.add(checkBagagem);
+        panelClasseServicos.add(checkPrioridade);
+        panelClasseServicos.add(checkRefeicao);
+        panelClasseServicos.add(btnProximo);
+
+        tabbedPane.addTab("Classe e Serviços", panelClasseServicos);
     }
 
     public static void main(String[] args) {
