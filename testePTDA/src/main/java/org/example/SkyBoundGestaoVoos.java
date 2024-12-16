@@ -94,6 +94,11 @@ public class SkyBoundGestaoVoos extends JFrame {
         });
         add(btnRemover, BorderLayout.SOUTH);
 
+        // Valaidação para que todos os campos sejam preenchidos
+        if (idAviao.getText().isEmpty() || origem.getText().isEmpty() || destino.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Torna a janela visível
         setVisible(true);
