@@ -57,6 +57,15 @@ public class SkyBoundGestaoVoos extends JFrame {
         btnAdicionar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Voo Adicionado!"));
         formPanel.add(btnAdicionar);
 
+        //Mostra a lista dos voos cadastrados
+        DefaultListModel<String> listaVoos = new DefaultListModel<>();
+        JList<String> voosCadastrados = new JList<>(listaVoos);
+        JScrollPane scrollPane = new JScrollPane(voosCadastrados);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Voos Cadastrados"));
+
+        add(scrollPane, BorderLayout.CENTER);
+
+
     }
 
     public static void main(String[] args) {
