@@ -31,6 +31,21 @@ public class SkyBoundGestaoVoos extends JFrame {
         formPanel.add(new JLabel("Limite de Passageiros:"));
         formPanel.add(new JTextField());
 
+        // Campos de Data e Hora
+        JSpinner tempoPartida = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor editor1 = new JSpinner.DateEditor(tempoPartida, "dd/MM/yyyy HH:mm");
+        tempoPartida.setEditor(editor1);
+
+        JSpinner tempoChegada = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor editor2 = new JSpinner.DateEditor(tempoChegada, "dd/MM/yyyy HH:mm");
+        tempoChegada.setEditor(editor2);
+
+        formPanel.add(new JLabel("Tempo de Partida:"));
+        formPanel.add(tempoPartida);
+
+        formPanel.add(new JLabel("Tempo de Chegada:"));
+        formPanel.add(tempoChegada);
+
         // Adiciona o painel ao topo da janela
         add(formPanel, BorderLayout.NORTH);
 
