@@ -133,14 +133,21 @@ public class SkyBoundGestaoVoos extends JFrame {
             return;
         }
 
-        // Validação de datas
+        // Validação de datas e horas
         Date partida = (Date) tempoPartida.getValue();
         Date chegada = (Date) tempoChegada.getValue();
-        if (partida.after(chegada)) {
-            JOptionPane.showMessageDialog(this, "A data de partida deve ser anterior à data de chegada!", "Erro", JOptionPane.ERROR_MESSAGE);
+
+        // Verifica se a partida é estritamente antes da chegada
+        if (!partida.before(chegada)) {
+            JOptionPane.showMessageDialog(this,
+                    "A data e hora de partida devem ser ANTES da data e hora de chegada!\n" +
+                            "Deve haver pelo menos 1 minuto de diferença.",
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        // Adiciona o voo se todas as validações passarem
         String voo = "ID Avião: " + idAviao.getText()
                 + " | ID Voo: " + idVoo.getText()
                 + " | Code Name: " + codeName.getText()
@@ -174,8 +181,8 @@ public class SkyBoundGestaoVoos extends JFrame {
         origem.setText("");
         destino.setText("");
         limitePassageiros.setValue(0);
-        tempoPartida.setValue(new java.util.Date());
-        tempoChegada.setValue(new java.util.Date());
+        tempoPartida.setValue(new Date());
+        tempoChegada.setValue(new Date());
     }
 
     public static void main(String[] args) {
