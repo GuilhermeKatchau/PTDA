@@ -51,6 +51,12 @@ public class SkyBoundGestaoVoos extends JFrame {
 
         // Torna a janela visível
         setVisible(true);
+
+        //Botão de submissão de voo
+        JButton btnAdicionar = new JButton("Adicionar Voo");
+        btnAdicionar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Voo Adicionado!"));
+        formPanel.add(btnAdicionar);
+
     }
 
     public static void main(String[] args) {
