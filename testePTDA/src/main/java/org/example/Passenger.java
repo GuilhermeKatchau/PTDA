@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Passenger {
 
@@ -82,14 +83,14 @@ public class Passenger {
         id_Passenger--;
     }
 
-   public boolean buyTicket(Ticket ticket) {
+  /* public boolean buyTicket(Ticket ticket) {
 
        if (ticket == null) {
            throw new IllegalArgumentException("O bilhete não pode ser nulo.");
        }
        Flight flight = ticket.getFlight();
        boolean checkIn = false;
-       double hCheckIn = flight.gethTakeoff() -1.00;
+       Date hCheckIn = flight.gethTakeoff() - 1.00;
 
         if (automatic) {
             checkIn = true;
@@ -100,6 +101,6 @@ public class Passenger {
         }
         return checkIn;
     }
-
+*/
 
 }

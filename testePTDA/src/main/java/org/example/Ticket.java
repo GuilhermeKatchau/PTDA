@@ -37,7 +37,7 @@ public class Ticket {
         if (id_Ticket > 100000000 && id_Ticket <= 999999999) {
             this.id_Ticket = id_Ticket;
         } else {
-            throw new IllegalArgumentException("ID de Bilhete inválido");
+            System.out.println("ID de Ticket inválido");
         }
     }
 

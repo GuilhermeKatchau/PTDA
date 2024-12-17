@@ -1,31 +1,33 @@
 package org.example;
 
-import java.util.ArrayList;
+import javax.swing.*;
+import java.util.Date;
 
 public class Flight {
 
     private int id_Flight;
+    private int id_Airplane;
+    private String codename;
+    private String source;
+    private String destination;
     private int maxPassengers;
     private int nCompany;
-    private int hTakeoff;
-    private int hLanding;
-    private String destination;
-    private String source;
-    private String codeName;
-    ArrayList<Flight> flights = new ArrayList<Flight>();
+    private Date hTakeOff;
+    private Date hLanding;
+    static DefaultListModel<Flight> flights = new DefaultListModel<>();
 
-
-    public Flight(int id_Flight, int nCompany, int maxPassengers, int hTakeoff,
-                  int hLanding, String destination, String source, String codeName) {
-        setMaxPassengers(maxPassengers);
+    public Flight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeoff, Date hLanding) {
+        this.id_Airplane = id_Airplane;
         setId_Flight(id_Flight);
-        setHTakeoff(hTakeoff);
-        setHLanding(hLanding);
+        setCodeName(codename);
         setSource(source);
         setDestination(destination);
-        nCompany = 0;
+        setMaxPassengers(maxPassengers);
+        setHTakeoff(hTakeoff);
+        setHLanding(hLanding);
     }
 
+    // Getters e Setters
     public void setMaxPassengers(int maxPassengers) {
         if (maxPassengers > 0 && maxPassengers <= 900) {
             this.maxPassengers = maxPassengers;
@@ -50,28 +52,20 @@ public class Flight {
         return id_Flight;
     }
 
-    public void setHTakeoff(int hTakeoff) {
-        if (hTakeoff > 0 && hTakeoff <= 24) {
-            this.hTakeoff = hTakeoff;
-        } else {
-            throw new IllegalArgumentException("Hora de decolagem inválida");
-        }
+    public void setHTakeoff(Date hTakeoff) {
+        this.hTakeOff = hTakeoff;
     }
 
-    public int gethTakeoff() {
-        return hTakeoff;
+    public Date gethTakeoff() {
+        return hTakeOff;
     }
 
-    public void setHLanding(int hLanding) {
-        if (hLanding > 0 && hLanding <= 24) {
-            this.hLanding = hLanding;
-        } else {
-            throw new IllegalArgumentException("Hora de aterragem inválida");
-        }
-    }
-
-    public void sethLanding(int hLanding) {
+    public void setHLanding(Date hLanding) {
         this.hLanding = hLanding;
+    }
+
+    public Date gethLanding() {
+        return hLanding;
     }
 
     public void setDestination(String destination) {
@@ -100,27 +94,58 @@ public class Flight {
 
     public void setCodeName(String codeName) {
         if (codeName != null && !codeName.trim().isEmpty()) {
-            this.codeName = codeName;
+            this.codename = codeName;
         } else {
             throw new IllegalArgumentException("Nome de Voo não pode ser vazio");
         }
     }
 
     public String getCodeName() {
-        return codeName;
+        return codename;
     }
 
-    // adiciona voos á lista
-    public void addFlight(Flight flight) {
-        flights.add(flight);
-        id_Flight++;
+    // Adiciona um voo à lista
+    public static void addFlight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeOff, Date hLanding) {
+        try {
+            // Validação de datas e horas
+            if (!hTakeOff.before(hLanding)) {
+                JOptionPane.showMessageDialog(null,
+                        "A data e hora de partida devem ser ANTES da data e hora de chegada!\n" +
+                                "Deve haver pelo menos 1 minuto de diferença.",
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Flight newFlight = new Flight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            flights.addElement(newFlight);
+
+            JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
-    // remove voos da lista
-    public  void removeFlight(Flight flight){
-        flights.remove(flight);
-        id_Flight--;
+
+    // Remove o voo pelo índice
+    public static void removeFlight(int flightIndex) {
+        if (flightIndex >= 0 && flightIndex < flights.size()) {
+            flights.remove(flightIndex);
+            JOptionPane.showMessageDialog(null, "Voo removido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Índice de voo inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método toString para mostrar as informações do voo
+    @Override
+    public String toString() {
+        return "ID Avião: " + id_Airplane +
+                " | ID Voo: " + id_Flight +
+                " | Code Name: " + codename +
+                " | Origem: " + source +
+                " | Destino: " + destination +
+                " | Partida: " + hTakeOff +
+                " | Chegada: " + hLanding +
+                " | Limite: " + maxPassengers;
     }
 }
-
-
-

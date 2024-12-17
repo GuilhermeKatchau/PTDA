@@ -114,52 +114,22 @@ public class SkyBoundGestaoVoos extends JFrame {
 
     // Método para adicionar um voo
     private void adicionarVoo() {
-        if (idAviao.getText().isEmpty() || idVoo.getText().isEmpty() || codeName.getText().isEmpty()
-                || origem.getText().isEmpty() || destino.getText().isEmpty() || limitePassageiros.getValue() == null) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Validação numérica do limite de passageiros
-        int limite;
         try {
-            limite = Integer.parseInt(limitePassageiros.getValue().toString());
-            if (limite <= 0) {
-                JOptionPane.showMessageDialog(this, "Limite de passageiros deve ser um número positivo!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            int id_Airplane = Integer.parseInt(idAviao.getText());
+            int id_Flight = Integer.parseInt(idVoo.getText());
+            String codename = codeName.getText();
+            String source = origem.getText();
+            String destination = destino.getText();
+            int maxPassengers = Integer.parseInt(limitePassageiros.getText());
+            Date hTakeOff = (Date) tempoPartida.getValue();
+            Date hLanding = (Date) tempoChegada.getValue();
+
+            Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            listaVoos.addElement("ID Avião: " + id_Airplane + " | ID Voo: " + id_Flight + " | Code Name: " + codename + " | Origem: " + source + " | Destino: " + destination + " | Partida: " + hTakeOff + " | Chegada: " + hLanding + " | Limite: " + maxPassengers);
+            limparCampos();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Limite de passageiros inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Validação de datas e horas
-        Date partida = (Date) tempoPartida.getValue();
-        Date chegada = (Date) tempoChegada.getValue();
-
-        // Verifica se a partida é estritamente antes da chegada
-        if (!partida.before(chegada)) {
-            JOptionPane.showMessageDialog(this,
-                    "A data e hora de partida devem ser ANTES da data e hora de chegada!\n" +
-                            "Deve haver pelo menos 1 minuto de diferença.",
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Adiciona o voo se todas as validações passarem
-        String voo = "ID Avião: " + idAviao.getText()
-                + " | ID Voo: " + idVoo.getText()
-                + " | Code Name: " + codeName.getText()
-                + " | Origem: " + origem.getText()
-                + " | Destino: " + destino.getText()
-                + " | Partida: " + partida
-                + " | Chegada: " + chegada
-                + " | Limite: " + limite;
-
-        listaVoos.addElement(voo);
-        JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        limparCampos();
     }
 
     // Método para remover um voo selecionado
