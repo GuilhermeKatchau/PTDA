@@ -41,7 +41,7 @@ public class Flight {
     }
 
     public void setId_Flight(int id_Flight) {
-        if (id_Flight > 100000000 && id_Flight <= 999999999) {
+        if (id_Flight >=1 || id_Flight <= 999999999) {
             this.id_Flight = id_Flight;
         } else {
             throw new IllegalArgumentException("ID de Voo inválido");
