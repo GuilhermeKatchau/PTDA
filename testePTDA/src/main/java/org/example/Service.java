@@ -29,7 +29,7 @@ public class Service {
     }
 
     public void setId_Service(int id_Service) {
-        if (id_Service > 100000000 && id_Service <= 999999999) {
+        if (id_Service >= 1 && id_Service <= 999999999) {
             this.id_Service = id_Service;
         } else {
             throw new IllegalArgumentException("ID de Serviço inválido");

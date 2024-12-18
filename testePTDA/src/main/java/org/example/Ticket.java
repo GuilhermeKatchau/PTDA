@@ -34,7 +34,7 @@ public class Ticket {
     }
 
     public void setId_Ticket(int id_Ticket) {
-        if (id_Ticket > 100000000 && id_Ticket <= 999999999) {
+        if (id_Ticket >= 1 && id_Ticket <= 999999999) {
             this.id_Ticket = id_Ticket;
         } else {
             System.out.println("ID de Ticket inválido");

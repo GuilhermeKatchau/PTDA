@@ -3,8 +3,7 @@ package org.example;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
@@ -17,22 +16,23 @@ public class CompraBilhete extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        criarAbaDestinoOrigemData();
-        criarAbaHoraVoo();
-        criarAbaClasseServicos();
-        criarAbaInformacaoPassageiro();
+        tabDestinationSource();
+        tabHourFlight();
+        tabClassService();
+        tabPassengerInfo();
+        tabFinalize();
 
         add(tabbedPane);
         setVisible(true);
     }
 
     // Método auxiliar para adicionar componentes ao painel
-    private void adicionarComponenteAoPainel(JPanel painel, Component componente1, Component componente2) {
+    private void addComponentToPanel(JPanel painel, Component componente1, Component componente2) {
         painel.add(componente1);
         painel.add(componente2);
     }
 
-    private void criarAbaDestinoOrigemData() {
+    private void tabDestinationSource() {
         JPanel panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
 
         JLabel labelOrigem = new JLabel("Origem:");
@@ -46,18 +46,18 @@ public class CompraBilhete extends JFrame {
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
 
-        JButton btnProximo = criarBotaoProximoAba1(comboOrigem, comboDestino, fieldData);
+        JButton btnProximo = nextButtonTab(comboOrigem, comboDestino, fieldData);
 
         // Usar método auxiliar para adicionar componentes
-        adicionarComponenteAoPainel(panelDestinoOrigemData, labelOrigem, comboOrigem);
-        adicionarComponenteAoPainel(panelDestinoOrigemData, labelDestino, comboDestino);
-        adicionarComponenteAoPainel(panelDestinoOrigemData, labelData, fieldData);
-        adicionarComponenteAoPainel(panelDestinoOrigemData, new JLabel(), btnProximo);
+        addComponentToPanel(panelDestinoOrigemData, labelOrigem, comboOrigem);
+        addComponentToPanel(panelDestinoOrigemData, labelDestino, comboDestino);
+        addComponentToPanel(panelDestinoOrigemData, labelData, fieldData);
+        addComponentToPanel(panelDestinoOrigemData, new JLabel(), btnProximo);
 
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
-    private JButton criarBotaoProximoAba1(JComboBox<String> comboOrigem, JComboBox<String> comboDestino, JFormattedTextField fieldData) {
+    private JButton nextButtonTab(JComboBox<String> comboOrigem, JComboBox<String> comboDestino, JFormattedTextField fieldData) {
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
             if (Objects.equals(comboOrigem.getSelectedItem(), comboDestino.getSelectedItem())) {
@@ -72,7 +72,7 @@ public class CompraBilhete extends JFrame {
         return btnProximo;
     }
 
-    private void criarAbaHoraVoo() {
+    private void tabHourFlight() {
         JPanel panelHoraVoo = new JPanel(new BorderLayout());
         String[] colunas = {"Hora", "Origem", "Destino"};
         Object[][] voos = {
@@ -84,7 +84,7 @@ public class CompraBilhete extends JFrame {
         };
         JTable tableVoos = new JTable(voos, colunas);
         JScrollPane scrollPane = new JScrollPane(tableVoos);
-        JButton btnProximo = criarBotaoProximo(tableVoos);
+        JButton btnProximo = nextButton(tableVoos);
 
         panelHoraVoo.add(scrollPane, BorderLayout.CENTER);
         panelHoraVoo.add(btnProximo, BorderLayout.SOUTH);
@@ -92,7 +92,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Hora e Voo", panelHoraVoo);
     }
 
-    private JButton criarBotaoProximo(JTable tableVoos) {
+    private JButton nextButton(JTable tableVoos) {
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
             int linhaSelecionada = tableVoos.getSelectedRow();
@@ -110,98 +110,140 @@ public class CompraBilhete extends JFrame {
         return btnProximo;
     }
 
-    private void criarAbaClasseServicos() {
-        JPanel panelClasseServicos = new JPanel(new GridLayout(7, 1, 10, 10));
+    private void tabClassService() {
+        JPanel panelClassServices = new JPanel(new GridLayout(7, 1, 10, 10));
 
-        JLabel labelClasse = new JLabel("Escolha a Classe:");
-        String[] classes = {"Luxuosa (200€)", "Intermédia (150€)", "Normal (100€)"};
-        JComboBox<String> comboClasse = new JComboBox<>(classes);
+        JLabel labelClass = new JLabel("Escolha a Classe:");
+        ArrayList<Class> availableClasses = getAvailableClasses(); // Método que retorna classes disponíveis
+        JComboBox<Class> comboClass = new JComboBox<>(availableClasses.toArray(new Class[0]));
 
-        JLabel labelServicos = new JLabel("Serviços Adicionais:");
-        JCheckBox checkBagagem = new JCheckBox("Bagagem Extra (20€)");
-        JCheckBox checkPrioridade = new JCheckBox("Prioridade de Embarque (10€)");
-        JCheckBox checkRefeicao = new JCheckBox("Refeição Especial (15€)");
+        JLabel labelServices = new JLabel("Serviços Adicionais:");
+        JPanel panelServices = new JPanel(new GridLayout(0, 1));
+        JButton btnNext = new JButton("Próximo");
 
-        JButton btnProximo = new JButton("Próximo");
-        btnProximo.addActionListener(e -> {
-            String classeSelecionada = (String) comboClasse.getSelectedItem();
-            StringBuilder servicosSelecionados = new StringBuilder();
+        comboClass.addActionListener(e -> {
+            Class selectedClass = (Class) comboClass.getSelectedItem();
+            panelServices.removeAll();
+            if (selectedClass != null) {
+                for (Service service : selectedClass.getServices()) {
+                    JCheckBox serviceCheckBox = new JCheckBox(service.getName() + " (" + service.getDescription() + ")");
+                    panelServices.add(serviceCheckBox);
+                }
+            }
+            panelServices.revalidate();
+            panelServices.repaint();
+        });
 
-            if (checkBagagem.isSelected()) servicosSelecionados.append("Bagagem Extra, ");
-            if (checkPrioridade.isSelected()) servicosSelecionados.append("Prioridade de Embarque, ");
-            if (checkRefeicao.isSelected()) servicosSelecionados.append("Refeição Especial");
+        btnNext.addActionListener(e -> {
+            Class selectedClass = (Class) comboClass.getSelectedItem();
+            StringBuilder selectedServices = new StringBuilder();
 
-            String servicos = servicosSelecionados.toString().replaceAll(", $", "");
-            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + classeSelecionada +
+            for (Component component : panelServices.getComponents()) {
+                if (component instanceof JCheckBox && ((JCheckBox) component).isSelected()) {
+                    selectedServices.append(((JCheckBox) component).getText()).append(", ");
+                }
+            }
+
+            String servicos = selectedServices.toString().replaceAll(", $", "");
+            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass +
                             "\nServiços Adicionais: " + (servicos.isEmpty() ? "Nenhum" : servicos),
                     "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
 
             tabbedPane.setSelectedIndex(3);
         });
 
-        panelClasseServicos.add(labelClasse);
-        panelClasseServicos.add(comboClasse);
-        panelClasseServicos.add(labelServicos);
-        panelClasseServicos.add(checkBagagem);
-        panelClasseServicos.add(checkPrioridade);
-        panelClasseServicos.add(checkRefeicao);
-        panelClasseServicos.add(btnProximo);
+        panelClassServices.add(labelClass);
+        panelClassServices.add(comboClass);
+        panelClassServices.add(labelServices);
+        panelClassServices.add(panelServices);
+        panelClassServices.add(btnNext);
 
-        tabbedPane.addTab("Classe e Serviços", panelClasseServicos);
+        tabbedPane.addTab("Classe e Serviços", panelClassServices);
     }
 
-    private void criarAbaInformacaoPassageiro() {
+    // Método auxiliar para retornar classes disponíveis
+    private ArrayList<Class> getAvailableClasses() {
+        ArrayList<Service> services1 = new ArrayList<>();
+        services1.add(new Service("Bagagem Extra", 1, "Bagagem adicional para voos longos"));
+        services1.add(new Service("Refeição Gourmet", 2, "Refeição premium durante o voo"));
+
+        ArrayList<Service> services2 = new ArrayList<>();
+        services2.add(new Service("Embarque Prioritário", 3, "Acesso prioritário ao embarque"));
+
+        ArrayList<Class> classes = new ArrayList<>();
+        classes.add(new Class("Luxuosa", 200.00, 10, services1));
+        classes.add(new Class("Econômica", 100.00, 50, services2));
+
+        return classes;
+    }
+
+
+    private void tabPassengerInfo() {
         JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
 
-        JLabel labelNome = new JLabel("Nome:");
-        JTextField fieldNome = new JTextField();
+        JLabel labelName = new JLabel("Nome:");
+        JTextField fieldName = new JTextField();
 
-        JLabel labelIdade = new JLabel("Idade:");
-        JSpinner spinnerIdade = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
+        JLabel labelAge = new JLabel("Idade:");
+        JSpinner spinnerAge = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
 
         JLabel labelEmail = new JLabel("Email:");
         JTextField fieldEmail = new JTextField();
 
         JLabel labelCheckIn = new JLabel("Check-in:");
-        JRadioButton radioAutomatico = new JRadioButton("Automático");
-        JRadioButton radioManual = new JRadioButton("Manual");
-        ButtonGroup groupCheckIn = new ButtonGroup();
-        groupCheckIn.add(radioAutomatico);
-        groupCheckIn.add(radioManual);
+        JRadioButton radioButtonAutomatic = new JRadioButton("Automático");
+        JRadioButton radioButtonManual = new JRadioButton("Manual");
+        ButtonGroup CheckIn = new ButtonGroup();
+        CheckIn.add(radioButtonAutomatic);
+        CheckIn.add(radioButtonManual);
 
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
-            String nome = fieldNome.getText().trim();
-            int idade = (int) spinnerIdade.getValue();
+            String name = fieldName.getText().trim();
+            int age = (int) spinnerAge.getValue();
             String email = fieldEmail.getText().trim();
-            String checkIn = radioAutomatico.isSelected() ? "Automático" : "Manual";
+            String checkIn = radioButtonAutomatic.isSelected() ? "Automático" : "Manual";
 
-            if (nome.isEmpty() || email.isEmpty() || groupCheckIn.getSelection() == null) {
+            if (name.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
                 JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else if (!email.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Informações do Passageiro:\nNome: " + nome +
-                                "\nIdade: " + idade + "\nEmail: " + email + "\nCheck-in: " + checkIn,
+                JOptionPane.showMessageDialog(this, "Informações do Passageiro:\nNome: " + name +
+                                "\nIdade: " + age + "\nEmail: " + email + "\nCheck-in: " + checkIn,
                         "Resumo - Informação do Passageiro", JOptionPane.INFORMATION_MESSAGE);
                 tabbedPane.setSelectedIndex(4);
             }
         });
 
-        panelPassageiro.add(labelNome);
-        panelPassageiro.add(fieldNome);
-        panelPassageiro.add(labelIdade);
-        panelPassageiro.add(spinnerIdade);
+        panelPassageiro.add(labelName);
+        panelPassageiro.add(fieldName);
+        panelPassageiro.add(labelAge);
+        panelPassageiro.add(spinnerAge);
         panelPassageiro.add(labelEmail);
         panelPassageiro.add(fieldEmail);
         panelPassageiro.add(labelCheckIn);
-        panelPassageiro.add(radioAutomatico);
+        panelPassageiro.add(radioButtonAutomatic);
         panelPassageiro.add(new JLabel());
-        panelPassageiro.add(radioManual);
+        panelPassageiro.add(radioButtonManual);
         panelPassageiro.add(new JLabel());
         panelPassageiro.add(btnProximo);
 
         tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
+    }
+
+
+    private void tabFinalize() {
+        JPanel panelFinalize = new JPanel(new BorderLayout());
+        JButton btnFinalize = new JButton("Finalizar Compra");
+
+        btnFinalize.addActionListener(e -> {
+            Ticket ticket = new Ticket("Lisboa", "Porto", 123456, 150.00);
+            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket, "Bilhete", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        panelFinalize.add(btnFinalize, BorderLayout.CENTER);
+        tabbedPane.addTab("Resumo", panelFinalize);
     }
 
     public static void main(String[] args) {
