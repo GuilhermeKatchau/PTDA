@@ -122,7 +122,22 @@ public class Main {
             return nextNum;
         }
     }
-    public static void salvarDadosAirplane(String destination, int id, String source1) {
+    public static void SavePassengerData(String name_passenger,int age, String email, int id) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO airplane (name_passenger,age,email,id) VALUES (?,?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name_passenger);
+            stmt.setInt(2, age);
+            stmt.setString(3, email);
+            stmt.setInt(4, id);
+            stmt.executeUpdate();
+            System.out.println("Dados inseridos com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao guardar os dados!");
+        }
+    }
+        public static void salvarDadosAirplane(String destination, int id, String source1) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
             PreparedStatement stmt = conn.prepareStatement(sql);

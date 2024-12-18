@@ -140,7 +140,11 @@ public class SkyBoundGestaoVoos extends JFrame {
                     hLandingFormatted,  // Data formatada
                     codename
             );
-
+            Main.salvarDadosAirplane(
+                    destination,
+                    id_Airplane,
+                    source
+            );
             listaVoos.addElement("ID Avião: " + id_Airplane
                     + " | ID Voo: " + id_Flight
                     + " | Code Name: " + codename
