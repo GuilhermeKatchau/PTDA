@@ -7,6 +7,7 @@ import java.util.*;
 
 public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
+    private final CheckIn checkInData = new CheckIn();
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -179,6 +180,7 @@ public class CompraBilhete extends JFrame {
 
 
     private void tabPassengerInfo() {
+
         JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
 
         JLabel labelName = new JLabel("Nome:");
@@ -197,20 +199,22 @@ public class CompraBilhete extends JFrame {
         CheckIn.add(radioButtonAutomatic);
         CheckIn.add(radioButtonManual);
 
-        JButton btnProximo = new JButton("Próximo");
-        btnProximo.addActionListener(e -> {
+        JButton btnNext = new JButton("Próximo");
+        btnNext.addActionListener(e -> {
             String name = fieldName.getText().trim();
             int age = (int) spinnerAge.getValue();
             String email = fieldEmail.getText().trim();
-            String checkIn = radioButtonAutomatic.isSelected() ? "Automático" : "Manual";
+            boolean isAutomatic = radioButtonAutomatic.isSelected();
 
             if (name.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
                 JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else if (!email.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
+                checkInData.setCheckIn(isAutomatic);
+                checkInData.sethCheckIn(isAutomatic ? 1 : 0);
                 JOptionPane.showMessageDialog(this, "Informações do Passageiro:\nNome: " + name +
-                                "\nIdade: " + age + "\nEmail: " + email + "\nCheck-in: " + checkIn,
+                                "\nIdade: " + age + "\nEmail: " + email + "\nCheck-in: " + (isAutomatic ? "Automático" : "Manual"),
                         "Resumo - Informação do Passageiro", JOptionPane.INFORMATION_MESSAGE);
                 tabbedPane.setSelectedIndex(4);
             }
@@ -227,7 +231,7 @@ public class CompraBilhete extends JFrame {
         panelPassageiro.add(new JLabel());
         panelPassageiro.add(radioButtonManual);
         panelPassageiro.add(new JLabel());
-        panelPassageiro.add(btnProximo);
+        panelPassageiro.add(btnNext);
 
         tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
     }
@@ -236,10 +240,12 @@ public class CompraBilhete extends JFrame {
     private void tabFinalize() {
         JPanel panelFinalize = new JPanel(new BorderLayout());
         JButton btnFinalize = new JButton("Finalizar Compra");
+        String checkInType = checkInData.isCheckIn() ? "Automático" : "Manual";
 
         btnFinalize.addActionListener(e -> {
             Ticket ticket = new Ticket("Lisboa", "Porto", 123456, 150.00);
-            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket, "Bilhete", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket,
+                    "Bilhete\n" + "Check-in: " + checkInType, JOptionPane.INFORMATION_MESSAGE);
         });
 
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);

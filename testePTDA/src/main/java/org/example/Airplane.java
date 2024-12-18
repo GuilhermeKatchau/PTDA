@@ -29,7 +29,7 @@ public class Airplane {
     }
 
     public void setId_Airplane(int id_Airplane) {
-        if (id_Airplane > 100000000 && id_Airplane <= 999999999) {
+        if (id_Airplane > 1 && id_Airplane <= 999999999) {
             this.id_Airplane = id_Airplane;
         } else {
             throw new IllegalArgumentException("ID de Avião inválido");
