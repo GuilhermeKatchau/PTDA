@@ -1,10 +1,6 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -55,7 +51,7 @@ public class Main {
             connection.setAutoCommit(false); // Transações manuais para consistência
 
             // Obtém o próximo ID
-            int nextId = getNextId(connection);
+            int nextId = getNextNumTicket(connection);
             int numTicket = getNextNumTicket(connection);
 
             // Inserção na tabela passenger
@@ -97,46 +93,44 @@ public class Main {
 
     // Função para obter o próximo ID na tabela passenger
     //VAI PARA A CLASSE PASSENGER
-    private static int getNextId(Connection connection) throws SQLException {
-        String sql = "SELECT MAX(id) AS max_id FROM passenger";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            int nextId = 1; // Começa com 1, caso a tabela esteja vazia
-            if (resultSet.next()) {
-                nextId = resultSet.getInt("max_id") + 1;
-            }
-            return nextId;
-        }
-    }
 
     // Função para obter o próximo número de bilhete na tabela ticket
     //ISTO VAI PARA A CLASSE TICKET
-    private static int getNextNumTicket(Connection connection) throws SQLException {
-        String sql = "SELECT MAX(id) AS max_num FROM ticket";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            int nextNum = 1; // Começa com 1, caso a tabela esteja vazia
-            if (resultSet.next()) {
-                nextNum = resultSet.getInt("max_num") + 1;
-            }
-            return nextNum;
-        }
-    }
-    public static void SavePassengerData(String name_passenger,int age, String email, int id) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO airplane (name_passenger,age,email,id) VALUES (?,?,?,?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+
+        // Certifique-se de que o método é estátic
+
+        // Outros métodos da classe Main...
+
+    public static void SavePassengerData(String name_passenger, int age, String email, int id) {
+        // URL de conexão ao banco de dados, usuário e senha
+        String url = "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05";
+        String user = "PTDA24_05";
+        String password = "Potm%793";
+
+        // Query SQL para inserir os dados na tabela
+        String sql = "INSERT INTO airplane (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // Definindo os valores nos parâmetros da query
             stmt.setString(1, name_passenger);
             stmt.setInt(2, age);
             stmt.setString(3, email);
-            stmt.setInt(4, id);
+            stmt.setInt(4, id);  // Se id for gerado automaticamente, ajuste isso no banco para auto-incremento
+
+            // Executando a query
             stmt.executeUpdate();
+
             System.out.println("Dados inseridos com sucesso!");
+
         } catch (SQLException e) {
+            // Tratamento de erros detalhado
+            System.err.println("Erro ao salvar os dados do passageiro.");
             e.printStackTrace();
-            System.out.println("Erro ao guardar os dados!");
         }
     }
+
     public static void SaveTicket(int id_passenger,String destination, int price, String source1,Boolean refundable, int id) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "INSERT INTO airplane (id_passenger,destination,price,source1,refundable,id) VALUES (?,?,?,?,?,?)";
@@ -189,6 +183,16 @@ public class Main {
             System.out.println("Erro ao guardar os dados do voo!");
         }
     }
-
+    public static int getNextNumTicket(Connection connection) throws SQLException {
+        // Lógica para obter o próximo número de ticket
+        String query = "SELECT MAX(ticket_id) FROM ticket"; // Exemplo de SQL
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1) + 1; // Incrementa o próximo ID
+        } else {
+            return 1; // Se não houver nenhum ticket, retorna 1
+        }
+    }
 
 }

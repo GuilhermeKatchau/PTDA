@@ -2,6 +2,7 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -211,6 +212,11 @@ public class CompraBilhete extends JFrame {
             } else if (!email.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
+                //VEJAM PFF se podem meter o metodo getNextNumTicket aqui nesta classe.
+               int id = Main.getNextNumTicket("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793");
+               //isto e info que vai para a bd
+                Main.SavePassengerData(name, age, email, id); // Passa esse id para salvar os dados
+
                 checkInData.setCheckIn(isAutomatic);
                 checkInData.sethCheckIn(isAutomatic ? 1 : 0);
                 JOptionPane.showMessageDialog(this, "Informações do Passageiro:\nNome: " + name +
