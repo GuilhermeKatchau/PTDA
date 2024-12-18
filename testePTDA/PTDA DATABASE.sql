@@ -13,7 +13,7 @@ id_passenger INTEGER
 REFERENCES passenger(id),
 destination VARCHAR(40),
 price INTEGER,
-trip VARCHAR(40),
+source1 VARCHAR(40),
 refundable BOOLEAN,
 id INTEGER PRIMARY KEY NOT NULL
 );
