@@ -123,9 +123,15 @@ public class SkyBoundGestaoVoos extends JFrame {
             int maxPassengers = Integer.parseInt(limitePassageiros.getText());
             Date hTakeOff = (Date) tempoPartida.getValue();
             Date hLanding = (Date) tempoChegada.getValue();
-
+            listaVoos.addElement("ID Avião: " + id_Airplane
+                    + " | ID Voo: " + id_Flight
+                    + " | Code Name: " + codename
+                    + " | Origem: " + source
+                    + " | Destino: " + destination
+                    + " | Partida: " + hTakeOff
+                    + " | Chegada: " + hLanding
+                    + " | Limite: " + maxPassengers);
             Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
-            listaVoos.addElement("ID Avião: " + id_Airplane + " | ID Voo: " + id_Flight + " | Code Name: " + codename + " | Origem: " + source + " | Destino: " + destination + " | Partida: " + hTakeOff + " | Chegada: " + hLanding + " | Limite: " + maxPassengers);
             limparCampos();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -154,6 +160,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         tempoPartida.setValue(new Date());
         tempoChegada.setValue(new Date());
     }
+
 
     public static void main(String[] args) {
         new SkyBoundGestaoVoos();
