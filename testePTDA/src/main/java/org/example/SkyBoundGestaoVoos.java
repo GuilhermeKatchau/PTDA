@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class SkyBoundGestaoVoos extends JFrame {
 
@@ -113,41 +114,49 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     // Método para adicionar um voo
-        private void adicionarVoo() {
-            try {
-                int id_Airplane = Integer.parseInt(idAviao.getText());
-                int id_Flight = Integer.parseInt(idVoo.getText());
-                String codename = codeName.getText();
-                String source = origem.getText();
-                String destination = destino.getText();
-                int maxPassengers = Integer.parseInt(limitePassageiros.getText());
-                Date hTakeOff = (Date) tempoPartida.getValue();
-                Date hLanding = (Date) tempoChegada.getValue();
-                Main.salvarDadosFlight(
-                        destination,  // `String` correspondente ao primeiro parâmetro
-                        id_Airplane,  // `int` correspondente ao segundo parâmetro
-                        source,
-                        id_Flight,    // `int` correspondente ao quarto parâmetro
-                        maxPassengers,
-                        hTakeOff,
-                        hLanding,
-                        codename
-                );
+    private void adicionarVoo() {
+        try {
+            int id_Airplane = Integer.parseInt(idAviao.getText());
+            int id_Flight = Integer.parseInt(idVoo.getText());
+            String codename = codeName.getText();
+            String source = origem.getText();
+            String destination = destino.getText();
+            int maxPassengers = Integer.parseInt(limitePassageiros.getText());
+            Date hTakeOff = (Date) tempoPartida.getValue();
+            Date hLanding = (Date) tempoChegada.getValue();
 
-                listaVoos.addElement("ID Avião: " + id_Airplane
-                        + " | ID Voo: " + id_Flight
-                        + " | Code Name: " + codename
-                        + " | Origem: " + source
-                        + " | Destino: " + destination
-                        + " | Partida: " + hTakeOff
-                        + " | Chegada: " + hLanding
-                        + " | Limite: " + maxPassengers);
-                Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
-                limparCampos();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+            // Formata as datas no formato correto
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String hTakeOffFormatted = dateFormat.format(hTakeOff);
+            String hLandingFormatted = dateFormat.format(hLanding);
+
+            Main.salvarDadosFlight(
+                    destination,
+                    id_Airplane,
+                    source,
+                    id_Flight,
+                    maxPassengers,
+                    hTakeOffFormatted,  // Data formatada
+                    hLandingFormatted,  // Data formatada
+                    codename
+            );
+
+            listaVoos.addElement("ID Avião: " + id_Airplane
+                    + " | ID Voo: " + id_Flight
+                    + " | Code Name: " + codename
+                    + " | Origem: " + source
+                    + " | Destino: " + destination
+                    + " | Partida: " + hTakeOffFormatted
+                    + " | Chegada: " + hLandingFormatted
+                    + " | Limite: " + maxPassengers);
+
+            Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            limparCampos();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
 
     // Método para remover um voo selecionado
     private void removerVoo() {
