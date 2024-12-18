@@ -122,7 +122,38 @@ public class Main {
             return nextNum;
         }
     }
-
-
+    public static void salvarDadosAirplane(String destination, int id, String source1) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, destination);
+            stmt.setInt(2, id);
+            stmt.setString(3,source1);
+            stmt.executeUpdate();
+            System.out.println("Dados inseridos com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao guardar os dados!");
+        }
+    }
+    public static void salvarDadosFlight(String destination, int id_plane, String source1, int id, int maxPassengers, Date TimeTakeoff, Date TimeLanding, String codename) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO airplane (id,destination,source1,id_plane,maxPassengers,TimeTakeOff,TimeLanding,codename) VALUES (?,?,?,?,?,?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.setString(2, destination);
+            stmt.setString(3, source1);
+            stmt.setInt(4, id_plane);
+            stmt.setInt(5, maxPassengers);
+            stmt.setTimestamp(6, new java.sql.Timestamp(TimeTakeoff.getTime()));
+            stmt.setTimestamp(7, new java.sql.Timestamp(TimeLanding.getTime()));
+            stmt.setString(8, codename);
+            stmt.executeUpdate();
+            System.out.println("Dados inseridos com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao guardar os dados!");
+        }
+    }
 
 }
