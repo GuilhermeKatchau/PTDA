@@ -12,7 +12,7 @@ public class Passenger {
     ArrayList<Passenger> passengers = new ArrayList<>();
 
 
-    public Passenger(int id_Passenger, int age, String name, String email) {
+    public Passenger(String name, int age, String email, int id_Passenger) {
         setId_Passenger(id_Passenger);
         setName(name);
         setAge(age);
