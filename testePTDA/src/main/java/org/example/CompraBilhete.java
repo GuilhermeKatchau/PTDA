@@ -184,6 +184,9 @@ public class CompraBilhete extends JFrame {
             } else if (!email.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
+                //testar pff
+                int id = new Random().nextInt(1000000); // Gerando um ID aleatório para o passageiro
+                Main.SavePassengerData(nome, idade, email, id);
                 Passenger passageiro = new Passenger(123456789, idade, nome, email);
                 checkInData.setCheckIn(isAutomatic);
 
