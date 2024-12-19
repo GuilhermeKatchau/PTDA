@@ -1,6 +1,7 @@
 package org.example;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Flight {
@@ -14,7 +15,8 @@ public class Flight {
     private int nCompany;
     private Date hTakeOff;
     private Date hLanding;
-    static DefaultListModel<Flight> flights = new DefaultListModel<>();
+
+    private static final ArrayList<Flight> flights = new ArrayList<>();
 
     public Flight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeoff, Date hLanding) {
         setId_Airplane(id_Airplane);
@@ -33,7 +35,7 @@ public class Flight {
 
     public void setId_Airplane(int id_Airplane) {
         if (id_Airplane >=1 || id_Airplane <= 999999999) {
-            this.id_Airplane = id_Flight;
+            this.id_Airplane = id_Airplane;
         } else {
             throw new IllegalArgumentException("ID de Avião inválido");
         }
@@ -120,17 +122,12 @@ public class Flight {
     public static void addFlight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeOff, Date hLanding) {
         try {
             // Validação de datas e horas
-            if (!hTakeOff.before(hLanding)) {
-                JOptionPane.showMessageDialog(null,
-                        "A data e hora de partida devem ser ANTES da data e hora de chegada!\n" +
-                                "Deve haver pelo menos 1 minuto de diferença.",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
+            if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
+                throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
             }
 
             Flight newFlight = new Flight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
-            flights.addElement(newFlight);
+            flights.add(newFlight);
 
             JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IllegalArgumentException e) {
@@ -146,6 +143,10 @@ public class Flight {
         } else {
             JOptionPane.showMessageDialog(null, "Índice de voo inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public static ArrayList<Flight> getFlights() {
+        return new ArrayList<>(flights);
     }
 
     // Método toString para mostrar as informações do voo

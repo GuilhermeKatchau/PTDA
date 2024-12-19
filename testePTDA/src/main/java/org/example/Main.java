@@ -118,13 +118,13 @@ public class Main {
         }
     }
 
-    public static void SaveTicket(int id_passenger,String destination, int price, String source1,Boolean refundable, int id) {
+    public static void SaveTicket(int id_passenger,String destination, double price, String source1,Boolean refundable, int id) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "INSERT INTO airplane (id_passenger,destination,price,source1,refundable,id) VALUES (?,?,?,?,?,?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id_passenger);
             stmt.setString(2, destination);
-            stmt.setInt(3, price);
+            stmt.setDouble(3, price);
             stmt.setString(4,source1);
             stmt.setBoolean(5,refundable);
             stmt.setInt(6,id);

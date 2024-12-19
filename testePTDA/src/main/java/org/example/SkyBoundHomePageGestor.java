@@ -22,7 +22,7 @@ public class SkyBoundHomePageGestor {
     private void mostrarVoos() {
         JFrame frame = new JFrame("Voos Cadastrados");
         DefaultListModel<String> model = new DefaultListModel<>();
-        for (Flight flight : FlightManager.getInstance().getFlights()) {
+        for (Flight flight : Flight.getFlights()) {
             model.addElement(flight.toString());
         }
         JList<String> list = new JList<>(model);

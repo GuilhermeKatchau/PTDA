@@ -17,6 +17,7 @@ public class CompraBilhete extends JFrame {
     private String selectedDestination;
     private Flight selectedFlight;
     private JTable tableFlights;
+    private Passenger passenger;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -258,11 +259,11 @@ public class CompraBilhete extends JFrame {
 
                 //testar pff
                 int id = new Random().nextInt(1000000); // Gerando um ID aleatório para o passageiro
-                Passenger passageiro = new Passenger(name, age, email, id);
+                passenger = new Passenger(name, age, email, id);
                 Main.SavePassengerData(name, age, email, id);
                 checkInData.setCheckIn(isAutomatic);
 
-                JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passageiro.toString() +
+                JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passenger.toString() +
                         "\nCheck-in: " + (isAutomatic ? "Automático" : "Manual"), "Resumo", JOptionPane.INFORMATION_MESSAGE);
                 tabbedPane.setSelectedIndex(4);
             }
@@ -293,7 +294,7 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             //VER A SITUAÇAO DO PREÇO E DO ID DO PASSAGEIRO
-            Main.SaveTicket(idPassenger, selectedDestination,price, selectedSource, refundable, idTicket);
+            Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
