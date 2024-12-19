@@ -290,6 +290,10 @@ public class CompraBilhete extends JFrame {
 
         btnFinalize.addActionListener(e -> {
             Ticket ticket = new Ticket("Lisboa", "Porto", 123456, 150.00);
+            boolean refundable = true; // ou false conforme necessário
+            int idTicket = new Random().nextInt(1000000);
+            //VER A SITUAÇAO DO PREÇO E DO ID DO PASSAGEIRO
+            Main.SaveTicket(idPassenger, selectedDestination, price, selectedSource, refundable, idTicket);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
