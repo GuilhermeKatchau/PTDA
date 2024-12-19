@@ -17,7 +17,7 @@ public class Flight {
     static DefaultListModel<Flight> flights = new DefaultListModel<>();
 
     public Flight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeoff, Date hLanding) {
-        this.id_Airplane = id_Airplane;
+        setId_Airplane(id_Airplane);
         setId_Flight(id_Flight);
         setCodeName(codename);
         setSource(source);
@@ -25,6 +25,18 @@ public class Flight {
         setMaxPassengers(maxPassengers);
         setHTakeoff(hTakeoff);
         setHLanding(hLanding);
+    }
+
+    public int getId_Airplane() {
+        return id_Airplane;
+    }
+
+    public void setId_Airplane(int id_Airplane) {
+        if (id_Airplane >=1 || id_Airplane <= 999999999) {
+            this.id_Airplane = id_Flight;
+        } else {
+            throw new IllegalArgumentException("ID de Avião inválido");
+        }
     }
 
     // Getters e Setters

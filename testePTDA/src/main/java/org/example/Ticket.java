@@ -74,6 +74,15 @@ public class Ticket {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id_Ticket=" + id_Ticket +
+                ", destination='" + destination + '\'' +
+                ", source='" + source + '\'' +
+                ", price=" + price;
+    }
+
     public double getPrice() {
         return price;
     }

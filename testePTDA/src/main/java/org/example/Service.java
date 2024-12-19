@@ -77,4 +77,8 @@ public class Service {
         return service;
     }
 
+    @Override
+    public String toString() {
+        return name + " - " + description;
+    }
 }

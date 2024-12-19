@@ -1,15 +1,22 @@
 package org.example;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.text.ParseException;
 
 public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
     private final CheckIn checkInData = new CheckIn();
+    JPanel panelDestinoOrigemData;
+    private String selectedSource;
+    private String selectedDestination;
+    private Flight selectedFlight;
+    private JTable tableFlights;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -30,7 +37,7 @@ public class CompraBilhete extends JFrame {
     }
 
     private void tabDestinationSource() {
-        JPanel panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
+        panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
 
         JLabel labelOrigem = new JLabel("Origem:");
         JLabel labelDestino = new JLabel("Destino:");
@@ -43,8 +50,20 @@ public class CompraBilhete extends JFrame {
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
 
+
         JButton btnProximo = new JButton("Próximo");
-        btnProximo.addActionListener(e -> tabbedPane.setSelectedIndex(1));
+        btnProximo.addActionListener(e -> {
+            selectedSource = comboOrigem.getSelectedItem().toString();
+            selectedDestination = comboDestino.getSelectedItem().toString();
+
+            if (selectedSource.equals(selectedDestination)) {
+                JOptionPane.showMessageDialog(this, "A origem e o destino não podem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                updateFlights();
+                tabbedPane.setSelectedIndex(1);
+            }
+        });
+
 
         panelDestinoOrigemData.add(labelOrigem);
         panelDestinoOrigemData.add(comboOrigem);
@@ -58,10 +77,61 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
+    private ArrayList<Flight> filterFlights(String origem, String destino) {
+        ArrayList<Flight> filteredFlights = new ArrayList<>();
+        for (Flight flight : getAvailableFlights()) {
+            if (flight.getSource().equals(origem) && flight.getDestination().equals(destino)) {
+                filteredFlights.add(flight);
+            }
+        }
+        return filteredFlights;
+    }
+
+    private ArrayList<Flight> getAvailableFlights() {
+        ArrayList<Flight> flights = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        try {
+            flights.add(new Flight(33, 200, "LisboaPorto", "Lisboa", "Porto", 255, sdf.parse("10:30"), sdf.parse("11:45")));
+            flights.add(new Flight(34, 301, "LisboaMadrid", "Lisboa", "Madrid", 280, sdf.parse("12:30"), sdf.parse("14:15")));
+            flights.add(new Flight(780, 999, "PortoLondres", "Porto", "Londres", 275, sdf.parse("14:00"), sdf.parse("16:50")));
+            flights.add(new Flight(96024, 246, "MadridParis", "Madrid", "Paris", 300, sdf.parse("16:30"), sdf.parse("18:10")));
+            flights.add(new Flight(123456, 678, "LondresLisboa", "Londres", "Lisboa", 260, sdf.parse("18:00"), sdf.parse("19:30")));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return flights;
+    }
+
+    private void updateFlights() {
+        DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
+        model.setRowCount(0);
+
+        ArrayList<Flight> filteredFlights = filterFlights(selectedSource, selectedDestination);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        for (Flight flight : filteredFlights) {
+            model.addRow(new Object[]{sdf.format(flight.gethTakeoff()), flight.getSource(), flight.getDestination()});
+        }
+    }
+
+    private Flight getFlightFromRow(int row) {
+        DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
+        String hora = model.getValueAt(row, 0).toString();
+        String origem = model.getValueAt(row, 1).toString();
+        String destino = model.getValueAt(row, 2).toString();
+
+        for (Flight flight : filterFlights(selectedSource, selectedDestination)) {
+            if (flight.getSource().equals(origem) && flight.getDestination().equals(destino)) {
+                return flight;
+            }
+        }
+        return null;
+    }
+
     private void tabHourFlight() {
-        JPanel panelHoraVoo = new JPanel(new BorderLayout());
-        String[] colunas = {"Hora", "Origem", "Destino"};
-        Object[][] voos = {
+        JPanel panelHourFlight = new JPanel(new BorderLayout());
+        String[] columns = {"Hora", "Origem", "Destino"};
+        Object[][] flights = {
                 {"10:00", "Lisboa", "Porto"},
                 {"12:30", "Lisboa", "Madrid"},
                 {"14:00", "Porto", "Londres"},
@@ -69,22 +139,23 @@ public class CompraBilhete extends JFrame {
                 {"18:00", "Londres", "Lisboa"}
         };
 
-        JTable tableVoos = new JTable(voos, colunas);
-        JScrollPane scrollPane = new JScrollPane(tableVoos);
+        tableFlights = new JTable(new DefaultTableModel(new Object[]{"Hora", "Origem", "Destino", "Preço"}, 0));
+        JScrollPane scrollPane = new JScrollPane(tableFlights);
 
-        JButton btnProximo = new JButton("Próximo");
-        btnProximo.addActionListener(e -> {
-            if (tableVoos.getSelectedRow() != -1) {
+        JButton btnNext = new JButton("Próximo");
+        btnNext.addActionListener(e -> {
+            int selectedRow = tableFlights.getSelectedRow();
+            if (selectedRow != -1) {
+                selectedFlight = getFlightFromRow(selectedRow);
                 tabbedPane.setSelectedIndex(2);
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um voo!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
+        panelHourFlight.add(scrollPane, BorderLayout.CENTER);
+        panelHourFlight.add(btnNext, BorderLayout.SOUTH);
 
-        panelHoraVoo.add(scrollPane, BorderLayout.CENTER);
-        panelHoraVoo.add(btnProximo, BorderLayout.SOUTH);
-
-        tabbedPane.addTab("Hora e Voo", panelHoraVoo);
+        tabbedPane.addTab("Hora e Voo", panelHourFlight);
     }
 
     private void tabClassService() {
@@ -103,7 +174,7 @@ public class CompraBilhete extends JFrame {
             panelServices.removeAll();
             if (selectedClass != null) {
                 for (Service service : selectedClass.getServices()) {
-                    JCheckBox serviceCheckBox = new JCheckBox(service.getName() + " (" + service.getDescription() + ")");
+                    JCheckBox serviceCheckBox = new JCheckBox(service.toString());
                     panelServices.add(serviceCheckBox);
                 }
             }
@@ -112,19 +183,19 @@ public class CompraBilhete extends JFrame {
         });
 
         btnNext.addActionListener(e -> {
-            Class classeSelecionada = (Class) comboClass.getSelectedItem();
-            StringBuilder servicosSelecionados = new StringBuilder();
+            Class selectedClass = (Class) comboClass.getSelectedItem();
+            StringBuilder selectedServices = new StringBuilder();
 
             // Coleta os serviços selecionados
             for (Component component : panelServices.getComponents()) {
                 if (component instanceof JCheckBox && ((JCheckBox) component).isSelected()) {
-                    servicosSelecionados.append(((JCheckBox) component).getText()).append(", ");
+                    selectedServices.append(((JCheckBox) component).getText()).append(", ");
                 }
             }
 
-            String servicos = servicosSelecionados.toString().replaceAll(", $", "");
-            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + classeSelecionada +
-                    "\nServiços Adicionais: " + (servicos.isEmpty() ? "Nenhum" : servicos), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
+            String services = selectedServices.toString().replaceAll(", $", "");
+            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass +
+                    "\nServiços Adicionais: " + (services.isEmpty() ? "Nenhum" : services), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
 
             tabbedPane.setSelectedIndex(3); // Próxima aba
         });
@@ -174,20 +245,20 @@ public class CompraBilhete extends JFrame {
 
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
-            String nome = fieldName.getText().trim();
-            int idade = (int) spinnerAge.getValue();
+            String name = fieldName.getText().trim();
+            int age = (int) spinnerAge.getValue();
             String email = fieldEmail.getText().trim();
             boolean isAutomatic = radioButtonAutomatic.isSelected();
 
-            if (nome.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
+            if (name.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
                 JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } else if (!email.contains("@")) {
+            } else if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-                Passenger passageiro = new Passenger(123456789, idade, nome, email);
+                Passenger passageiro = new Passenger(123456789, age, name, email);
                 checkInData.setCheckIn(isAutomatic);
 
-                JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passageiro +
+                JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passageiro.toString() +
                         "\nCheck-in: " + (isAutomatic ? "Automático" : "Manual"), "Resumo", JOptionPane.INFORMATION_MESSAGE);
                 tabbedPane.setSelectedIndex(4);
             }
@@ -215,7 +286,7 @@ public class CompraBilhete extends JFrame {
 
         btnFinalize.addActionListener(e -> {
             Ticket ticket = new Ticket("Lisboa", "Porto", 123456, 150.00);
-            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket, "Bilhete", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
 

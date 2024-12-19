@@ -6,14 +6,9 @@ import java.util.Date;
 public class Passenger {
 
     private int id_Passenger; // --> id_Passenger = id adicionar á classe Main
-    private int priceTicket; // --> priceTicket = price adicionar á classe Main
     private int age;
     private String name;
     private String email;
-    private int id_Ticket;
-    private String destination;
-    private String source;
-     boolean automatic;
     ArrayList<Passenger> passengers = new ArrayList<>();
 
 
@@ -22,7 +17,6 @@ public class Passenger {
         setName(name);
         setAge(age);
         setEmail(email);
-        automatic = true;
     }
 
     public void setId_Passenger(int id_Passenger) {
@@ -83,7 +77,17 @@ public class Passenger {
         id_Passenger--;
     }
 
-  /* public boolean buyTicket(Ticket ticket) {
+    @Override
+    public String toString() {
+        return "Passenger{" +
+                "id_Passenger=" + id_Passenger +
+                ", age=" + age +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\''
+                ;
+    }
+
+    /* public boolean buyTicket(Ticket ticket) {
 
        if (ticket == null) {
            throw new IllegalArgumentException("O bilhete não pode ser nulo.");
