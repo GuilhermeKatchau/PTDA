@@ -62,22 +62,6 @@ public class GestaoServicosClasses extends JFrame {
         panel.setBorder(BorderFactory.createTitledBorder("Serviços"));
 
         panel.add(new JScrollPane(listaServicosJList), BorderLayout.CENTER);
-
-        JButton btnAdicionarServico = new JButton("Adicionar Serviço");
-        btnAdicionarServico.addActionListener(e -> adicionarServico());
-
-        JButton btnRemoverServico = new JButton("Remover Serviço");
-        btnRemoverServico.addActionListener(e -> removerServico());
-
-        JButton btnDetalhesServico = new JButton("Detalhes do Serviço");
-        btnDetalhesServico.addActionListener(e -> visualizarDetalhesServico());
-
-        JPanel botoes = new JPanel();
-        botoes.add(btnAdicionarServico);
-        botoes.add(btnRemoverServico);
-        botoes.add(btnDetalhesServico);
-
-        panel.add(botoes, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -143,47 +127,6 @@ public class GestaoServicosClasses extends JFrame {
             JOptionPane.showMessageDialog(this, detalhes.toString());
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma classe para ver os detalhes.");
-        }
-    }
-
-    private void adicionarServico() {
-        try {
-            String nome = JOptionPane.showInputDialog("Nome do Serviço:");
-            int id = listaServicos.size() + 1;
-            String descricao = JOptionPane.showInputDialog("Descrição do Serviço:");
-
-            Service novoServico = new Service(nome, id, descricao);
-            listaServicos.add(novoServico);
-            listaServicosModel.addElement(nome);
-
-            JOptionPane.showMessageDialog(this, "Serviço adicionado com sucesso!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao adicionar serviço: " + e.getMessage());
-        }
-    }
-
-    private void removerServico() {
-        int index = listaServicosJList.getSelectedIndex();
-        if (index != -1) {
-            listaServicos.remove(index);
-            listaServicosModel.remove(index);
-            JOptionPane.showMessageDialog(this, "Serviço removido com sucesso!");
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione um serviço para remover.");
-        }
-    }
-
-    private void visualizarDetalhesServico() {
-        int index = listaServicosJList.getSelectedIndex();
-        if (index != -1) {
-            Service servico = listaServicos.get(index);
-            String detalhes = "Detalhes do Serviço:\n" +
-                    "Nome: " + servico.getName() + "\n" +
-                    "ID: " + servico.getId_Service() + "\n" +
-                    "Descrição: " + servico.getDescription();
-            JOptionPane.showMessageDialog(this, detalhes);
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione um serviço para ver os detalhes.");
         }
     }
 
