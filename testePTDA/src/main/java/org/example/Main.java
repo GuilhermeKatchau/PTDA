@@ -102,32 +102,19 @@ public class Main {
         // Outros métodos da classe Main...
 
     public static void SavePassengerData(String name_passenger, int age, String email, int id) {
-        // URL de conexão ao banco de dados, usuário e senha
-        String url = "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05";
-        String user = "PTDA24_05";
-        String password = "Potm%793";
-
-        // Query SQL para inserir os dados na tabela
-        String sql = "INSERT INTO airplane (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            // Definindo os valores nos parâmetros da query
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO passenger (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, name_passenger);
             stmt.setInt(2, age);
             stmt.setString(3, email);
-            stmt.setInt(4, id);  // Se id for gerado automaticamente, ajuste isso no banco para auto-incremento
+            stmt.setInt(4, id);
 
-            // Executando a query
             stmt.executeUpdate();
-
-            System.out.println("Dados inseridos com sucesso!");
-
-        } catch (SQLException e) {
-            // Tratamento de erros detalhado
-            System.err.println("Erro ao salvar os dados do passageiro.");
+            System.out.println("Dados do passageiro inseridos com sucesso!");
+        } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Erro ao guardar os dados do passageiro!");
         }
     }
 
