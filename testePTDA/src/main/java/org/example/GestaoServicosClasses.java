@@ -111,7 +111,6 @@ public class GestaoServicosClasses extends JFrame {
             Class novaClasse = new Class(nome, preco, capacidade, servicosClasse);
             listaClasses.add(novaClasse);
             listaClassesModel.addElement(nome);
-
             JOptionPane.showMessageDialog(this, "Classe adicionada com sucesso!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao adicionar classe: " + e.getMessage());
