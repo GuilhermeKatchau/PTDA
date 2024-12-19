@@ -39,19 +39,19 @@ public class SkyBoundGestaoVoos extends JFrame {
         listaVoos = new DefaultListModel<>();
         voosCadastrados = new JList<>(listaVoos);
 
-        JPanel formPanel = criarFormulario();
-        JScrollPane scrollPane = criarListaVoos();
-        JPanel buttonPanel = criarBotoes();
+        JPanel formPanel = Form();
+        JScrollPane scrollPane = FlightList();
+        JPanel buttonPanel = Buttons();
 
         add(formPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        carregarVoos();
+        loadFlights();
         setVisible(true);
     }
 
-    private JPanel criarFormulario() {
+    private JPanel Form() {
         JPanel formPanel = new JPanel(new GridLayout(5, 4, 10, 10));
 
         formPanel.add(new JLabel("ID do Avião:"));
@@ -81,20 +81,20 @@ public class SkyBoundGestaoVoos extends JFrame {
         return formPanel;
     }
 
-    private JScrollPane criarListaVoos() {
+    private JScrollPane FlightList() {
         JScrollPane scrollPane = new JScrollPane(voosCadastrados);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Voos Cadastrados"));
         return scrollPane;
     }
 
-    private JPanel criarBotoes() {
+    private JPanel Buttons() {
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
         JButton btnAdicionar = new JButton("Adicionar Voo");
-        btnAdicionar.addActionListener(e -> adicionarVoo());
+        btnAdicionar.addActionListener(e -> addFlight());
 
         JButton btnRemover = new JButton("Remover Voo");
-        btnRemover.addActionListener(e -> removerVoo());
+        btnRemover.addActionListener(e -> removeFlight());
 
         buttonPanel.add(btnAdicionar);
         buttonPanel.add(btnRemover);
@@ -102,7 +102,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         return buttonPanel;
     }
 
-    private void adicionarVoo() {
+    private void addFlight() {
         try {
             // Verifica se todos os campos estão preenchidos
             if (idAviao.getText().isEmpty() || idVoo.getText().isEmpty() || codeName.getText().isEmpty()
@@ -114,60 +114,48 @@ public class SkyBoundGestaoVoos extends JFrame {
             // Verifica se ID do Avião e ID do Voo são numéricos
             int id_Airplane = Integer.parseInt(idAviao.getText());
             int id_Flight = Integer.parseInt(idVoo.getText());
-
             String codename = codeName.getText();
             String source = origem.getText();
             String destination = destino.getText();
             int maxPassengers = Integer.parseInt(limitePassageiros.getText());
-
             Date hTakeOff = (Date) tempoPartida.getValue();
             Date hLanding = (Date) tempoChegada.getValue();
 
-            // Verifica se a hora de partida é anterior à de chegada
-            if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
-                JOptionPane.showMessageDialog(this, "O tempo de partida deve ser pelo menos 1 minuto antes do de chegada!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Adicionar o voo ao FlightManager
-            Flight flight = new Flight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
-            FlightManager.getInstance().addFlight(flight);
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            listaVoos.addElement("ID Avião: " + id_Airplane
-                    + " | ID Voo: " + id_Flight
-                    + " | Code Name: " + codename
-                    + " | Origem: " + source
-                    + " | Destino: " + destination
-                    + " | Partida: " + dateFormat.format(hTakeOff)
-                    + " | Chegada: " + dateFormat.format(hLanding)
-                    + " | Limite: " + maxPassengers);
-
-            JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            limparCampos();
+            Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            loadFlights();
+            clearFields();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Os campos ID do Avião, ID do Voo devem ser numéricos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void removerVoo() {
+    private void removeFlight() {
         int selectedIndex = voosCadastrados.getSelectedIndex();
         if (selectedIndex != -1) {
-            FlightManager.getInstance().getFlights().remove(selectedIndex);
-            listaVoos.remove(selectedIndex);
-            JOptionPane.showMessageDialog(this, "Voo removido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            Flight.removeFlight(selectedIndex);
+            loadFlights();
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void carregarVoos() {
-        for (Flight flight : FlightManager.getInstance().getFlights()) {
-            listaVoos.addElement(flight.toString());
+    private void loadFlights() {
+        listaVoos.clear();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (Flight flight : Flight.getFlights()) {
+            listaVoos.addElement("ID Avião: " + flight.getId_Airplane()
+                    + " | ID Voo: " + flight.getId_Flight()
+                    + " | Code Name: " + flight.getCodeName()
+                    + " | Origem: " + flight.getSource()
+                    + " | Destino: " + flight.getDestination()
+                    + " | Partida: " + dateFormat.format(flight.gethTakeoff())
+                    + " | Chegada: " + dateFormat.format(flight.gethLanding())
+                    + " | Limite: " + flight.getMaxPassengers());
         }
     }
 
-    private void limparCampos() {
+    private void clearFields() {
         idAviao.setText("");
         idVoo.setText("");
         codeName.setText("");
