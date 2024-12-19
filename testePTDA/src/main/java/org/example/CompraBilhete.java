@@ -255,7 +255,12 @@ public class CompraBilhete extends JFrame {
             } else if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
+                
+                //testar pff
+                int id = new Random().nextInt(1000000); // Gerando um ID aleatório para o passageiro
+                Main.SavePassengerData(name, age, email, id);
                 Passenger passageiro = new Passenger(123456789, age, name, email);
+
                 checkInData.setCheckIn(isAutomatic);
 
                 JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passageiro.toString() +
