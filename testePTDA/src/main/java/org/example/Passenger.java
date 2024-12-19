@@ -13,7 +13,7 @@ public class Passenger {
     private int id_Ticket;
     private String destination;
     private String source;
-    private boolean automatic;
+     boolean automatic;
     ArrayList<Passenger> passengers = new ArrayList<>();
 
 
@@ -26,7 +26,7 @@ public class Passenger {
     }
 
     public void setId_Passenger(int id_Passenger) {
-        if (id_Passenger > 100000000 && id_Passenger <= 999999999) {
+        if (id_Passenger > 1 && id_Passenger <= 999999999) {
             this.id_Passenger = id_Passenger;
         } else {
             throw new IllegalArgumentException("ID de Passageiro inválido");

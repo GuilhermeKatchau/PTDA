@@ -8,8 +8,6 @@ public class Ticket {
     private String destination;
     private String source;
     private double price;
-    private boolean refundable;
-    private boolean automatic;
     private Passenger passenger;
     private Class flightClass;
     private Flight flight;
@@ -21,9 +19,8 @@ public class Ticket {
         setSource(source);
         setDestination(destination);
         setPrice(price);
-        refundable = true;
-        automatic = true;
     }
+
 
     public Class getFlightClass() {
         return flightClass;
