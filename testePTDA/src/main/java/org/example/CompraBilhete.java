@@ -293,7 +293,7 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             //VER A SITUAÇAO DO PREÇO E DO ID DO PASSAGEIRO
-            Main.SaveTicket(idPassenger, selectedDestination,price, selectedSource, refundable, idTicket);
+            //Main.SaveTicket(id_Passenger, selectedDestination,price, selectedSource, refundable, idTicket);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
