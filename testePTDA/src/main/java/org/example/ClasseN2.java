@@ -22,7 +22,7 @@ public class ClasseN2 extends JFrame{
     private JButton button16;
     private JButton button17;
     private JButton button18;
-    private JPanel panel1;
+    private JPanel panelSeat2;
     private JButton button19;
     private JButton button20;
     private JButton button21;
@@ -36,17 +36,18 @@ public class ClasseN2 extends JFrame{
         setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        initPanel();
+    }
 
-        panel1 = new JPanel();
-        panel1.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
+    private void initPanel() {
+        panelSeat2 = new JPanel();
+        panelSeat2.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
         seatButtons = new JButton[24];
         for (int i = 0; i < 24; i += 4) {
-            // Crie dois sub-painéis (esquerda e direita) para cada linha
             JPanel linha = new JPanel();
             linha.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-            // Painel da esquerda com 2 botões
             JPanel painelEsquerda = new JPanel();
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
@@ -54,7 +55,6 @@ public class ClasseN2 extends JFrame{
                 painelEsquerda.add(seatButtons[i + j]);
             }
 
-            // Painel da direita com 2 botões
             JPanel painelDireita = new JPanel();
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
@@ -62,30 +62,27 @@ public class ClasseN2 extends JFrame{
                 painelDireita.add(seatButtons[i + j]);
             }
 
-
             linha.add(painelEsquerda);
             linha.add(painelDireita);
-            panel1.add(linha);
+            panelSeat2.add(linha);
         }
 
         adicionarEventosBotoes();
-        add(panel1, BorderLayout.CENTER);
-        setVisible(true);
     }
-
-
 
     private void adicionarEventosBotoes() {
         for (int i = 0; i < seatButtons.length; i++) {
             int numeroAssento = i + 1; // Números de 1 a 24
             seatButtons[i].addActionListener(e -> processarEscolhaAssento(numeroAssento));
         }
-
-
     }
 
     private void processarEscolhaAssento(int numeroAssento) {
         JOptionPane.showMessageDialog(this, "Você escolheu o assento: " + numeroAssento);
+    }
+
+    public JPanel getPanel() {
+        return panelSeat2;
     }
     private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento

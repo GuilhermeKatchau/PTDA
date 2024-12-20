@@ -9,8 +9,8 @@ public class Class {
     private String className;
     private double price;
     private int seatCapacity;
-    ArrayList<Class> classes;
-    ArrayList<String> services;
+    static ArrayList<Class> classes;
+    private ArrayList<String> services;
 
     // Construtor para inicializar os atributos da classe
     public Class(String className, double price, int seatCapacity,  ArrayList<String> services) {

@@ -13,12 +13,16 @@ public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
     private final CheckIn checkInData = new CheckIn();
     JPanel panelDestinoOrigemData;
+    JPanel panelSeat;
     private String selectedSource;
     private String selectedDestination;
     private Flight selectedFlight;
     private JTable tableFlights;
     private Passenger passenger;
-    Class selectedClass;
+    private Class selectedClass;
+    private Class luxurious,economical;
+    private ArrayList<Class> classes = new ArrayList<>();
+
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -30,7 +34,8 @@ public class CompraBilhete extends JFrame {
 
         tabDestinationSource();
         tabHourFlight();
-        tabClassService(); // Este método agora está corretamente definido
+        tabClassService();
+        tabSeat();
         tabPassengerInfo();
         tabFinalize();
 
@@ -122,14 +127,14 @@ public class CompraBilhete extends JFrame {
 
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
-        String[] columns = {"Hora", "Origem", "Destino"};
+       /* String[] columns = {"Hora", "Origem", "Destino"};
         Object[][] flights = {
                 {"10:00", "Lisboa", "Porto"},
                 {"12:30", "Lisboa", "Madrid"},
                 {"14:00", "Porto", "Londres"},
                 {"16:30", "Madrid", "Paris"},
                 {"18:00", "Londres", "Lisboa"}
-        };
+        }; */
 
         tableFlights = new JTable(new DefaultTableModel(new Object[]{"Hora", "Origem", "Destino", "Preço"}, 0));
         JScrollPane scrollPane = new JScrollPane(tableFlights);
@@ -165,8 +170,8 @@ public class CompraBilhete extends JFrame {
            selectedClass = (Class) comboClass.getSelectedItem();
             panelServices.removeAll();
             if (selectedClass != null) {
-                for (Service service : selectedClass.getServices()) {
-                    JCheckBox serviceCheckBox = new JCheckBox(service.toString());
+                for (String service : selectedClass.getServices()) {
+                    JCheckBox serviceCheckBox = new JCheckBox(service);
                     panelServices.add(serviceCheckBox);
                 }
             }
@@ -202,26 +207,42 @@ public class CompraBilhete extends JFrame {
     }
 
     private ArrayList<Class> getAvailableClasses() {
-        ArrayList<Service> services1 = new ArrayList<>();
-        services1.add(new Service("Bagagem Extra", 1, "Bagagem adicional para voos longos"));
-        services1.add(new Service("Refeição Gourmet", 2, "Refeição premium durante o voo"));
+        ArrayList<String> services1 = new ArrayList<>();
+        services1.add("Bagagem Extra");
+        services1.add("Refeição Gourmet");
 
-        ArrayList<Service> services2 = new ArrayList<>();
-        services2.add(new Service("Embarque Prioritário", 3, "Acesso prioritário ao embarque"));
+        ArrayList<String> services2 = new ArrayList<>();
+        services2.add("Embarque Prioritário");
 
-        ArrayList<Class> classes = new ArrayList<>();
-        classes.add(new Class("Luxuosa", 200.00, 10, services1));
-        classes.add(new Class("Económica", 100.00, 50, services2));
+        classes = new ArrayList<>();
+        luxurious = new Class("Luxuosa", 200.00, 10, services1);
+        classes.add(luxurious);
+        economical = new Class("Económica", 100.00, 50, services2);
+        classes.add(economical);
 
         return classes;
     }
     private void tabSeat(){
-        JPanel panelSeat = new JPanel(new BorderLayout());
+
+        if (selectedClass.equals(luxurious)) {
+            JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
+            ClasseN2 panelSeat2 = new ClasseN2();
+            panelSeat2.add(label, BorderLayout.CENTER);
+            panelSeat = panelSeat2.getPanel();
+
+        } else if (selectedClass.equals(economical)) {
+            JLabel label = new JLabel("Você escolheu a classe Económica.");
+            ClasseN3 panelSeat3 = new ClasseN3();
+            panelSeat3.add(label, BorderLayout.CENTER);
+            panelSeat = panelSeat3.getPanel();
+        }
+
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
+            panelSeat.add(btnNext, BorderLayout.CENTER);
             tabbedPane.setSelectedIndex(4);
         });
-        panelSeat.add(btnNext, BorderLayout.CENTER);
+
         tabbedPane.addTab("Assento", panelSeat);
     }
 
@@ -294,9 +315,9 @@ public class CompraBilhete extends JFrame {
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
             
 
-            if (assento != null && !assento.isEmpty()) {
-                Main.saveSeatInfo(assento);
-                System.out.println("Assento salvo: " + assento);
+            if (seat != null && !seat.isEmpty()) {
+                Main.saveSeatInfo(seat);
+                System.out.println("Assento salvo: " + seat);
             } else {
                 System.out.println("Nenhum assento foi selecionado.");
             }
