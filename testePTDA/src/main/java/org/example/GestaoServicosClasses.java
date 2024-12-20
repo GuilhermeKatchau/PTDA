@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class GestaoServicosClasses extends JFrame {
     // Listas de objetos
     private final ArrayList<Class> listaClasses = new ArrayList<>();
-    private final ArrayList<Service> listaServicos = new ArrayList<>();
+    private final ArrayList<String> listaServicos = new ArrayList<>();
 
     // Componentes visuais
     private final DefaultListModel<String> listaClassesModel = new DefaultListModel<>();
@@ -79,17 +79,13 @@ public class GestaoServicosClasses extends JFrame {
             double preco = Double.parseDouble(JOptionPane.showInputDialog("Preço da Classe:"));
             int capacidade = Integer.parseInt(JOptionPane.showInputDialog("Capacidade de Assentos:"));
 
-            ArrayList<Service> servicosClasse = new ArrayList<>();
+            ArrayList<String> servicosClasse = new ArrayList<>();
             while (true) {
                 int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar um serviço à classe?");
                 if (resposta != JOptionPane.YES_OPTION) break;
 
-                String nomeServico = JOptionPane.showInputDialog("Nome do Serviço:");
-                int idServico = listaServicos.size() + 1;
-                String descricaoServico = JOptionPane.showInputDialog("Descrição do Serviço:");
-
-                Service novoServico = new Service(nomeServico, idServico, descricaoServico);
-                servicosClasse.add(novoServico);
+                String nomeServico = JOptionPane.showInputDialog("Nome ou Descrição do Serviço:");
+                servicosClasse.add(nomeServico);
             }
 
             Class novaClasse = new Class(nome, preco, capacidade, servicosClasse);
@@ -121,8 +117,8 @@ public class GestaoServicosClasses extends JFrame {
             detalhes.append("Preço: ").append(classe.getPrice()).append("\n");
             detalhes.append("Capacidade: ").append(classe.getSeatCapacity()).append("\n");
             detalhes.append("Serviços:\n");
-            for (Service servico : classe.getServices()) {
-                detalhes.append("- ").append(servico.getName()).append(": ").append(servico.getDescription()).append("\n");
+            for (String servico : classe.getServices()) {
+                detalhes.append("- ").append(servico).append("\n");
             }
             JOptionPane.showMessageDialog(this, detalhes.toString());
         } else {

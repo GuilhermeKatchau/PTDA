@@ -152,7 +152,23 @@ public class Main {
     }
 
 
+        public static void salvarDadosAirplane(String destination, int id, String source1) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, destination);
+            stmt.setInt(2, id);
+            stmt.setString(3,source1);
+            stmt.executeUpdate();
+            System.out.println("Dados inseridos com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao guardar os dados!");
+        }
+    }
+
     public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             // Formatar as datas no padrão esperado pelo MySQL
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -208,14 +224,14 @@ public class Main {
         }
     }
 
-    public static void saveSeatInfo(int idTicket, int idSeat, double price, int place, Class classe){
+    public static void saveSeatInfo(int idTicket, int idSeat, double price, Class classe){
         try(Connection conn= DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
             String sql = "INSERT INTO seat (id_Ticket, id_Seat, price, place) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idTicket);
             stmt.setInt(2, idSeat);
             stmt.setDouble(3, price);
-            stmt.setInt(4, place);
+            stmt.setString(4, String.valueOf(classe));
             stmt.executeUpdate();
             System.out.println("Dados do assento inseridos com sucesso!");
         } catch (SQLException e) {
