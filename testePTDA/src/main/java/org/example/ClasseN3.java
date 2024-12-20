@@ -76,17 +76,21 @@ public class ClasseN3 extends JFrame{
     public JPanel getPanel() {
         return panelSeat3;
     }
+
+    public JButton[] getBotoesAssentos() {
+        return botoesAssentos;
+    }
+
     private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento
         System.out.println("Assento selecionado: " + numeroAssento);
         return new Object[]{botao, numeroAssento};
     }
     private void saveSeat(int idTicket, int idSeat, double price,Class classe){
-<<<<<<< HEAD
+
         Main.saveSeatInfo(idTicket, idSeat, price,classe);
-=======
+
         Main.saveSeatInfo(idTicket, idSeat, price, classe);
->>>>>>> refs/remotes/origin/main
     }
 
     public static void main(String[] args) {

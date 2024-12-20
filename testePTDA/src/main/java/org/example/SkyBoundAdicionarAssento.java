@@ -2,12 +2,10 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.sql.*;
 
 public class SkyBoundAdicionarAssento extends JFrame {
     private String assentoSelecionado;
-    private JPanel panel1;
+    private JPanel panelSeat1;
     private JButton button1, button2, button3, button4, button5, button6,
             button7, button8, button9, button10, button11, button12,
             button13, button14, button15, button16, button17, button18,
@@ -28,8 +26,8 @@ public class SkyBoundAdicionarAssento extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        panel1 = new JPanel();
-        panel1.setLayout(new GridLayout(12, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
+        panelSeat1 = new JPanel();
+        panelSeat1.setLayout(new GridLayout(12, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
         botoesAssentos = new JButton[64];
         for (int i = 0; i < 64; i += 4) {
@@ -56,15 +54,20 @@ public class SkyBoundAdicionarAssento extends JFrame {
 
             linha.add(painelEsquerda);
             linha.add(painelDireita);
-            panel1.add(linha);
+            panelSeat1.add(linha);
         }
 
         adicionarEventosBotoes();
-        add(panel1, BorderLayout.CENTER);
+        add(panelSeat1, BorderLayout.CENTER);
         setVisible(true);
     }
+    public JButton[] getBotoesAssentos() {
+        return botoesAssentos;
+    }
 
-
+    public JPanel getPanel() {
+        return panelSeat1;
+    }
 
     private void adicionarEventosBotoes() {
         for (int i = 0; i < botoesAssentos.length; i++) {
