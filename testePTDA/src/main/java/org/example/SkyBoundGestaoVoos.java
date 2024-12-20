@@ -118,7 +118,7 @@ public class SkyBoundGestaoVoos extends JFrame {
             Date hLanding = (Date) tempoChegada.getValue();
 
             Flight.addFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
-            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
+            Main.saveFlightData(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
             loadFlights();
             clearFields();
         } catch (NumberFormatException ex) {

@@ -164,8 +164,8 @@ public class CompraBilhete extends JFrame {
             Class selectedClass = (Class) comboClass.getSelectedItem();
             panelServices.removeAll();
             if (selectedClass != null) {
-                for (Service service : selectedClass.getServices()) {
-                    JCheckBox serviceCheckBox = new JCheckBox(service.toString());
+                for (String service : selectedClass.getServices()) {
+                    JCheckBox serviceCheckBox = new JCheckBox(service);
                     panelServices.add(serviceCheckBox);
                 }
             }
@@ -201,12 +201,12 @@ public class CompraBilhete extends JFrame {
     }
 
     private ArrayList<Class> getAvailableClasses() {
-        ArrayList<Service> services1 = new ArrayList<>();
-        services1.add(new Service("Bagagem Extra", 1, "Bagagem adicional para voos longos"));
-        services1.add(new Service("Refeição Gourmet", 2, "Refeição premium durante o voo"));
+        ArrayList<String> services1 = new ArrayList<>();
+        services1.add("Bagagem Extra");
+        services1.add("Refeição Gourmet");
 
-        ArrayList<Service> services2 = new ArrayList<>();
-        services2.add(new Service("Embarque Prioritário", 3, "Acesso prioritário ao embarque"));
+        ArrayList<String> services2 = new ArrayList<>();
+        services2.add("Embarque Prioritário");
 
         ArrayList<Class> classes = new ArrayList<>();
         classes.add(new Class("Luxuosa", 200.00, 10, services1));
