@@ -292,7 +292,15 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
-            Main.saveSeatInfo(idTicket, seat, ticket.getPrice(), numero,selectedClass);
+            
+
+            if (assento != null && !assento.isEmpty()) {
+                Main.saveSeatInfo(assento);
+                System.out.println("Assento salvo: " + assento);
+            } else {
+                System.out.println("Nenhum assento foi selecionado.");
+            }
+
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });
