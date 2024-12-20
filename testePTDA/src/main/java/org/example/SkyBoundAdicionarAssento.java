@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.sql.*;
 
 public class SkyBoundAdicionarAssento extends JFrame {
     private JPanel panel1;
@@ -64,15 +66,27 @@ public class SkyBoundAdicionarAssento extends JFrame {
 
     private void adicionarEventosBotoes() {
         for (int i = 0; i < botoesAssentos.length; i++) {
-            int numeroAssento = i + 1; // Números de 1 a 24
-            botoesAssentos[i].addActionListener(e -> processarEscolhaAssento(numeroAssento));
+            JButton botao = botoesAssentos[i];
+            int numeroAssento = i + 1; // Números de 1 a 64
+            botoesAssentos[i].addActionListener(e -> processarEscolhaAssento(botao,numeroAssento));
         }
 
 
     }
 
-    private void processarEscolhaAssento(int numeroAssento) {
+    private void processarEscolhaAssento( JButton botao, int numeroAssento) {
+        botao.setBackground(Color.orange);
         JOptionPane.showMessageDialog(this, "Você escolheu o assento: " + numeroAssento);
+        enviarInformacoesAssento(botao, numeroAssento);
+    }
+
+    private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
+        // Lógica para enviar as informações do botão e número do assento
+        System.out.println("Assento selecionado: " + numeroAssento);
+        return new Object[]{botao, numeroAssento};
+    }
+    private void saveSeat(int idTicket, int idSeat, double price, int place, Class classe){
+        Main.saveSeatInfo(idTicket, idSeat, price, place, classe);
     }
 
     public static void main(String[] args) {
