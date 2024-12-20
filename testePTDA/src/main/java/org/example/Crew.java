@@ -75,14 +75,14 @@ public class Crew {
         return experience;
     }
 
-    class Assistant extends Crew {
+    static class Assistant extends Crew {
 
         public Assistant(int id_Crew, String name, int phoneNumber, String shift, int experience) {
             super(id_Crew, name, phoneNumber, shift,experience);
         }
     }
 
-    class Pilot extends Crew {
+    static class Pilot extends Crew {
         private String rank;
 
         public Pilot(int id_Crew, String name, int phoneNumber, String shift, int experience) {
