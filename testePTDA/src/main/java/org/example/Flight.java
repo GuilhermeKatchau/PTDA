@@ -1,8 +1,7 @@
 package org.example;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class Flight {
 
@@ -18,14 +17,14 @@ public class Flight {
 
     private static final ArrayList<Flight> flights = new ArrayList<>();
 
-    public Flight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeoff, Date hLanding) {
+    public Flight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         setId_Airplane(id_Airplane);
         setId_Flight(id_Flight);
         setCodeName(codename);
         setSource(source);
         setDestination(destination);
         setMaxPassengers(maxPassengers);
-        setHTakeoff(hTakeoff);
+        setHTakeoff(hTakeOff);
         setHLanding(hLanding);
     }
 
@@ -118,15 +117,19 @@ public class Flight {
         return codename;
     }
 
-    // Adiciona um voo à lista
-    public static void addFlight(int id_Airplane, int id_Flight, String codename, String source, String destination, int maxPassengers, Date hTakeOff, Date hLanding) {
+
+    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try {
-            // Validação de datas e horas
+            if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
+                    || source.isEmpty() || destination.isEmpty()) {
+                System.out.println("Por favor, preencha todos os campos!");
+
+            }
             if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
                 throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
             }
 
-            Flight newFlight = new Flight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
 
             JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -135,7 +138,6 @@ public class Flight {
         }
     }
 
-    // Remove o voo pelo índice
     public static void removeFlight(int flightIndex) {
         if (flightIndex >= 0 && flightIndex < flights.size()) {
             flights.remove(flightIndex);
@@ -149,7 +151,7 @@ public class Flight {
         return new ArrayList<>(flights);
     }
 
-    // Método toString para mostrar as informações do voo
+
     @Override
     public String toString() {
         return "ID Avião: " + id_Airplane +

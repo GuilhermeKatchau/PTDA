@@ -90,6 +90,7 @@ public class CompraBilhete extends JFrame {
 
     private ArrayList<Flight> getAvailableFlights() {
         return Flight.getFlights();
+
     }
 
     private void updateFlights() {
@@ -292,11 +293,11 @@ public class CompraBilhete extends JFrame {
     public static void main(String[] args) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         try {
-            Flight.addFlight(33, 200, "LisboaPorto", "Lisboa", "Porto", 255, sdf.parse("10:30"), sdf.parse("11:45"));
-            Flight.addFlight(34, 301, "LisboaMadrid", "Lisboa", "Madrid", 280, sdf.parse("12:30"), sdf.parse("14:15"));
-            Flight.addFlight(780, 999, "PortoLondres", "Porto", "Londres", 275, sdf.parse("14:00"), sdf.parse("16:50"));
-            Flight.addFlight(96024, 246, "MadridParis", "Madrid", "Paris", 300, sdf.parse("16:30"), sdf.parse("18:10"));
-            Flight.addFlight(123456, 678, "LondresLisboa", "Londres", "Lisboa", 260, sdf.parse("18:00"), sdf.parse("19:30"));
+            Flight.addFlight(33, 200, 255, sdf.parse("10:30"),sdf.parse("11:45"),"Porto","Lisboa","LisboaPorto");
+            Flight.addFlight(34, 301, 280, sdf.parse("12:30"),sdf.parse("14:15"),"Londres","Lisboa","LisboaMadrid");
+            Flight.addFlight(780, 999, 275, sdf.parse("14:00"),sdf.parse("16:50"),"Londres","Porto","PortoLondres");
+            Flight.addFlight(96024, 246, 300, sdf.parse("16:30"), sdf.parse("18:10"),"Paris","Madrid","MadridParis");
+            Flight.addFlight(123456, 678, 260, sdf.parse("18:00"),sdf.parse("19:30"),"Lisboa","Londres","LondresLisboa");
         } catch (ParseException e) {
             e.printStackTrace();
         }

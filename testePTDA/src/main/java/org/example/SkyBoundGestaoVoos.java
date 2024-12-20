@@ -105,11 +105,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     private void addFlight() {
         try {
             // Verifica se todos os campos estão preenchidos
-            if (idAviao.getText().isEmpty() || idVoo.getText().isEmpty() || codeName.getText().isEmpty()
-                    || origem.getText().isEmpty() || destino.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+
 
             // Verifica se ID do Avião e ID do Voo são numéricos
             int id_Airplane = Integer.parseInt(idAviao.getText());
@@ -121,7 +117,8 @@ public class SkyBoundGestaoVoos extends JFrame {
             Date hTakeOff = (Date) tempoPartida.getValue();
             Date hLanding = (Date) tempoChegada.getValue();
 
-            Flight.addFlight(id_Airplane, id_Flight, codename, source, destination, maxPassengers, hTakeOff, hLanding);
+            Flight.addFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
+            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
             loadFlights();
             clearFields();
         } catch (NumberFormatException ex) {
