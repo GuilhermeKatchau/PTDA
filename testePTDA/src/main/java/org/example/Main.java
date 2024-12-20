@@ -3,6 +3,7 @@ package org.example;
 import java.sql.*;
 import java.util.Date;
 import java.util.Scanner;
+import java.text.SimpleDateFormat;
 
 
 public class Main {
@@ -120,7 +121,7 @@ public class Main {
 
     public static void SaveTicket(int id_passenger,String destination, double price, String source1,Boolean refundable, int id) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO airplane (id_passenger,destination,price,source1,refundable,id) VALUES (?,?,?,?,?,?)";
+            String sql = "INSERT INTO ticket (id_passenger,destination,price,trip,refundable,id) VALUES (?,?,?,?,?,?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id_passenger);
             stmt.setString(2, destination);
@@ -137,7 +138,7 @@ public class Main {
     }
     public static void SaveCrewData(String destination, int id, String source1) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
+            String sql = "INSERT INTO crew (id,nome, shift, experience, ranq) VALUES (?,?,?,?,?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, destination);
             stmt.setInt(2, id);
@@ -165,17 +166,22 @@ public class Main {
             System.out.println("Erro ao guardar os dados!");
         }
     }
-    public static void salvarDadosFlight(String destination, int id_Airplane, String source, int id_Flight, int maxPassengers, String hTakeOff, String hLanding, String codename) {
+    public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO flight (destination, id_plane, source1, id, maxPassengers, timeTakeOff, timeLanding, codename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            // Formatar as datas no padrão esperado pelo MySQL
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedTakeOff = dateFormat.format(hTakeOff);
+            String formattedLanding = dateFormat.format(hLanding);
+
+            String sql = "INSERT INTO flight (id_plane, id, maxPassengers, timeTakeOff, timeLanding, destination, source1, codename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, destination);
-            stmt.setInt(2, id_Airplane);
-            stmt.setString(3, source);
-            stmt.setInt(4, id_Flight);
-            stmt.setInt(5, maxPassengers);
-            stmt.setString(6, String.valueOf(hTakeOff));
-            stmt.setString(7, String.valueOf(hLanding));
+            stmt.setInt(1, id_Airplane);
+            stmt.setInt(2, id_Flight);
+            stmt.setInt(3, maxPassengers);
+            stmt.setString(4, formattedTakeOff); // Passa a data formatada
+            stmt.setString(5, formattedLanding); // Passa a data formatada
+            stmt.setString(6, destination);
+            stmt.setString(7, source);
             stmt.setString(8, codename);
 
             stmt.executeUpdate();

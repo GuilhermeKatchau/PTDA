@@ -92,11 +92,11 @@ public class CompraBilhete extends JFrame {
         ArrayList<Flight> flights = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         try {
-            flights.add(new Flight(33, 200, "LisboaPorto", "Lisboa", "Porto", 255, sdf.parse("10:30"), sdf.parse("11:45")));
-            flights.add(new Flight(34, 301, "LisboaMadrid", "Lisboa", "Madrid", 280, sdf.parse("12:30"), sdf.parse("14:15")));
-            flights.add(new Flight(780, 999, "PortoLondres", "Porto", "Londres", 275, sdf.parse("14:00"), sdf.parse("16:50")));
-            flights.add(new Flight(96024, 246, "MadridParis", "Madrid", "Paris", 300, sdf.parse("16:30"), sdf.parse("18:10")));
-            flights.add(new Flight(123456, 678, "LondresLisboa", "Londres", "Lisboa", 260, sdf.parse("18:00"), sdf.parse("19:30")));
+            flights.add(new Flight(33, 200, 255, sdf.parse("10:30"), sdf.parse("11:45"), "Lisboa", "Porto", "Porto"));
+            flights.add(new Flight(34, 301, 280, sdf.parse("12:30"), sdf.parse("14:15"), "Lisboa", "Madrid", "LisboaMadrid"));
+            flights.add(new Flight(780, 999, 275, sdf.parse("14:00"), sdf.parse("16:50"), "Porto", "Londres","PortoLondres" ));
+            flights.add(new Flight(96024, 246, 300, sdf.parse("16:30"), sdf.parse("18:10"), "Madrid", "Paris", "MadridParis" ));
+            flights.add(new Flight(123456, 678, 260, sdf.parse("18:00"), sdf.parse("19:30"), "Londres", "Lisboa","LondresLisboa" ));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -294,11 +294,11 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             //VER A SITUAÇAO DO PREÇO E DO ID DO PASSAGEIRO
-<<<<<<< HEAD
+
             //Main.SaveTicket(id_Passenger, selectedDestination,price, selectedSource, refundable, idTicket);
-=======
+
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
->>>>>>> 2f43de9d1247c0f17ed354b596c78612f31a1c85
+
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
