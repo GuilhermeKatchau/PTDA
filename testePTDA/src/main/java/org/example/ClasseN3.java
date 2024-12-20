@@ -83,8 +83,8 @@ public class ClasseN3 extends JFrame{
         System.out.println("Assento selecionado: " + numeroAssento);
         return new Object[]{botao, numeroAssento};
     }
-    private void saveSeat(int idTicket, int idSeat, double price, int place, Class classe){
-        Main.saveSeatInfo(idTicket, idSeat, price, place, classe);
+    private void saveSeat(int idTicket, int idSeat, double price,Class classe){
+        Main.saveSeatInfo(idTicket, idSeat, price, classe);
     }
 
     public static void main(String[] args) {
