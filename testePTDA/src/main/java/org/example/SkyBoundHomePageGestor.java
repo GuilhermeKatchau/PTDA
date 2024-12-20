@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class SkyBoundHomePageGestor {
     private JPanel panel1;
-    private JButton ADICIONARVOOSButton;
-    private JButton CONSULTARVOOSButton;
+    private JButton addFlightsButton;
+    private JButton viewFlightsButton;
 
     public SkyBoundHomePageGestor() {
         JFrame frame = new JFrame("SkyBound Home");
@@ -15,8 +15,8 @@ public class SkyBoundHomePageGestor {
         frame.setSize(600, 400);
         frame.setVisible(true);
 
-        ADICIONARVOOSButton.addActionListener(e -> new SkyBoundGestaoVoos());
-        CONSULTARVOOSButton.addActionListener(e -> mostrarVoos());
+        addFlightsButton.addActionListener(e -> new SkyBoundGestaoVoos());
+        viewFlightsButton.addActionListener(e -> mostrarVoos());
     }
 
     private void mostrarVoos() {

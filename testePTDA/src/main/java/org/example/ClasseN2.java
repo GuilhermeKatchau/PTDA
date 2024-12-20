@@ -29,7 +29,7 @@ public class ClasseN2 extends JFrame{
     private JButton button22;
     private JButton button23;
     private JButton button24;
-    private JButton[] botoesAssentos;
+    private JButton[] seatButtons;
 
     public ClasseN2() {
         setTitle("Escolha o Assento");
@@ -43,7 +43,7 @@ public class ClasseN2 extends JFrame{
         panelSeat2 = new JPanel();
         panelSeat2.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
-        botoesAssentos = new JButton[24];
+        seatButtons = new JButton[24];
         for (int i = 0; i < 24; i += 4) {
             JPanel linha = new JPanel();
             linha.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -51,15 +51,15 @@ public class ClasseN2 extends JFrame{
             JPanel painelEsquerda = new JPanel();
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
-                botoesAssentos[i + j] = new JButton(String.valueOf(i + j + 1));
-                painelEsquerda.add(botoesAssentos[i + j]);
+                seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                painelEsquerda.add(seatButtons[i + j]);
             }
 
             JPanel painelDireita = new JPanel();
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
-                botoesAssentos[i + j] = new JButton(String.valueOf(i + j + 1));
-                painelDireita.add(botoesAssentos[i + j]);
+                seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                painelDireita.add(seatButtons[i + j]);
             }
 
             linha.add(painelEsquerda);
@@ -71,9 +71,9 @@ public class ClasseN2 extends JFrame{
     }
 
     private void adicionarEventosBotoes() {
-        for (int i = 0; i < botoesAssentos.length; i++) {
+        for (int i = 0; i < seatButtons.length; i++) {
             int numeroAssento = i + 1; // Números de 1 a 24
-            botoesAssentos[i].addActionListener(e -> processarEscolhaAssento(numeroAssento));
+            seatButtons[i].addActionListener(e -> processarEscolhaAssento(numeroAssento));
         }
     }
 

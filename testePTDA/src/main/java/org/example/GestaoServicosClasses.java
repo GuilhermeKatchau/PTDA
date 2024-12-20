@@ -6,19 +6,22 @@ import java.util.ArrayList;
 
 public class GestaoServicosClasses extends JFrame {
     // Listas de objetos
-    private final ArrayList<Class> listaClasses = new ArrayList<>();
-    private final ArrayList<String> listaServicos = new ArrayList<>();
+    private final ArrayList<Class> classList = new ArrayList<>();
+    private final ArrayList<String> serviceList = new ArrayList<>();
 
     // Componentes visuais
-    private final DefaultListModel<String> listaClassesModel = new DefaultListModel<>();
-    private final DefaultListModel<String> listaServicosModel = new DefaultListModel<>();
-    private final JList<String> listaClassesJList = new JList<>(listaClassesModel);
-    private final JList<String> listaServicosJList = new JList<>(listaServicosModel);
+    private final DefaultListModel<String> classListModel = new DefaultListModel<>();
+    private final DefaultListModel<String> serviceListModel = new DefaultListModel<>();
+    private final JList<String> classJlist = new JList<>(classListModel);
+    private final JList<String> serviceJList = new JList<>(serviceListModel);
 
     public GestaoServicosClasses() {
         setTitle("Gestão de Classes e Serviços");
         setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+        ;
+
         setLayout(new BorderLayout());
 
         // Dividir a interface em Classes e Serviços
@@ -37,7 +40,7 @@ public class GestaoServicosClasses extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Classes"));
 
-        panel.add(new JScrollPane(listaClassesJList), BorderLayout.CENTER);
+        panel.add(new JScrollPane(classJlist), BorderLayout.CENTER);
 
         JButton btnAdicionarClasse = new JButton("Adicionar Classe");
         btnAdicionarClasse.addActionListener(e -> adicionarClasse());
@@ -61,7 +64,7 @@ public class GestaoServicosClasses extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Serviços"));
 
-        panel.add(new JScrollPane(listaServicosJList), BorderLayout.CENTER);
+        panel.add(new JScrollPane(serviceJList), BorderLayout.CENTER);
         return panel;
     }
 
@@ -89,8 +92,8 @@ public class GestaoServicosClasses extends JFrame {
             }
 
             Class novaClasse = new Class(nome, preco, capacidade, servicosClasse);
-            listaClasses.add(novaClasse);
-            listaClassesModel.addElement(nome);
+            classList.add(novaClasse);
+            classListModel.addElement(nome);
             JOptionPane.showMessageDialog(this, "Classe adicionada com sucesso!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao adicionar classe: " + e.getMessage());
@@ -98,10 +101,10 @@ public class GestaoServicosClasses extends JFrame {
     }
 
     private void removerClasse() {
-        int index = listaClassesJList.getSelectedIndex();
+        int index = classJlist.getSelectedIndex();
         if (index != -1) {
-            listaClasses.remove(index);
-            listaClassesModel.remove(index);
+            classList.remove(index);
+            classListModel.remove(index);
             JOptionPane.showMessageDialog(this, "Classe removida com sucesso!");
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma classe para remover.");
@@ -109,9 +112,9 @@ public class GestaoServicosClasses extends JFrame {
     }
 
     private void visualizarDetalhesClasse() {
-        int index = listaClassesJList.getSelectedIndex();
+        int index = classJlist.getSelectedIndex();
         if (index != -1) {
-            Class classe = listaClasses.get(index);
+            Class classe = classList.get(index);
             StringBuilder detalhes = new StringBuilder("Detalhes da Classe:\n");
             detalhes.append("Nome: ").append(classe.getClassName()).append("\n");
             detalhes.append("Preço: ").append(classe.getPrice()).append("\n");

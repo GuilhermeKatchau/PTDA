@@ -7,7 +7,7 @@ public class Flight {
 
     private int id_Flight;
     private int id_Airplane;
-    private String codename;
+    private String codeName;
     private String source;
     private String destination;
     private int maxPassengers;
@@ -107,14 +107,14 @@ public class Flight {
 
     public void setCodeName(String codeName) {
         if (codeName != null && !codeName.trim().isEmpty()) {
-            this.codename = codeName;
+            this.codeName = codeName;
         } else {
             throw new IllegalArgumentException("Nome de Voo não pode ser vazio");
         }
     }
 
     public String getCodeName() {
-        return codename;
+        return codeName;
     }
 
 
@@ -156,11 +156,14 @@ public class Flight {
     public String toString() {
         return "ID Avião: " + id_Airplane +
                 " | ID Voo: " + id_Flight +
-                " | Code Name: " + codename +
+                " | Code Name: " + codeName +
                 " | Origem: " + source +
                 " | Destino: " + destination +
                 " | Partida: " + hTakeOff +
                 " | Chegada: " + hLanding +
                 " | Limite: " + maxPassengers;
+    }
+
+    public Object getId() {
     }
 }

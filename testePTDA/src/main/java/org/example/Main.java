@@ -240,4 +240,6 @@ public class Main {
     }
 
 
+    public static void saveSeatInfo(String seat, int idPassenger, Object id) {
+    }
 }
