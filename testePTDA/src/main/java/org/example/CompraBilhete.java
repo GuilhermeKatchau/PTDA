@@ -35,7 +35,7 @@ public class CompraBilhete extends JFrame {
         tabDestinationSource();
         tabHourFlight();
         tabClassService();
-        tabSeat();
+       // tabSeat();
         tabPassengerInfo();
         tabFinalize();
 
@@ -222,7 +222,7 @@ public class CompraBilhete extends JFrame {
 
         return classes;
     }
-    private void tabSeat(){
+    /*private void tabSeat(){
 
         if (selectedClass.equals(luxurious)) {
             JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
@@ -244,7 +244,7 @@ public class CompraBilhete extends JFrame {
         });
 
         tabbedPane.addTab("Assento", panelSeat);
-    }
+    }*/
 
     private void tabPassengerInfo() {
         JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
@@ -315,15 +315,15 @@ public class CompraBilhete extends JFrame {
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
 
 
-            if (seat != null && !seat.isEmpty()) {
+           /* if (seat != null && !seat.isEmpty()) {
                 Main.saveSeatInfo(seat);
                 System.out.println("Assento salvo: " + seat);
             } else {
                 System.out.println("Nenhum assento foi selecionado.");
-            }
+            }*/
 
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
-            tabbedPane.setSelectedIndex(0);
+            tabbedPane.setSelectedIndex(5);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
 
