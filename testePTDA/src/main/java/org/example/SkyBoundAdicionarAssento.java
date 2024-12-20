@@ -77,16 +77,16 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private void processarEscolhaAssento( JButton botao, int numeroAssento) {
         botao.setBackground(Color.orange);
         JOptionPane.showMessageDialog(this, "Você escolheu o assento: " + numeroAssento);
-        enviarInformacoesAssento(botao, numeroAssento);
+        enviarInformacoesAssento(numeroAssento);
     }
 
-    private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
+    private int enviarInformacoesAssento(int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento
         System.out.println("Assento selecionado: " + numeroAssento);
-        return new Object[]{botao, numeroAssento};
+        return numeroAssento;
     }
-    private void saveSeat(int idTicket, int idSeat, double price, int place, Class classe){
-        Main.saveSeatInfo(idTicket, idSeat, price, place, classe);
+    private void saveSeat(int idTicket, int idSeat, double price, Class classe){
+        Main.saveSeatInfo(idTicket, idSeat, price, classe);
     }
 
     public static void main(String[] args) {

@@ -18,7 +18,7 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     private JTable tableFlights;
     private Passenger passenger;
-    Class selectedClass;
+    private Class selectedClass;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -292,7 +292,7 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
-            Main.saveSeatInfo(idTicket, seat, ticket.getPrice(), numero,selectedClass);
+            Main.saveSeatInfo(idTicket, seat, ticket.getPrice(),selectedClass);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });
