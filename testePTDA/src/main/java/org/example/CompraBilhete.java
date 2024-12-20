@@ -89,18 +89,8 @@ public class CompraBilhete extends JFrame {
     }
 
     private ArrayList<Flight> getAvailableFlights() {
-        ArrayList<Flight> flights = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        try {
-            flights.add(new Flight(33, 200, "LisboaPorto", "Lisboa", "Porto", 255, sdf.parse("10:30"), sdf.parse("11:45")));
-            flights.add(new Flight(34, 301, "LisboaMadrid", "Lisboa", "Madrid", 280, sdf.parse("12:30"), sdf.parse("14:15")));
-            flights.add(new Flight(780, 999, "PortoLondres", "Porto", "Londres", 275, sdf.parse("14:00"), sdf.parse("16:50")));
-            flights.add(new Flight(96024, 246, "MadridParis", "Madrid", "Paris", 300, sdf.parse("16:30"), sdf.parse("18:10")));
-            flights.add(new Flight(123456, 678, "LondresLisboa", "Londres", "Lisboa", 260, sdf.parse("18:00"), sdf.parse("19:30")));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return flights;
+        return Flight.getFlights();
+
     }
 
     private void updateFlights() {
@@ -256,8 +246,6 @@ public class CompraBilhete extends JFrame {
             } else if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-
-                //testar pff
                 int id = new Random().nextInt(1000000); // Gerando um ID aleatório para o passageiro
                 passenger = new Passenger(name, age, email, id);
                 Main.SavePassengerData(name, age, email, id);
@@ -293,9 +281,9 @@ public class CompraBilhete extends JFrame {
             Ticket ticket = new Ticket("Lisboa", "Porto", 123456, 150.00);
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
-            //VER A SITUAÇAO DO PREÇO E DO ID DO PASSAGEIRO
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
+            tabbedPane.setSelectedIndex(0);
         });
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
 
@@ -303,6 +291,17 @@ public class CompraBilhete extends JFrame {
     }
 
     public static void main(String[] args) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        try {
+            Flight.addFlight(33, 200, 255, sdf.parse("10:30"),sdf.parse("11:45"),"Porto","Lisboa","LisboaPorto");
+            Flight.addFlight(34, 301, 280, sdf.parse("12:30"),sdf.parse("14:15"),"Londres","Lisboa","LisboaMadrid");
+            Flight.addFlight(780, 999, 275, sdf.parse("14:00"),sdf.parse("16:50"),"Londres","Porto","PortoLondres");
+            Flight.addFlight(96024, 246, 300, sdf.parse("16:30"), sdf.parse("18:10"),"Paris","Madrid","MadridParis");
+            Flight.addFlight(123456, 678, 260, sdf.parse("18:00"),sdf.parse("19:30"),"Lisboa","Londres","LondresLisboa");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         new CompraBilhete();
     }
 }
