@@ -18,14 +18,6 @@ refundable BOOLEAN,
 id INTEGER PRIMARY KEY NOT NULL
 );
 
-CREATE TABLE bag(
-id_Ticket INTEGER
-REFERENCES ticket(id),
-size INTEGER,
-weight INTEGER,
-quantity INTEGER
-);
-
 CREATE TABLE airplane(
 id INTEGER PRIMARY KEY,
 destination VARCHAR(40),
@@ -37,7 +29,8 @@ id_Ticket INTEGER
 REFERENCES ticket(id),
 id_Seat INTEGER PRIMARY KEY,
 price INTEGER,
-place INTEGER
+place INTEGER,
+class VARCHAR(40)
 );
 
 CREATE TABLE class(
