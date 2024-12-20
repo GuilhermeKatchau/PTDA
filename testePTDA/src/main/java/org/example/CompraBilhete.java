@@ -13,12 +13,16 @@ public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
     private final CheckIn checkInData = new CheckIn();
     JPanel panelDestinoOrigemData;
+    JPanel panelSeat;
     private String selectedSource;
     private String selectedDestination;
     private Flight selectedFlight;
     private JTable tableFlights;
     private Passenger passenger;
     private Class selectedClass;
+    private Class luxurious,economical;
+    private ArrayList<Class> classes = new ArrayList<>();
+
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -30,7 +34,8 @@ public class CompraBilhete extends JFrame {
 
         tabDestinationSource();
         tabHourFlight();
-        tabClassService(); // Este método agora está corretamente definido
+        tabClassService();
+        tabSeat
         tabPassengerInfo();
         tabFinalize();
 
@@ -122,14 +127,14 @@ public class CompraBilhete extends JFrame {
 
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
-        String[] columns = {"Hora", "Origem", "Destino"};
+       /* String[] columns = {"Hora", "Origem", "Destino"};
         Object[][] flights = {
                 {"10:00", "Lisboa", "Porto"},
                 {"12:30", "Lisboa", "Madrid"},
                 {"14:00", "Porto", "Londres"},
                 {"16:30", "Madrid", "Paris"},
                 {"18:00", "Londres", "Lisboa"}
-        };
+        }; */
 
         tableFlights = new JTable(new DefaultTableModel(new Object[]{"Hora", "Origem", "Destino", "Preço"}, 0));
         JScrollPane scrollPane = new JScrollPane(tableFlights);
@@ -209,19 +214,35 @@ public class CompraBilhete extends JFrame {
         ArrayList<String> services2 = new ArrayList<>();
         services2.add("Embarque Prioritário");
 
-        ArrayList<Class> classes = new ArrayList<>();
-        classes.add(new Class("Luxuosa", 200.00, 10, services1));
-        classes.add(new Class("Económica", 100.00, 50, services2));
+        classes = new ArrayList<>();
+        luxurious = new Class("Luxuosa", 200.00, 10, services1);
+        classes.add(luxurious);
+        economical = new Class("Económica", 100.00, 50, services2);
+        classes.add(economical);
 
         return classes;
     }
     private void tabSeat(){
-        JPanel panelSeat = new JPanel(new BorderLayout());
+
+        if (selectedClass.equals(luxurious)) {
+            JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
+            ClasseN2 panelSeat2 = new ClasseN2();
+            panelSeat2.add(label, BorderLayout.CENTER);
+            panelSeat = panelSeat2.getPanel();
+
+        } else if (selectedClass.equals(economical)) {
+            JLabel label = new JLabel("Você escolheu a classe Económica.");
+            ClasseN3 panelSeat3 = new ClasseN3();
+            panelSeat3.add(label, BorderLayout.CENTER);
+            panelSeat = panelSeat3.getPanel();
+        }
+
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
+            panelSeat.add(btnNext, BorderLayout.CENTER);
             tabbedPane.setSelectedIndex(4);
         });
-        panelSeat.add(btnNext, BorderLayout.CENTER);
+
         tabbedPane.addTab("Assento", panelSeat);
     }
 
