@@ -91,4 +91,7 @@ public class ClasseN3 extends JFrame{
         SwingUtilities.invokeLater(() -> new SkyBoundAdicionarAssento());
     }
 
+    public JPanel getPanel() {
+        return null;
+    }
 }

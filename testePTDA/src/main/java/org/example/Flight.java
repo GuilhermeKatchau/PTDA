@@ -163,4 +163,7 @@ public class Flight {
                 " | Chegada: " + hLanding +
                 " | Limite: " + maxPassengers;
     }
+
+    public Object getId() {
+    }
 }

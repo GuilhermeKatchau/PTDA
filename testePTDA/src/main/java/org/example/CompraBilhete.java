@@ -167,7 +167,7 @@ public class CompraBilhete extends JFrame {
         JButton btnNext = new JButton("Próximo");
 
         comboClass.addActionListener(e -> {
-           selectedClass = (Class) comboClass.getSelectedItem();
+            selectedClass = (Class) comboClass.getSelectedItem();
             panelServices.removeAll();
             if (selectedClass != null) {
                 for (String service : selectedClass.getServices()) {
@@ -313,7 +313,7 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
-            
+
 
             if (seat != null && !seat.isEmpty()) {
                 Main.saveSeatInfo(seat);
