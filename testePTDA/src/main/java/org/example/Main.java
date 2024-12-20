@@ -52,8 +52,8 @@ public class Main {
             connection.setAutoCommit(false); // Transações manuais para consistência
 
             // Obtém o próximo ID
-            int nextId = getNextNumTicket(connection);
-            int numTicket = getNextNumTicket(connection);
+            int nextId = getNextIDTicket(connection);
+            int numTicket = getNextIDTicket(connection);
 
             // Inserção na tabela passenger
             String sqlPassenger = "INSERT INTO passenger (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
@@ -152,20 +152,6 @@ public class Main {
     }
 
 
-        public static void salvarDadosAirplane(String destination, int id, String source1) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, destination);
-            stmt.setInt(2, id);
-            stmt.setString(3,source1);
-            stmt.executeUpdate();
-            System.out.println("Dados inseridos com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erro ao guardar os dados!");
-        }
-    }
     public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             // Formatar as datas no padrão esperado pelo MySQL
@@ -191,7 +177,7 @@ public class Main {
             System.out.println("Erro ao guardar os dados do voo!");
         }
     }
-    public static int getNextNumTicket(Connection connection) throws SQLException {
+    public static int getNextIDTicket(Connection connection) throws SQLException {
         // Lógica para obter o próximo número de ticket
         String query = "SELECT MAX(ticket_id) FROM ticket"; // Exemplo de SQL
         Statement stmt = connection.createStatement();
@@ -202,42 +188,38 @@ public class Main {
             return 1; // Se não houver nenhum ticket, retorna 1
         }
     }
-    public static void addServiceToDatabase(String nome) {
-        String url = "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05";
-        String user = "PTDA24_05";
-        String password = "Potm%793";
-        String sql = "INSERT INTO service (nome) VALUES (?)";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public static void linkServiceToClass(int idClass,String className, String service, int idService) {
+        String sql = "INSERT INTO class (id, name,service, price) VALUES (?, ? ,?, ?)";
 
-            stmt.setString(1, nome);
-            stmt.executeUpdate();
-            System.out.println("Serviço adicionado com sucesso!");
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao adicionar serviço: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    //VER SE FUNCIONA
-    public static void linkServiceToClass(int idClass, int idService) {
-        String url = "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05";
-        String user = "PTDA24_05";
-        String password = "Potm%793";
-        String sql = "INSERT INTO class_services (id_class, id_service) VALUES (?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(url, user, password);
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793");
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idClass);
-            stmt.setInt(2, idService);
+            stmt.setString(2, className);
+            stmt.setString(3, service);
+            stmt.setInt(4, idService);
             stmt.executeUpdate();
             System.out.println("Serviço associado à classe com sucesso!");
 
         } catch (SQLException e) {
             System.err.println("Erro ao associar serviço à classe: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public static void saveSeatInfo(int idTicket, int idSeat, double price, int place, Class classe){
+        try(Connection conn= DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
+            String sql = "INSERT INTO seat (id_Ticket, id_Seat, price, place) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idTicket);
+            stmt.setInt(2, idSeat);
+            stmt.setDouble(3, price);
+            stmt.setInt(4, place);
+            stmt.executeUpdate();
+            System.out.println("Dados do assento inseridos com sucesso!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

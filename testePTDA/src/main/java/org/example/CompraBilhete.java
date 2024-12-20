@@ -18,6 +18,7 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     private JTable tableFlights;
     private Passenger passenger;
+    Class selectedClass;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -161,7 +162,7 @@ public class CompraBilhete extends JFrame {
         JButton btnNext = new JButton("Próximo");
 
         comboClass.addActionListener(e -> {
-            Class selectedClass = (Class) comboClass.getSelectedItem();
+           selectedClass = (Class) comboClass.getSelectedItem();
             panelServices.removeAll();
             if (selectedClass != null) {
                 for (Service service : selectedClass.getServices()) {
@@ -174,7 +175,7 @@ public class CompraBilhete extends JFrame {
         });
 
         btnNext.addActionListener(e -> {
-            Class selectedClass = (Class) comboClass.getSelectedItem();
+            selectedClass = (Class) comboClass.getSelectedItem();
             StringBuilder selectedServices = new StringBuilder();
 
             // Coleta os serviços selecionados
@@ -214,18 +215,27 @@ public class CompraBilhete extends JFrame {
 
         return classes;
     }
+    private void tabSeat(){
+        JPanel panelSeat = new JPanel(new BorderLayout());
+        JButton btnNext = new JButton("Próximo");
+        btnNext.addActionListener(e -> {
+            tabbedPane.setSelectedIndex(4);
+        });
+        panelSeat.add(btnNext, BorderLayout.CENTER);
+        tabbedPane.addTab("Assento", panelSeat);
+    }
 
     private void tabPassengerInfo() {
         JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
 
         JLabel labelName = new JLabel("Nome:");
-        JTextField fieldName = new JTextField();
+        JTextField passengerName = new JTextField();
 
         JLabel labelAge = new JLabel("Idade:");
-        JSpinner spinnerAge = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
+        JSpinner passengerAge = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
 
         JLabel labelEmail = new JLabel("Email:");
-        JTextField fieldEmail = new JTextField();
+        JTextField passengerEmail = new JTextField();
 
         JLabel labelCheckIn = new JLabel("Check-in:");
         JRadioButton radioButtonAutomatic = new JRadioButton("Automático");
@@ -236,9 +246,9 @@ public class CompraBilhete extends JFrame {
 
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
-            String name = fieldName.getText().trim();
-            int age = (int) spinnerAge.getValue();
-            String email = fieldEmail.getText().trim();
+            String name = passengerName.getText().trim();
+            int age = (int) passengerAge.getValue();
+            String email = passengerEmail.getText().trim();
             boolean isAutomatic = radioButtonAutomatic.isSelected();
 
             if (name.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
@@ -258,11 +268,11 @@ public class CompraBilhete extends JFrame {
         });
 
         panelPassageiro.add(labelName);
-        panelPassageiro.add(fieldName);
+        panelPassageiro.add(passengerName);
         panelPassageiro.add(labelAge);
-        panelPassageiro.add(spinnerAge);
+        panelPassageiro.add(passengerAge);
         panelPassageiro.add(labelEmail);
-        panelPassageiro.add(fieldEmail);
+        panelPassageiro.add(passengerEmail);
         panelPassageiro.add(labelCheckIn);
         panelPassageiro.add(radioButtonAutomatic);
         panelPassageiro.add(new JLabel());
@@ -282,6 +292,7 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
+            Main.saveSeatInfo(idTicket, seat, ticket.getPrice(), numero,selectedClass);
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });
