@@ -7,12 +7,12 @@ import java.awt.event.ActionListener;
 public class SkyBoundHomePage {
 
     private JPanel panel1;
-    private JButton inícioButton;
+    private JButton startButton;
     private JTextArea skyBoundTextArea;
     private JPanel panel2;
 
     public SkyBoundHomePage() {
-        inícioButton.addActionListener(new ActionListener() {
+        startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Quando o botão for clicado, cria uma nova instância de CompraBilhete

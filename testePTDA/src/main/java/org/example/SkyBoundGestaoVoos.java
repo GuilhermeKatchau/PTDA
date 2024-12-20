@@ -8,11 +8,11 @@ import java.util.Date;
 
 public class SkyBoundGestaoVoos extends JFrame {
 
-    private final JTextField idAviao, idVoo, codeName, origem, destino;
-    private final JFormattedTextField limitePassageiros;
-    private final JSpinner tempoPartida, tempoChegada;
-    private final DefaultListModel<String> listaVoos;
-    private final JList<String> voosCadastrados;
+    private final JTextField id_Airplane, id_Flight, codeName, source, destination;
+    private final JFormattedTextField maxPassengers;
+    private final JSpinner hTakeOff, hLanding;
+    private final DefaultListModel<String> flights;
+    private final JList<String> registeredFlights;
 
     public SkyBoundGestaoVoos() {
         setTitle("Gestão de Voos");
@@ -20,24 +20,25 @@ public class SkyBoundGestaoVoos extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        idAviao = new JTextField();
-        idVoo = new JTextField();
+        id_Airplane = new JTextField();
+        id_Flight = new JTextField();
+
         codeName = new JTextField();
-        origem = new JTextField();
-        destino = new JTextField();
+        source = new JTextField();
+        destination = new JTextField();
 
         NumberFormat numberFormat = NumberFormat.getIntegerInstance();
-        limitePassageiros = new JFormattedTextField(numberFormat);
-        limitePassageiros.setValue(0);
+        maxPassengers = new JFormattedTextField(numberFormat);
+        maxPassengers.setValue(0);
 
-        tempoPartida = new JSpinner(new SpinnerDateModel());
-        tempoPartida.setEditor(new JSpinner.DateEditor(tempoPartida, "dd/MM/yyyy HH:mm"));
+        hTakeOff = new JSpinner(new SpinnerDateModel());
+        hTakeOff.setEditor(new JSpinner.DateEditor(hTakeOff, "dd/MM/yyyy HH:mm"));
 
-        tempoChegada = new JSpinner(new SpinnerDateModel());
-        tempoChegada.setEditor(new JSpinner.DateEditor(tempoChegada, "dd/MM/yyyy HH:mm"));
+        hLanding = new JSpinner(new SpinnerDateModel());
+        hLanding.setEditor(new JSpinner.DateEditor(hLanding, "dd/MM/yyyy HH:mm"));
 
-        listaVoos = new DefaultListModel<>();
-        voosCadastrados = new JList<>(listaVoos);
+        flights = new DefaultListModel<>();
+        registeredFlights = new JList<>(flights);
 
         JPanel formPanel = Form();
         JScrollPane scrollPane = FlightList();
@@ -55,34 +56,34 @@ public class SkyBoundGestaoVoos extends JFrame {
         JPanel formPanel = new JPanel(new GridLayout(5, 4, 10, 10));
 
         formPanel.add(new JLabel("ID do Avião:"));
-        formPanel.add(idAviao);
+        formPanel.add(id_Airplane);
 
         formPanel.add(new JLabel("ID do Voo:"));
-        formPanel.add(idVoo);
+        formPanel.add(id_Flight);
 
         formPanel.add(new JLabel("Code Name:"));
         formPanel.add(codeName);
 
         formPanel.add(new JLabel("Cidade de Origem:"));
-        formPanel.add(origem);
+        formPanel.add(source);
 
         formPanel.add(new JLabel("Cidade de Destino:"));
-        formPanel.add(destino);
+        formPanel.add(destination);
 
         formPanel.add(new JLabel("Limite de Passageiros:"));
-        formPanel.add(limitePassageiros);
+        formPanel.add(maxPassengers);
 
         formPanel.add(new JLabel("Tempo de Partida:"));
-        formPanel.add(tempoPartida);
+        formPanel.add(hTakeOff);
 
         formPanel.add(new JLabel("Tempo de Chegada:"));
-        formPanel.add(tempoChegada);
+        formPanel.add(hLanding);
 
         return formPanel;
     }
 
     private JScrollPane FlightList() {
-        JScrollPane scrollPane = new JScrollPane(voosCadastrados);
+        JScrollPane scrollPane = new JScrollPane(registeredFlights);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Voos Cadastrados"));
         return scrollPane;
     }
@@ -108,14 +109,14 @@ public class SkyBoundGestaoVoos extends JFrame {
 
 
             // Verifica se ID do Avião e ID do Voo são numéricos
-            int id_Airplane = Integer.parseInt(idAviao.getText());
-            int id_Flight = Integer.parseInt(idVoo.getText());
+            int id_Airplane = Integer.parseInt(this.id_Airplane.getText());
+            int id_Flight = Integer.parseInt(this.id_Flight.getText());
             String codename = codeName.getText();
-            String source = origem.getText();
-            String destination = destino.getText();
-            int maxPassengers = Integer.parseInt(limitePassageiros.getText());
-            Date hTakeOff = (Date) tempoPartida.getValue();
-            Date hLanding = (Date) tempoChegada.getValue();
+            String source = this.source.getText();
+            String destination = this.destination.getText();
+            int maxPassengers = Integer.parseInt(this.maxPassengers.getText());
+            Date hTakeOff = (Date) this.hTakeOff.getValue();
+            Date hLanding = (Date) this.hLanding.getValue();
 
             Flight.addFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
             Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
@@ -127,7 +128,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private void removeFlight() {
-        int selectedIndex = voosCadastrados.getSelectedIndex();
+        int selectedIndex = registeredFlights.getSelectedIndex();
         if (selectedIndex != -1) {
             Flight.removeFlight(selectedIndex);
             loadFlights();
@@ -137,11 +138,11 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private void loadFlights() {
-        listaVoos.clear();
+        flights.clear();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //TEM DE SE TROCAR PARA APARECER OS VOOS DA BD !!!!!
         for (Flight flight : Flight.getFlights()) {
-            listaVoos.addElement("ID Avião: " + flight.getId_Airplane()
+            flights.addElement("ID Avião: " + flight.getId_Airplane()
                     + " | ID Voo: " + flight.getId_Flight()
                     + " | Code Name: " + flight.getCodeName()
                     + " | Origem: " + flight.getSource()
@@ -154,7 +155,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
     //Nao funciona, serve de exemplo
     private void abrirGestaoTripulacao() {
-        int selectedIndex = voosCadastrados.getSelectedIndex();
+        int selectedIndex = registeredFlights.getSelectedIndex();
         if (selectedIndex != -1) {
             Flight selectedFlight = Flight.getFlights().get(selectedIndex);
             new GestaoTripulacao();
@@ -164,14 +165,14 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private void clearFields() {
-        idAviao.setText("");
-        idVoo.setText("");
+        id_Airplane.setText("");
+        id_Flight.setText("");
         codeName.setText("");
-        origem.setText("");
-        destino.setText("");
-        limitePassageiros.setValue(0);
-        tempoPartida.setValue(new Date());
-        tempoChegada.setValue(new Date());
+        source.setText("");
+        destination.setText("");
+        maxPassengers.setValue(0);
+        hTakeOff.setValue(new Date());
+        hLanding.setValue(new Date());
     }
 
     public static void main(String[] args) {

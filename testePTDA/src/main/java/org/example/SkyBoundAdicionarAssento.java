@@ -2,8 +2,6 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.sql.*;
 
 public class SkyBoundAdicionarAssento extends JFrame {
     private String assentoSelecionado;
@@ -19,7 +17,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
             button54, button55, button56, button57, button58, button59, button60,
             button61, button62, button63, button64;
 
-    private JButton[] botoesAssentos;
+    private JButton[] seatButtons;
 
     public SkyBoundAdicionarAssento() {
 
@@ -31,7 +29,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
         panel1 = new JPanel();
         panel1.setLayout(new GridLayout(12, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
-        botoesAssentos = new JButton[64];
+        seatButtons = new JButton[64];
         for (int i = 0; i < 64; i += 4) {
             // Crie dois sub-painéis (esquerda e direita) para cada linha
             JPanel linha = new JPanel();
@@ -41,16 +39,16 @@ public class SkyBoundAdicionarAssento extends JFrame {
             JPanel painelEsquerda = new JPanel();
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
-                botoesAssentos[i + j] = new JButton(String.valueOf(i + j + 1));
-                painelEsquerda.add(botoesAssentos[i + j]);
+                seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                painelEsquerda.add(seatButtons[i + j]);
             }
 
             // Painel da direita com 2 botões
             JPanel painelDireita = new JPanel();
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
-                botoesAssentos[i + j] = new JButton(String.valueOf(i + j + 1));
-                painelDireita.add(botoesAssentos[i + j]);
+                seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                painelDireita.add(seatButtons[i + j]);
             }
 
 
@@ -67,10 +65,10 @@ public class SkyBoundAdicionarAssento extends JFrame {
 
 
     private void adicionarEventosBotoes() {
-        for (int i = 0; i < botoesAssentos.length; i++) {
-            JButton botao = botoesAssentos[i];
-            int numeroAssento = i + 1; // Números de 1 a 64
-            botoesAssentos[i].addActionListener(e -> processarEscolhaAssento(botao,numeroAssento));
+        for (int i = 0; i < seatButtons.length; i++) {
+            JButton button = seatButtons[i];
+            int seatButton = i + 1; // Números de 1 a 64
+            seatButtons[i].addActionListener(e -> processarEscolhaAssento(button,seatButton));
         }
 
 
