@@ -40,9 +40,11 @@ price INTEGER,
 place INTEGER
 );
 
-CREATE TABLE service(
+CREATE TABLE class(
 id INTEGER PRIMARY KEY,
-nome VARCHAR(40)
+name VARCHAR(40),
+service VARCHAR(40),
+price INT
 );
 
 CREATE TABLE flight(
