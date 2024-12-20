@@ -131,9 +131,10 @@ public class Flight {
 
             Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
-            //JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+           // JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -164,6 +165,5 @@ public class Flight {
     }
 
     public Object getId() {
-        return id_Flight;
     }
 }
