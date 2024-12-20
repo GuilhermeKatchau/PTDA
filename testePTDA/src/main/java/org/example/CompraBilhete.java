@@ -35,7 +35,7 @@ public class CompraBilhete extends JFrame {
         tabDestinationSource();
         tabHourFlight();
         tabClassService();
-        tabSeat
+        tabSeat();
         tabPassengerInfo();
         tabFinalize();
 
@@ -313,7 +313,15 @@ public class CompraBilhete extends JFrame {
             boolean refundable = true; // ou false conforme necessário
             int idTicket = new Random().nextInt(1000000);
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
-            Main.saveSeatInfo(idTicket, seat, ticket.getPrice(),selectedClass);
+            
+
+            if (seat != null && !seat.isEmpty()) {
+                Main.saveSeatInfo(seat);
+                System.out.println("Assento salvo: " + seat);
+            } else {
+                System.out.println("Nenhum assento foi selecionado.");
+            }
+
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });

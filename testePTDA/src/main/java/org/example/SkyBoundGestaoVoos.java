@@ -139,7 +139,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     private void loadFlights() {
         listaVoos.clear();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+//TEM DE SE TROCAR PARA APARECER OS VOOS DA BD !!!!!
         for (Flight flight : Flight.getFlights()) {
             listaVoos.addElement("ID Avião: " + flight.getId_Airplane()
                     + " | ID Voo: " + flight.getId_Flight()
@@ -149,6 +149,17 @@ public class SkyBoundGestaoVoos extends JFrame {
                     + " | Partida: " + dateFormat.format(flight.gethTakeoff())
                     + " | Chegada: " + dateFormat.format(flight.gethLanding())
                     + " | Limite: " + flight.getMaxPassengers());
+
+        }
+    }
+    //Nao funciona, serve de exemplo
+    private void abrirGestaoTripulacao() {
+        int selectedIndex = voosCadastrados.getSelectedIndex();
+        if (selectedIndex != -1) {
+            Flight selectedFlight = Flight.getFlights().get(selectedIndex);
+            new GestaoTripulacao();
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um voo para continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.*;
 import java.sql.*;
 
 public class SkyBoundAdicionarAssento extends JFrame {
+    private String assentoSelecionado;
     private JPanel panel1;
     private JButton button1, button2, button3, button4, button5, button6,
             button7, button8, button9, button10, button11, button12,
@@ -21,6 +22,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private JButton[] botoesAssentos;
 
     public SkyBoundAdicionarAssento() {
+
         setTitle("Escolha o Assento");
         setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,16 +79,17 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private void processarEscolhaAssento( JButton botao, int numeroAssento) {
         botao.setBackground(Color.orange);
         JOptionPane.showMessageDialog(this, "Você escolheu o assento: " + numeroAssento);
-        enviarInformacoesAssento(numeroAssento);
+        enviarInformacoesAssento(botao, numeroAssento);
     }
 
-    private int enviarInformacoesAssento(int numeroAssento) {
+
+    private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento
         System.out.println("Assento selecionado: " + numeroAssento);
-        return numeroAssento;
+        return new Object[]{botao, numeroAssento};
     }
-    private void saveSeat(int idTicket, int idSeat, double price, Class classe){
-        Main.saveSeatInfo(idTicket, idSeat, price, classe);
+    private void saveSeat(int idTicket, int idSeat, double price,Class classe){
+        Main.saveSeatInfo(idTicket, idSeat, price,classe);
     }
 
     public static void main(String[] args) {
