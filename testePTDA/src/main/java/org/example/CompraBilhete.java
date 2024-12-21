@@ -237,6 +237,11 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Assento", panelSeatPlaceholder);
     }
 
+    // Variáveis temporárias para armazenar as informações do assento
+    private int selectedSeatId = 0;
+    private double selectedSeatPrice = 0.0;
+    private Class selectedSeatClass = null;
+
     private void updateTabSeat() {
         Seat selectedSeat = new Seat();
         JPanel panelSeat = new JPanel();
@@ -249,20 +254,20 @@ public class CompraBilhete extends JFrame {
             panelSeat.add(label);
             panelSeat.add(panelSeat3.getPanel());
 
-            JButton[] botoesAssentos = panelSeat3.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
+            JButton[] botoesAssentos = panelSeat3.getBotoesAssentos();
             for (int i = 0; i < botoesAssentos.length; i++) {
-                int numeroAssento = i + 1; // Números de 1 a 16
+                int numeroAssento = i + 1;
                 int finalI = i;
                 botoesAssentos[i].addActionListener(e -> {
                     // Atualizar informações do assento selecionado
-                    selectedSeat.setId_Seat(numeroAssento);
-                    selectedSeat.setPrice(calcularPreco(numeroAssento));
+                    selectedSeatId = numeroAssento;
+                    selectedSeatPrice = calcularPreco(numeroAssento);
+                    selectedSeatClass = luxurious;
 
-                    // Mostrar um resumo da seleção
                     JOptionPane.showMessageDialog(
                             tabbedPane,
-                            "Assento selecionado: " + selectedSeat.getId_Seat() +
-                                    "\nPreço: " + selectedSeat.getPrice()
+                            "Assento selecionado: " + selectedSeatId +
+                                    "\nPreço: " + selectedSeatPrice
                     );
                     botoesAssentos[finalI].setBackground(Color.orange);
                 });
@@ -272,11 +277,10 @@ public class CompraBilhete extends JFrame {
             btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
             btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
             btnNext.addActionListener(e -> {
-                if (selectedSeat.getId_Seat() == 0) {
+                if (selectedSeatId == 0) {
                     JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedClass);
-                    JOptionPane.showMessageDialog(tabbedPane, "Assento registrado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(tabbedPane, "Assento selecionado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     tabbedPane.setSelectedIndex(4);
                 }
             });
@@ -293,19 +297,19 @@ public class CompraBilhete extends JFrame {
             economicalPanel.add(label);
             economicalPanel.add(panelSeat1.getPanel());
 
-            JButton[] botoesAssentos = panelSeat1.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
+            JButton[] botoesAssentos = panelSeat1.getBotoesAssentos();
             for (int i = 0; i < botoesAssentos.length; i++) {
-                int numeroAssento = i + 1; // Números de 1 a 64
+                int numeroAssento = i + 1;
                 botoesAssentos[i].addActionListener(e -> {
                     // Atualizar informações do assento selecionado
-                    selectedSeat.setId_Seat(numeroAssento);
-                    selectedSeat.setPrice(calcularPreco(numeroAssento));
+                    selectedSeatId = numeroAssento;
+                    selectedSeatPrice = calcularPreco(numeroAssento);
+                    selectedSeatClass = economical;
 
-                    // Mostrar um resumo da seleção
                     JOptionPane.showMessageDialog(
                             tabbedPane,
-                            "Assento selecionado: " + selectedSeat.getId_Seat() +
-                                    "\nPreço: " + selectedSeat.getPrice()
+                            "Assento selecionado: " + selectedSeatId +
+                                    "\nPreço: " + selectedSeatPrice
                     );
                 });
             }
@@ -314,12 +318,11 @@ public class CompraBilhete extends JFrame {
             btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
             btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
             btnNext.addActionListener(e -> {
-                if (selectedSeat.getId_Seat() == 0) {
+                if (selectedSeatId == 0) {
                     JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedClass);
-                    JOptionPane.showMessageDialog(tabbedPane, "Assento registrado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    tabbedPane.setSelectedIndex(5);
+                    JOptionPane.showMessageDialog(tabbedPane, "Assento selecionado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                    tabbedPane.setSelectedIndex(4);
                 }
             });
 
@@ -339,6 +342,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.revalidate();
         tabbedPane.repaint();
     }
+
 
 
     private double calcularPreco(int seatNumber) {
@@ -410,17 +414,18 @@ public class CompraBilhete extends JFrame {
 
         btnFinalize.addActionListener(e -> {
             ticket = new Ticket("Lisboa", "Porto", idTicket, 150.00);
-            boolean refundable = true; // ou false conforme necessário
+            boolean refundable = true;
 
-            Main.SaveTicket(passenger.getId_Passenger(), selectedDestination,ticket.getPrice(), selectedSource, refundable, idTicket);
+            // Salvar o ticket no banco de dados
+            Main.SaveTicket(passenger.getId_Passenger(), selectedDestination, ticket.getPrice(), selectedSource, refundable, idTicket);
 
-
-           /* if (seat != null && !seat.isEmpty()) {
-                Main.saveSeatInfo(seat);
-                System.out.println("Assento salvo: " + seat);
+            // Salvar informações do assento no banco de dados
+            if (selectedSeatId != 0 && selectedSeatClass != null) {
+                Main.saveSeatInfo(idTicket, selectedSeatId, selectedSeatPrice, selectedSeatClass);
+                System.out.println("Assento salvo com sucesso!");
             } else {
                 System.out.println("Nenhum assento foi selecionado.");
-            } */
+            }
 
             JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
@@ -429,6 +434,7 @@ public class CompraBilhete extends JFrame {
 
         tabbedPane.addTab("Finalizar", panelFinalize);
     }
+
 
     public static void main(String[] args) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
