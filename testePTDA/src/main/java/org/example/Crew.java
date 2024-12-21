@@ -27,7 +27,7 @@ public class Crew {
         }
     }
 
-    public int getId_Crew() {
+    public int getId_CrewMember() {
         return id_CrewMember;
     }
 
