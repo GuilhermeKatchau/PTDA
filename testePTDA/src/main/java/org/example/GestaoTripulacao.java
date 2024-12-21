@@ -124,7 +124,7 @@ public class GestaoTripulacao {
         buttonPanel.add(editButton);
 
         JButton deleteButton = createStyledButton("Remover Tripulante");
-        //deleteButton.addActionListener(e -> deleteCrew());
+        deleteButton.addActionListener(e -> deleteCrew());
         buttonPanel.add(deleteButton);
 
         return buttonPanel;

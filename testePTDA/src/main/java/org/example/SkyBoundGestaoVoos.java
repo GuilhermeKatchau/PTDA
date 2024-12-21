@@ -44,6 +44,15 @@ public class SkyBoundGestaoVoos extends JFrame {
         JScrollPane scrollPane = FlightList();
         JPanel buttonPanel = Buttons();
 
+        registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 2) { // Clique duplo
+                    abrirGestaoTripulacao();
+                }
+            }
+        });
+        
         add(formPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
@@ -150,14 +159,7 @@ public class SkyBoundGestaoVoos extends JFrame {
 
         }
 
-        registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 1) { // Clique duplo
-                    abrirGestaoTripulacao();
-                }
-            }
-        });
+
 
     }
     //Nao funciona, serve de exemplo
