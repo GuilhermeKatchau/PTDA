@@ -88,17 +88,17 @@ public class Crew {
     static class Pilot extends Crew {
         private String rank;
 
-        public Pilot(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
+        public Pilot(int id_CrewMember, String name, int phoneNumber, String shift, int experience,String rank) {
             super(id_CrewMember, name, phoneNumber, shift, experience);
             setRank(rank);
         }
 
         public void setRank(String rank) {
-            if (rank != null && !rank.trim().isEmpty()) {
-                this.rank = rank;
-            } else {
+            System.out.println("Valor recebido no setRank: '" + rank + "'");
+            if (rank == null || rank.trim().isEmpty()) {
                 throw new IllegalArgumentException("Cargo não pode ser vazio");
             }
+            this.rank = rank.trim();
         }
 
         public String getRank() {

@@ -168,14 +168,13 @@ public class GestaoTripulacao {
             int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
             int experience = Integer.parseInt(experienceField.getText());
-            String ranq = rankField.getText();
+            String ranq = rankField.getText().trim();
 
             Crew crewMember;
             if (ranq.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, phone, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience);
-                pilot.setRank(ranq);
+                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience,ranq);
                 crewMember = pilot;
             }
 
@@ -209,8 +208,7 @@ public class GestaoTripulacao {
             if (ranq.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, phone, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience);
-                pilot.setRank(ranq);
+                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience,ranq);
                 crewMember = pilot;
             }
 
