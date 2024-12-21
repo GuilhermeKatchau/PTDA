@@ -161,6 +161,7 @@ public class CompraBilhete extends JFrame {
 
         ArrayList<Class> availableClasses = getAvailableClasses(); // Método que retorna classes disponíveis
         JComboBox<Class> comboClass = new JComboBox<>(availableClasses.toArray(new Class[0]));
+        selectedClass = (Class) comboClass.getSelectedItem();
 
         JLabel labelService = new JLabel("Serviços Adicionais:");
         JPanel panelServices = new JPanel(new GridLayout(0, 1));
@@ -180,7 +181,10 @@ public class CompraBilhete extends JFrame {
         });
 
         btnNext.addActionListener(e -> {
-            selectedClass = (Class) comboClass.getSelectedItem();
+            if (selectedClass == null) {
+                JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione uma classe!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             StringBuilder selectedServices = new StringBuilder();
 
             // Coleta os serviços selecionados
@@ -207,30 +211,36 @@ public class CompraBilhete extends JFrame {
     }
 
     private ArrayList<Class> getAvailableClasses() {
-        ArrayList<String> services1 = new ArrayList<>();
-        services1.add("Bagagem Extra");
-        services1.add("Refeição Gourmet");
+            classes = new ArrayList<>();
+            ArrayList<String> services1 = new ArrayList<>();
+            services1.add("Bagagem Extra");
+            services1.add("Refeição Gourmet");
 
-        ArrayList<String> services2 = new ArrayList<>();
-        services2.add("Embarque Prioritário");
+            ArrayList<String> services2 = new ArrayList<>();
+            services2.add("Embarque Prioritário");
 
-        classes = new ArrayList<>();
-        luxurious = new Class("Luxuosa", 200.00, 10, services1);
-        classes.add(luxurious);
-        economical = new Class("Económica", 100.00, 50, services2);
-        classes.add(economical);
+            luxurious = new Class("Luxuosa", 200.00, 10, services1);
+            economical = new Class("Económica", 100.00, 50, services2);
 
+            classes.add(luxurious);
+            classes.add(economical);
         return classes;
     }
     private void tabSeat() {
+        /*Certo, isto está a abrir 2 painéis, a dar mais erros do que deveria,
+        * E selectedClass tem de ser predefinida, pelo menos de momento, porque
+        * tabSeat() executa antes do ActionListener que dá um valor a selectedClass.
+        * É um começo.*/
+        
         Seat selectedSeat = new Seat();
-        JPanel panelSeat = new JPanel();
+        JPanel panelSeat = new JPanel(new BorderLayout());
 
-        if (selectedClass == luxurious) {
+        if (selectedClass.equals(luxurious)) {
             JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
             ClasseN3 panelSeat3 = new ClasseN3();
-            panelSeat3.add(label, BorderLayout.CENTER);
-            panelSeat = panelSeat3.getPanel();
+            panelSeat.add(label, BorderLayout.NORTH);
+            panelSeat.add(panelSeat3.getPanel(),BorderLayout.CENTER);
+
             JButton[] botoesAssentos = panelSeat3.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
             for (int i = 0; i < botoesAssentos.length; i++) {
                 int numeroAssento = i + 1; // Números de 1 a 16
@@ -247,11 +257,12 @@ public class CompraBilhete extends JFrame {
                     );
                 });
             }
-        } else if (selectedClass == economical) {
+        } else if (selectedClass.equals(economical)) {
             JLabel label = new JLabel("Você escolheu a classe Económica.");
             SkyBoundAdicionarAssento panelSeat1 = new SkyBoundAdicionarAssento();
-            panelSeat1.add(label, BorderLayout.CENTER);
-            panelSeat = panelSeat1.getPanel();
+            panelSeat.add(label, BorderLayout.NORTH);
+            panelSeat.add(panelSeat1.getPanel(),BorderLayout.CENTER);
+
             JButton[] botoesAssentos = panelSeat1.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
             for (int i = 0; i < botoesAssentos.length; i++) {
                 int numeroAssento = i + 1; // Números de 1 a 64
@@ -272,7 +283,9 @@ public class CompraBilhete extends JFrame {
 
         int index = tabbedPane.indexOfTab("Assento");
         if (index != -1) {
-            tabbedPane.remove(index);
+            tabbedPane.setComponentAt(index, panelSeat);
+        } else {
+            tabbedPane.addTab("Assento", panelSeat);
         }
 
         JButton btnNext = new JButton("Próximo");
@@ -285,8 +298,10 @@ public class CompraBilhete extends JFrame {
                 tabbedPane.setSelectedIndex(4);
             }
         });
+        panelSeat.add(btnNext, BorderLayout.SOUTH);
 
-        tabbedPane.addTab("Assento", panelSeat);
+        tabbedPane.revalidate();
+        tabbedPane.repaint();
     }
 
     private double calcularPreco(int seatNumber) {
@@ -389,7 +404,6 @@ public class CompraBilhete extends JFrame {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         new CompraBilhete();
     }
 }
