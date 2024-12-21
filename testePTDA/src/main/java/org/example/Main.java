@@ -253,5 +253,25 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+    public static void showRegisteredFlights(){
+        try(Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
+            String sql = "SELECT * FROM flight";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                System.out.println("ID do Avião: " + rs.getInt("id_plane"));
+                System.out.println("ID do Voo: " + rs.getInt("id"));
+                System.out.println("Número Máximo de Passageiros: " + rs.getInt("maxPassengers"));
+                System.out.println("Hora de Partida: " + rs.getString("timeTakeOff"));
+                System.out.println("Hora de Chegada: " + rs.getString("timeLanding"));
+                System.out.println("Destino: " + rs.getString("destination"));
+                System.out.println("Origem: " + rs.getString("source1"));
+                System.out.println("Código do Voo: " + rs.getString("codename"));
+                System.out.println();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

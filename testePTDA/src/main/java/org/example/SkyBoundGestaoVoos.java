@@ -1,7 +1,9 @@
 package org.example;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +43,9 @@ public class SkyBoundGestaoVoos extends JFrame {
         registeredFlights = new JList<>(flights);
 
         JPanel formPanel = Form();
-        JScrollPane scrollPane = FlightList();
+        JScrollPane scrollPane = FlightList(); // Atualizado para carregar os dados da base de dados
+        add(scrollPane, BorderLayout.CENTER);
+
         JPanel buttonPanel = Buttons();
 
         registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -52,11 +56,11 @@ public class SkyBoundGestaoVoos extends JFrame {
                 }
             }
         });
-        
+
         add(formPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-
+        //loadRegisteredFlights();
         loadFlights();
         setVisible(true);
     }
@@ -92,10 +96,41 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private JScrollPane FlightList() {
-        JScrollPane scrollPane = new JScrollPane(registeredFlights);
+        // Configura o modelo da tabela para exibir os voos
+        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        JTable table = new JTable(model);
+
+        // Carrega os dados da base de dados no modelo da tabela
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM flight";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Object[] row = {
+                        rs.getInt("id_plane"),
+                        rs.getInt("id"),
+                        rs.getInt("maxPassengers"),
+                        rs.getString("timeTakeOff"),
+                        rs.getString("timeLanding"),
+                        rs.getString("destination"),
+                        rs.getString("source1"),
+                        rs.getString("codename")
+                };
+                model.addRow(row); // Adiciona cada linha de dados ao modelo
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar voos da base de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Configura o JScrollPane para exibir a tabela
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Voos Cadastrados"));
+
         return scrollPane;
     }
+
 
     private JPanel Buttons() {
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -142,7 +177,35 @@ public class SkyBoundGestaoVoos extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
+    /*private void loadRegisteredFlights(){
+        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM flight";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
+            while (rs.next()) {
+                Object[] row = {
+                        rs.getInt("id_plane"),
+                        rs.getInt("id"),
+                        rs.getInt("maxPassengers"),
+                        rs.getString("timeTakeOff"),
+                        rs.getString("timeLanding"),
+                        rs.getString("destination"),
+                        rs.getString("source1"),
+                        rs.getString("codename")
+                };
+                model.addRow(row);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+    }*/
     private void loadFlights() {
         flights.clear();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -158,11 +221,8 @@ public class SkyBoundGestaoVoos extends JFrame {
                     + " | Limite: " + flight.getMaxPassengers());
 
         }
-
-
-
     }
-    //Nao funciona, serve de exemplo
+
     private void abrirGestaoTripulacao() {
         int selectedIndex = registeredFlights.getSelectedIndex();
         if (selectedIndex != -1) {
