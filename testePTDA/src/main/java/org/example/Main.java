@@ -226,7 +226,7 @@ public class Main {
 
     public static void saveSeatInfo(int idTicket, int idSeat, double price, Class classe){
         try(Connection conn= DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
-            String sql = "INSERT INTO seat (id_Ticket, id_Seat, price, place) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO seat (id_Ticket, id_Seat, price) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idTicket);
             stmt.setInt(2, idSeat);
@@ -237,9 +237,5 @@ public class Main {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    public static void saveSeatInfo(String seat, int idPassenger, Object id) {
     }
 }

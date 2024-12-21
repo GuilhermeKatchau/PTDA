@@ -198,6 +198,7 @@ public class CompraBilhete extends JFrame {
             JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass +
                     "\nServiços Adicionais: " + (services.isEmpty() ? "Nenhum" : services), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
 
+            updateTabSeat();
             tabbedPane.setSelectedIndex(3); // Próxima aba
         });
 
@@ -206,6 +207,7 @@ public class CompraBilhete extends JFrame {
         panelClassService.add(labelService);
         panelClassService.add(panelServices);
         panelClassService.add(btnNext);
+
 
         tabbedPane.addTab("Classe e Serviços", panelClassService);
     }
@@ -222,16 +224,21 @@ public class CompraBilhete extends JFrame {
             luxurious = new Class("Luxuosa", 200.00, 10, services1);
             economical = new Class("Económica", 100.00, 50, services2);
 
-            classes.add(luxurious);
             classes.add(economical);
+            classes.add(luxurious);
         return classes;
     }
     private void tabSeat() {
-        /*Certo, isto está a abrir 2 painéis, a dar mais erros do que deveria,
-        * E selectedClass tem de ser predefinida, pelo menos de momento, porque
-        * tabSeat() executa antes do ActionListener que dá um valor a selectedClass.
-        * É um começo.*/
-        
+
+        JPanel panelSeatPlaceholder = new JPanel();
+        JLabel placeholderLabel = new JLabel("Por favor, selecione uma classe primeiro.");
+        panelSeatPlaceholder.add(placeholderLabel);
+
+        tabbedPane.addTab("Assento", panelSeatPlaceholder);
+    }
+
+    private void updateTabSeat() {
+
         Seat selectedSeat = new Seat();
         JPanel panelSeat = new JPanel(new BorderLayout());
 
@@ -280,13 +287,14 @@ public class CompraBilhete extends JFrame {
                 });
             }
         }
-
+        /*
         int index = tabbedPane.indexOfTab("Assento");
         if (index != -1) {
-            tabbedPane.setComponentAt(index, panelSeat);
+            tabbedPane.setComponentAt(index, panelSeat); // Atualize a aba existente
         } else {
-            tabbedPane.addTab("Assento", panelSeat);
+            tabbedPane.addTab("Assento", panelSeat); // Adicione apenas se ainda não existir
         }
+         */
 
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
@@ -299,6 +307,9 @@ public class CompraBilhete extends JFrame {
             }
         });
         panelSeat.add(btnNext, BorderLayout.SOUTH);
+
+        int index1 = tabbedPane.indexOfTab("Assento");
+        tabbedPane.setComponentAt(index1, panelSeat);
 
         tabbedPane.revalidate();
         tabbedPane.repaint();

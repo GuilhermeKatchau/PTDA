@@ -20,15 +20,14 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private JButton[] seatButtons;
 
     public SkyBoundAdicionarAssento() {
-
+        /*
         setTitle("Escolha o Assento");
         setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
+        */
         panelSeat1 = new JPanel();
         panelSeat1.setLayout(new GridLayout(12, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
-
         seatButtons = new JButton[64];
         for (int i = 0; i < 64; i += 4) {
             // Crie dois sub-painéis (esquerda e direita) para cada linha
@@ -59,7 +58,6 @@ public class SkyBoundAdicionarAssento extends JFrame {
 
         adicionarEventosBotoes();
         add(panelSeat1, BorderLayout.CENTER);
-        setVisible(true);
     }
     public JButton[] getBotoesAssentos() {
         return seatButtons;

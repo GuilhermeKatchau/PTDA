@@ -23,11 +23,12 @@ public class ClasseN3 extends JFrame{
     private JPanel panelSeat3;
     private JButton[] seatButtons;
     public ClasseN3() {
+        /*
         setTitle("Escolha o Assento");
         setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
+        */
         panelSeat3 = new JPanel();
         panelSeat3.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
@@ -61,7 +62,6 @@ public class ClasseN3 extends JFrame{
 
         adicionarEventosBotoes();
         add(panelSeat3, BorderLayout.CENTER);
-        setVisible(true);
     }
 
 
