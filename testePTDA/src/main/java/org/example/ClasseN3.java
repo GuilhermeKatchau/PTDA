@@ -20,7 +20,7 @@ public class ClasseN3 extends JFrame{
     private JButton button14;
     private JButton button15;
     private JButton button16;
-    private JPanel panel1;
+    private JPanel panelSeat3;
     private JButton[] seatButtons;
     public ClasseN3() {
         setTitle("Escolha o Assento");
@@ -28,8 +28,8 @@ public class ClasseN3 extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        panel1 = new JPanel();
-        panel1.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
+        panelSeat3 = new JPanel();
+        panelSeat3.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
         seatButtons = new JButton[24];
         for (int i = 0; i < 24; i += 4) {
@@ -56,11 +56,11 @@ public class ClasseN3 extends JFrame{
 
             linha.add(painelEsquerda);
             linha.add(painelDireita);
-            panel1.add(linha);
+            panelSeat3.add(linha);
         }
 
         adicionarEventosBotoes();
-        add(panel1, BorderLayout.CENTER);
+        add(panelSeat3, BorderLayout.CENTER);
         setVisible(true);
     }
 
@@ -78,38 +78,26 @@ public class ClasseN3 extends JFrame{
     private void processarEscolhaAssento(int numeroAssento) {
         JOptionPane.showMessageDialog(this, "Você escolheu o assento: " + numeroAssento);
     }
-<<<<<<< HEAD
+
 
     public JPanel getPanel() {
         return panelSeat3;
     }
 
     public JButton[] getBotoesAssentos() {
-        return botoesAssentos;
+        return seatButtons;
     }
 
-=======
->>>>>>> refs/remotes/origin/main
     private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento
         System.out.println("Assento selecionado: " + numeroAssento);
         return new Object[]{botao, numeroAssento};
     }
     private void saveSeat(int idTicket, int idSeat, double price,Class classe){
-<<<<<<< HEAD
-
-        Main.saveSeatInfo(idTicket, idSeat, price,classe);
-
-=======
->>>>>>> refs/remotes/origin/main
         Main.saveSeatInfo(idTicket, idSeat, price, classe);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new SkyBoundAdicionarAssento());
-    }
-
-    public JPanel getPanel() {
-        return null;
     }
 }

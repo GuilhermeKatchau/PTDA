@@ -86,7 +86,7 @@ public class ClasseN2 extends JFrame{
     }
 
     public JButton[] getBotoesAssentos() {
-        return botoesAssentos;
+        return seatButtons;
     }
 
     private Object[] enviarInformacoesAssento(JButton botao, int numeroAssento) {
