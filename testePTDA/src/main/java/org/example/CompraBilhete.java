@@ -238,21 +238,21 @@ public class CompraBilhete extends JFrame {
     }
 
     private void updateTabSeat() {
-
         Seat selectedSeat = new Seat();
-        JPanel panelSeat = new JPanel(new BorderLayout());
+        JPanel panelSeat = new JPanel();
+        panelSeat.setLayout(new BoxLayout(panelSeat, BoxLayout.Y_AXIS)); // Define o layout como BoxLayout
 
         if (selectedClass.equals(luxurious)) {
             JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
             ClasseN3 panelSeat3 = new ClasseN3();
             setSize(700, 600);
-            setLayout(new BorderLayout());
-            panelSeat.add(label, BorderLayout.NORTH);
-            panelSeat.add(panelSeat3.getPanel(),BorderLayout.CENTER);
+            panelSeat.add(label);
+            panelSeat.add(panelSeat3.getPanel());
 
             JButton[] botoesAssentos = panelSeat3.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
             for (int i = 0; i < botoesAssentos.length; i++) {
                 int numeroAssento = i + 1; // Números de 1 a 16
+                int finalI = i;
                 botoesAssentos[i].addActionListener(e -> {
                     // Atualizar informações do assento selecionado
                     selectedSeat.setId_Seat(numeroAssento);
@@ -264,13 +264,34 @@ public class CompraBilhete extends JFrame {
                             "Assento selecionado: " + selectedSeat.getId_Seat() +
                                     "\nPreço: " + selectedSeat.getPrice()
                     );
+                    botoesAssentos[finalI].setBackground(Color.orange);
                 });
             }
+
+            JButton btnNext = new JButton("Próximo");
+            btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+            btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
+            btnNext.addActionListener(e -> {
+                if (selectedSeat.getId_Seat() == 0) {
+                    JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedClass);
+                    JOptionPane.showMessageDialog(tabbedPane, "Assento registrado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                    tabbedPane.setSelectedIndex(4);
+                }
+            });
+
+            panelSeat.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
+            panelSeat.add(btnNext);
+
         } else if (selectedClass.equals(economical)) {
             JLabel label = new JLabel("Você escolheu a classe Económica.");
             SkyBoundAdicionarAssento panelSeat1 = new SkyBoundAdicionarAssento();
-            panelSeat.add(label, BorderLayout.NORTH);
-            panelSeat.add(panelSeat1.getPanel(),BorderLayout.CENTER);
+            JPanel economicalPanel = new JPanel();
+            economicalPanel.setLayout(new BoxLayout(economicalPanel, BoxLayout.Y_AXIS));
+
+            economicalPanel.add(label);
+            economicalPanel.add(panelSeat1.getPanel());
 
             JButton[] botoesAssentos = panelSeat1.getBotoesAssentos(); // Presumindo que você tenha um getter para acessar os botões
             for (int i = 0; i < botoesAssentos.length; i++) {
@@ -288,27 +309,29 @@ public class CompraBilhete extends JFrame {
                     );
                 });
             }
-        }
-        /*
-        int index = tabbedPane.indexOfTab("Assento");
-        if (index != -1) {
-            tabbedPane.setComponentAt(index, panelSeat); // Atualize a aba existente
-        } else {
-            tabbedPane.addTab("Assento", panelSeat); // Adicione apenas se ainda não existir
-        }
-         */
 
-        JButton btnNext = new JButton("Próximo");
-        btnNext.addActionListener(e -> {
-            if (selectedSeat.getId_Seat() == 0) {
-                JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } else {
-                Main.saveSeatInfo(idTicket,selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedClass);
-                JOptionPane.showMessageDialog(tabbedPane, "Assento registrado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                tabbedPane.setSelectedIndex(4);
-            }
-        });
-        panelSeat.add(btnNext, BorderLayout.SOUTH);
+            JButton btnNext = new JButton("Próximo");
+            btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+            btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
+            btnNext.addActionListener(e -> {
+                if (selectedSeat.getId_Seat() == 0) {
+                    JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedClass);
+                    JOptionPane.showMessageDialog(tabbedPane, "Assento registrado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                    tabbedPane.setSelectedIndex(5);
+                }
+            });
+
+            economicalPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
+            economicalPanel.add(btnNext);
+
+            JScrollPane scrollPane = new JScrollPane(economicalPanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+            panelSeat.add(scrollPane);
+        }
 
         int index1 = tabbedPane.indexOfTab("Assento");
         tabbedPane.setComponentAt(index1, panelSeat);
@@ -316,6 +339,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.revalidate();
         tabbedPane.repaint();
     }
+
 
     private double calcularPreco(int seatNumber) {
         // Lógica para calcular preço com base no número do assento

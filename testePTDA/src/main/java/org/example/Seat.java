@@ -6,7 +6,7 @@ public class Seat {
     private double price;
 
     public void setId_Seat(int id_Seat) {
-        if (id_Seat > 1 && id_Seat <= 999999999) {
+        if (id_Seat >= 1 && id_Seat <= 999999999) {
             this.id_Seat = id_Seat;
         } else {
             throw new IllegalArgumentException("ID de Assento inválido");
