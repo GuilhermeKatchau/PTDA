@@ -62,7 +62,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
         setVisible(true);
     }
     public JButton[] getBotoesAssentos() {
-        return botoesAssentos;
+        return seatButtons;
     }
 
     public JPanel getPanel() {
