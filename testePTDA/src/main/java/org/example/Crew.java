@@ -1,31 +1,34 @@
 package org.example;
 
+import java.util.ArrayList;
+
 public class Crew {
 
-    private int id_Crew;
+    private int id_CrewMember;
     private String name;
     private int phoneNumber;
     private String shift;
     private int experience;
+    private ArrayList<Crew> crew;
 
-    public Crew(int id_Crew, String name, int phoneNumber, String shift, int experience) {
-        setId_Crew(id_Crew);
+    public Crew(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
+        SetId_CrewMember(id_CrewMember);
         setName(name);
         setPhoneNumber(phoneNumber);
         setShift(shift);
         setExperience(experience);
     }
 
-    public void setId_Crew(int id_Crew) {
-        if (id_Crew > 100000000 && id_Crew <= 999999999) {
-            this.id_Crew = id_Crew;
+    public void SetId_CrewMember(int id_CrewMember) {
+        if (id_CrewMember > 1 && id_CrewMember <= 999999999) {
+            this.id_CrewMember = id_CrewMember;
         } else {
             throw new IllegalArgumentException("ID de membro de Tripulação inválido");
         }
     }
 
     public int getId_Crew() {
-        return id_Crew;
+        return id_CrewMember;
     }
 
     public void setName(String name) {
@@ -41,7 +44,7 @@ public class Crew {
     }
 
     public void setPhoneNumber(int phoneNumber) {
-        if (phoneNumber >= 000000000 && phoneNumber <= 999999999) {
+        if (phoneNumber >=  000000000 && phoneNumber <= 999999999) {
             this.phoneNumber = phoneNumber;
         } else {
             throw new IllegalArgumentException("Número de Telefone inválido");
@@ -77,16 +80,16 @@ public class Crew {
 
     static class Assistant extends Crew {
 
-        public Assistant(int id_Crew, String name, int phoneNumber, String shift, int experience) {
-            super(id_Crew, name, phoneNumber, shift,experience);
+        public Assistant(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
+            super(id_CrewMember, name, phoneNumber, shift,experience);
         }
     }
 
     static class Pilot extends Crew {
         private String rank;
 
-        public Pilot(int id_Crew, String name, int phoneNumber, String shift, int experience) {
-            super(id_Crew, name, phoneNumber, shift, experience);
+        public Pilot(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
+            super(id_CrewMember, name, phoneNumber, shift, experience);
             setRank(rank);
         }
 
@@ -104,6 +107,12 @@ public class Crew {
 
     }
 
+    public void addCrewMember(Crew crewMember) {
+        crew.add(crewMember);
+    }
 
+    public void removeCrewMember(Crew crewMember) {
+        crew.remove(crewMember);
+    }
 
 }
