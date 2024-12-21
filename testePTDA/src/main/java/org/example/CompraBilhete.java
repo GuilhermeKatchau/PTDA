@@ -26,7 +26,7 @@ public class CompraBilhete extends JFrame {
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
-        setSize(800, 600);
+        setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -245,6 +245,8 @@ public class CompraBilhete extends JFrame {
         if (selectedClass.equals(luxurious)) {
             JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
             ClasseN3 panelSeat3 = new ClasseN3();
+            setSize(700, 600);
+            setLayout(new BorderLayout());
             panelSeat.add(label, BorderLayout.NORTH);
             panelSeat.add(panelSeat3.getPanel(),BorderLayout.CENTER);
 
