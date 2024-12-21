@@ -151,6 +151,18 @@ public class Main {
         }
     }
 
+    public static void deleteCrewData(int id) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "DELETE FROM crew WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,id);
+            stmt.executeUpdate();
+            System.out.println("Dados apagados com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao apagar os dados!");
+        }
+    }
 
         public static void salvarDadosAirplane(String destination, int id, String source1) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
