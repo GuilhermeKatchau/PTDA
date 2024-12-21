@@ -25,6 +25,7 @@ public class SkyBoundHomePageGestor {
         for (Flight flight : Flight.getFlights()) {
             model.addElement(flight.toString());
         }
+
         JList<String> list = new JList<>(model);
         frame.add(new JScrollPane(list), BorderLayout.CENTER);
         frame.setSize(400, 300);
