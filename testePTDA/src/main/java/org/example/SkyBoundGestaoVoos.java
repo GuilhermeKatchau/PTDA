@@ -105,9 +105,6 @@ public class SkyBoundGestaoVoos extends JFrame {
 
     private void addFlight() {
         try {
-            // Verifica se todos os campos estão preenchidos
-
-
             // Verifica se ID do Avião e ID do Voo são numéricos
             int id_Airplane = Integer.parseInt(this.id_Airplane.getText());
             int id_Flight = Integer.parseInt(this.id_Flight.getText());
@@ -152,13 +149,23 @@ public class SkyBoundGestaoVoos extends JFrame {
                     + " | Limite: " + flight.getMaxPassengers());
 
         }
+
+        registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 2) { // Clique duplo
+                    abrirGestaoTripulacao();
+                }
+            }
+        });
+
     }
     //Nao funciona, serve de exemplo
     private void abrirGestaoTripulacao() {
         int selectedIndex = registeredFlights.getSelectedIndex();
         if (selectedIndex != -1) {
             Flight selectedFlight = Flight.getFlights().get(selectedIndex);
-            new GestaoTripulacao();
+            new GestaoTripulacao(selectedFlight);
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
         }

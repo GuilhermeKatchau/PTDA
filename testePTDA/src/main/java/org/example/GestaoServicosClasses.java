@@ -33,6 +33,8 @@ public class GestaoServicosClasses extends JFrame {
         JPanel botoesPanel = criarPainelBotoes();
         add(botoesPanel, BorderLayout.SOUTH);
 
+        classJlist.addListSelectionListener(e -> atualizarServicos());
+
         setVisible(true);
     }
 
@@ -126,6 +128,18 @@ public class GestaoServicosClasses extends JFrame {
             JOptionPane.showMessageDialog(this, detalhes.toString());
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma classe para ver os detalhes.");
+        }
+    }
+
+    private void atualizarServicos() {
+        int index = classJlist.getSelectedIndex();
+        serviceListModel.clear(); // Limpa a lista de serviços anterior
+
+        if (index != -1) {
+            Class classe = classList.get(index);
+            for (String servico : classe.getServices()) {
+                serviceListModel.addElement(servico);
+            }
         }
     }
 

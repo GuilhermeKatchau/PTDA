@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class GestaoTripulacao {
+    private Flight flight;
     private JTextField idField, nameField, phoneField, shiftField, experienceField, rankField;
     private JLabel messageLabel;
     private final DefaultListModel<String> crewListModel;
@@ -15,7 +16,8 @@ public class GestaoTripulacao {
     private static final Color SUCCESS_COLOR = new Color(75, 181, 67);
     private static final Color ERROR_COLOR = new Color(220, 53, 69);
 
-    public GestaoTripulacao() {
+    public GestaoTripulacao(Flight flight) {
+        this.flight = flight;
         crewListModel = new DefaultListModel<>();
         initializeUI();
     }
@@ -284,8 +286,10 @@ public class GestaoTripulacao {
         messageLabel.setText(message);
         messageLabel.setForeground(color);
     }
-
+/*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GestaoTripulacao::new);
     }
+
+ */
 }
