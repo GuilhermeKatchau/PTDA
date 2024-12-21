@@ -15,6 +15,7 @@ public class GestaoTripulacao {
     private static final Color PRIMARY_COLOR = new Color(51, 153, 255);
     private static final Color SUCCESS_COLOR = new Color(75, 181, 67);
     private static final Color ERROR_COLOR = new Color(220, 53, 69);
+    private static int id;
 
     public GestaoTripulacao(Flight flight) {
         this.flight = flight;
@@ -123,7 +124,7 @@ public class GestaoTripulacao {
         buttonPanel.add(editButton);
 
         JButton deleteButton = createStyledButton("Remover Tripulante");
-        deleteButton.addActionListener(e -> deleteCrew());
+        //deleteButton.addActionListener(e -> deleteCrew());
         buttonPanel.add(deleteButton);
 
         return buttonPanel;
@@ -162,7 +163,7 @@ public class GestaoTripulacao {
     private void addCrew() {
         try {
             validateRequiredFields();
-            int id = Integer.parseInt(idField.getText());
+            id = Integer.parseInt(idField.getText());
             String name = nameField.getText();
             int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
@@ -182,6 +183,7 @@ public class GestaoTripulacao {
             crewListModel.addElement(formatCrewForList(crewMember));
             showMessage("Tripulante adicionado com sucesso!", SUCCESS_COLOR);
             clearFields();
+            Main.saveCrewInfo(id, flight.getId_Flight(), name, shift, experience, rank);
         } catch (IllegalArgumentException e) {
             showMessage(e.getMessage(), ERROR_COLOR);
         }
@@ -215,6 +217,7 @@ public class GestaoTripulacao {
             crewMembers.set(selectedIndex, crewMember);
             crewListModel.set(selectedIndex, formatCrewForList(crewMember));
             showMessage("Tripulante atualizado com sucesso!", SUCCESS_COLOR);
+            Main.saveCrewInfo(id, flight.getId_Flight(), name, shift, experience, rank);
             clearFields();
         } catch (Exception e) {
             showMessage(e.getMessage(), ERROR_COLOR);
@@ -223,11 +226,10 @@ public class GestaoTripulacao {
 
     private void deleteCrew() {
         try {
-            int selectedIndex = crewListDisplay.getSelectedIndex();
+            int selectedIndex = crewListDisplay.getSelected;
             if (selectedIndex == -1) {
                 throw new IllegalArgumentException("Por favor, selecione um tripulante na lista para remover.");
             }
-
             crewMembers.remove(selectedIndex);
             crewListModel.remove(selectedIndex);
             showMessage("Tripulante removido com sucesso!", SUCCESS_COLOR);

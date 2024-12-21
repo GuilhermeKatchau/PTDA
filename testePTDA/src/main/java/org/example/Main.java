@@ -238,4 +238,20 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+    public static void saveCrewInfo( int idCrew,int idFlight, String nome, String turno, int experiencia, String ranq){
+        try(Connection conn= DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
+            String sql = "INSERT INTO crew (id,id_flight, nome, shift, experience, ranq) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idCrew);
+            stmt.setString(2, nome);
+            stmt.setString(3, turno);
+            stmt.setInt(4, experiencia);
+            stmt.setString(5, ranq);
+            stmt.executeUpdate();
+            System.out.println("Dados da tripulação inseridos com sucesso!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
