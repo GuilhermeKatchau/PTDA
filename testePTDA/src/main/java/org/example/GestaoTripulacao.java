@@ -168,14 +168,14 @@ public class GestaoTripulacao {
             int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
             int experience = Integer.parseInt(experienceField.getText());
-            String rank = rankField.getText();
+            String ranq = rankField.getText();
 
             Crew crewMember;
-            if (rank.isEmpty()) {
+            if (ranq.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, phone, shift, experience);
             } else {
                 Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience);
-                pilot.setRank(rank);
+                pilot.setRank(ranq);
                 crewMember = pilot;
             }
 
@@ -183,7 +183,7 @@ public class GestaoTripulacao {
             crewListModel.addElement(formatCrewForList(crewMember));
             showMessage("Tripulante adicionado com sucesso!", SUCCESS_COLOR);
             clearFields();
-            Main.saveCrewInfo(id, flight.getId_Flight(), name, shift, experience, rank);
+            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, ranq);
         } catch (IllegalArgumentException e) {
             showMessage(e.getMessage(), ERROR_COLOR);
         }
@@ -203,21 +203,21 @@ public class GestaoTripulacao {
             int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
             int experience = Integer.parseInt(experienceField.getText());
-            String rank = rankField.getText();
+            String ranq = rankField.getText();
 
             Crew crewMember;
-            if (rank.isEmpty()) {
+            if (ranq.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, phone, shift, experience);
             } else {
                 Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience);
-                pilot.setRank(rank);
+                pilot.setRank(ranq);
                 crewMember = pilot;
             }
 
             crewMembers.set(selectedIndex, crewMember);
             crewListModel.set(selectedIndex, formatCrewForList(crewMember));
             showMessage("Tripulante atualizado com sucesso!", SUCCESS_COLOR);
-            Main.saveCrewInfo(id, flight.getId_Flight(), name, shift, experience, rank);
+            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, ranq);
             clearFields();
         } catch (Exception e) {
             showMessage(e.getMessage(), ERROR_COLOR);
@@ -226,7 +226,8 @@ public class GestaoTripulacao {
 
     private void deleteCrew() {
         try {
-            int selectedIndex = crewListDisplay.getSelected;
+            int selectedIndex = crewListDisplay.getSelectedIndex();
+            Main.deleteCrewData(id);
             if (selectedIndex == -1) {
                 throw new IllegalArgumentException("Por favor, selecione um tripulante na lista para remover.");
             }
@@ -244,7 +245,7 @@ public class GestaoTripulacao {
         if (selectedIndex != -1) {
             Crew selectedCrew = crewMembers.get(selectedIndex);
 
-            idField.setText(String.valueOf(selectedCrew.getId_Crew()));
+            idField.setText(String.valueOf(selectedCrew.getId_CrewMember()));
             nameField.setText(selectedCrew.getName());
             phoneField.setText(String.valueOf(selectedCrew.getPhoneNumber()));
             shiftField.setText(selectedCrew.getShift());
@@ -267,7 +268,7 @@ public class GestaoTripulacao {
 
     private String formatCrewForList(Crew crewMember) {
         String base = String.format("ID: %d, Nome: %s, Telefone: %d, Turno: %s, Experiência: %d anos",
-                crewMember.getId_Crew(), crewMember.getName(), crewMember.getPhoneNumber(),
+                crewMember.getId_CrewMember(), crewMember.getName(), crewMember.getPhoneNumber(),
                 crewMember.getShift(), crewMember.getExperience());
         if (crewMember instanceof Crew.Pilot) {
             base += ", Cargo: " + ((Crew.Pilot) crewMember).getRank();
