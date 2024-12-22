@@ -80,8 +80,8 @@ public class GestaoServicosClasses extends JFrame {
             }
         });
 
-        JButton btnRemoverServico = new JButton("Remover Serviço Selecionado");
-        btnRemoverServico.addActionListener(e -> {
+        JButton btnRemoveService = new JButton("Remover Serviço Selecionado");
+        btnRemoveService.addActionListener(e -> {
             int selectedIndex = listServicos.getSelectedIndex();
             if (selectedIndex != -1) {
                 servicosModel.remove(selectedIndex);
@@ -89,8 +89,8 @@ public class GestaoServicosClasses extends JFrame {
         });
 
         // Botão para salvar a classe
-        JButton btnSalvarClasse = new JButton("Salvar Classe");
-        btnSalvarClasse.addActionListener(e -> {
+        JButton btnSaveClass = new JButton("Salvar Classe");
+        btnSaveClass.addActionListener(e -> {
             try {
                 String nomeClasse = txtNomeClasse.getText().trim();
                 double precoClasse = Double.parseDouble(txtPreco.getText().trim());
@@ -128,10 +128,10 @@ public class GestaoServicosClasses extends JFrame {
         panel.add(scrollServicos);
         panel.add(txtNovoServico);
         panel.add(btnAdicionarServico);
-        panel.add(btnRemoverServico);
+        panel.add(btnRemoveService);
 
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento
-        panel.add(btnSalvarClasse);
+        panel.add(btnSaveClass);
 
         frameAdicionarClasse.add(panel);
         frameAdicionarClasse.setVisible(true);
