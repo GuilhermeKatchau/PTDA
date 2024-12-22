@@ -2,7 +2,9 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GestaoServicosClasses extends JFrame {
     // Listas de objetos
@@ -32,6 +34,8 @@ public class GestaoServicosClasses extends JFrame {
         JPanel botoesPanel = criarPainelBotoes();
         add(botoesPanel, BorderLayout.SOUTH);
         setVisible(true);
+
+
     }
     private void adicionarClasseInterativo() {
         JFrame frameAdicionarClasse = new JFrame("Adicionar Nova Classe");
@@ -76,8 +80,8 @@ public class GestaoServicosClasses extends JFrame {
             }
         });
 
-        JButton btnRemoverServico = new JButton("Remover Serviço Selecionado");
-        btnRemoverServico.addActionListener(e -> {
+        JButton btnRemoveService = new JButton("Remover Serviço Selecionado");
+        btnRemoveService.addActionListener(e -> {
             int selectedIndex = listServicos.getSelectedIndex();
             if (selectedIndex != -1) {
                 servicosModel.remove(selectedIndex);
@@ -85,8 +89,8 @@ public class GestaoServicosClasses extends JFrame {
         });
 
         // Botão para salvar a classe
-        JButton btnSalvarClasse = new JButton("Salvar Classe");
-        btnSalvarClasse.addActionListener(e -> {
+        JButton btnSaveClass = new JButton("Salvar Classe");
+        btnSaveClass.addActionListener(e -> {
             try {
                 String nomeClasse = txtNomeClasse.getText().trim();
                 double precoClasse = Double.parseDouble(txtPreco.getText().trim());
@@ -105,8 +109,20 @@ public class GestaoServicosClasses extends JFrame {
                 Class novaClasse = new Class(nomeClasse, precoClasse, capacidadeClasse, servicosClasse);
                 classList.add(novaClasse);
                 classListModel.addElement(nomeClasse);
+                try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+                    String sql = "INSERT INTO class (nome, price, capacity, services) VALUES (?, ?, ?, ?)";
+                    PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    stmt.setString(1, nomeClasse);
+                    stmt.setDouble(2, precoClasse);
+                    stmt.setInt(3, capacidadeClasse);
+                    stmt.setString(4, String.join(",", servicosClasse));
+                    stmt.setString(4, String.join(",", servicosClasse));
+                    stmt.executeUpdate();
 
-                JOptionPane.showMessageDialog(frameAdicionarClasse, "Classe adicionada com sucesso!");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Erro ao adicionar classe: " + ex.getMessage());
+                }
+                JOptionPane.showMessageDialog(this, "Classe adicionada com sucesso!");
                 frameAdicionarClasse.dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frameAdicionarClasse, "Erro ao adicionar classe: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -124,10 +140,10 @@ public class GestaoServicosClasses extends JFrame {
         panel.add(scrollServicos);
         panel.add(txtNovoServico);
         panel.add(btnAdicionarServico);
-        panel.add(btnRemoverServico);
+        panel.add(btnRemoveService);
 
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento
-        panel.add(btnSalvarClasse);
+        panel.add(btnSaveClass);
 
         frameAdicionarClasse.add(panel);
         frameAdicionarClasse.setVisible(true);
@@ -138,10 +154,62 @@ public class GestaoServicosClasses extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Classes"));
 
+        // Adicionar MouseListener para o duplo clique
+        classJlist.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 2) { // Detectar duplo clique
+                    int index = classJlist.locationToIndex(e.getPoint()); // Obter índice do item clicado
+                    if (index != -1) {
+                        atualizarServicos(index); // Atualizar painel de serviços
+                    }
+                }
+            }
+        });
+
+        // Carregar dados do banco de dados
+        carregarDadosClasses();
+
         panel.add(new JScrollPane(classJlist), BorderLayout.CENTER);
 
-        JButton btnAdicionarClasse = new JButton("Adicionar Classe");
-        btnAdicionarClasse.addActionListener(e -> adicionarClasse());
+        // Botões opcionais para gestão
+        JPanel botoes = criarBotoesClasses();
+        panel.add(botoes, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    // Método para carregar classes e serviços do banco de dados
+    private void carregarDadosClasses() {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM class";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                double preco = rs.getDouble("price");
+                int capacidade = rs.getInt("capacity");
+                ArrayList<String> servicos = new ArrayList<>(Arrays.asList(rs.getString("services").split(",")));
+
+
+                Class novaClasse = new Class(nome, preco, capacidade, servicos);
+
+                classList.add(novaClasse);
+                classListModel.addElement(nome);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar classes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método para criar botões da lista de classes
+    private JPanel criarBotoesClasses() {
+        JPanel botoes = new JPanel();
+
+        JButton btnAdicionarClasseInterativo = new JButton("Adicionar Classe");
+        btnAdicionarClasseInterativo.addActionListener(e -> adicionarClasseInterativo());
 
         JButton btnRemoverClasse = new JButton("Remover Classe");
         btnRemoverClasse.addActionListener(e -> removerClasse());
@@ -149,22 +217,13 @@ public class GestaoServicosClasses extends JFrame {
         JButton btnDetalhesClasse = new JButton("Detalhes da Classe");
         btnDetalhesClasse.addActionListener(e -> visualizarDetalhesClasse());
 
-        JButton btnAdicionarClasseInterativo = new JButton("Adicionar Classe Interativa");
-        btnAdicionarClasseInterativo.addActionListener(e -> adicionarClasseInterativo());
-
-        JButton btnAtualizarServicos = new JButton("Atualizar Serviços");
-        btnAtualizarServicos.addActionListener(e -> atualizarServicos());
-
-        JPanel botoes = new JPanel();
-        botoes.add(btnAdicionarClasse);
+        botoes.add(btnAdicionarClasseInterativo);
         botoes.add(btnRemoverClasse);
         botoes.add(btnDetalhesClasse);
-        botoes.add(btnAdicionarClasseInterativo);
-        botoes.add(btnAtualizarServicos);
 
-        panel.add(botoes, BorderLayout.SOUTH);
-        return panel;
+        return botoes;
     }
+
 
     private JPanel criarPainelServicos() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -182,29 +241,7 @@ public class GestaoServicosClasses extends JFrame {
         return panel;
     }
 
-    private void adicionarClasse() {
-        try {
-            String nome = JOptionPane.showInputDialog("Nome da Classe:");
-            double preco = Double.parseDouble(JOptionPane.showInputDialog("Preço da Classe:"));
-            int capacidade = Integer.parseInt(JOptionPane.showInputDialog("Capacidade de Assentos:"));
 
-            ArrayList<String> servicosClasse = new ArrayList<>();
-            while (true) {
-                int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar um serviço à classe?");
-                if (resposta != JOptionPane.YES_OPTION) break;
-
-                String nomeServico = JOptionPane.showInputDialog("Nome ou Descrição do Serviço:");
-                servicosClasse.add(nomeServico);
-            }
-
-            Class novaClasse = new Class(nome, preco, capacidade, servicosClasse);
-            classList.add(novaClasse);
-            classListModel.addElement(nome);
-            JOptionPane.showMessageDialog(this, "Classe adicionada com sucesso!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao adicionar classe: " + e.getMessage());
-        }
-    }
 
     private void removerClasse() {
         int index = classJlist.getSelectedIndex();
@@ -235,17 +272,18 @@ public class GestaoServicosClasses extends JFrame {
         }
     }
 
-    private void atualizarServicos() {
-        int index = classJlist.getSelectedIndex();
-        serviceListModel.clear(); // Limpa a lista de serviços anterior
+    private void atualizarServicos(int index) {
+        serviceListModel.clear(); // Limpa os serviços no painel de serviços
 
-        if (index != -1) {
-            Class classe = classList.get(index);
-            for (String servico : classe.getServices()) {
+        if (index != -1) { // Verifica se o índice é válido
+            Class classe = classList.get(index); // Obtém a classe correspondente
+            for (String servico : classe.getServices()) { // Adiciona cada serviço ao modelo da lista
                 serviceListModel.addElement(servico);
             }
         }
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GestaoServicosClasses::new);
