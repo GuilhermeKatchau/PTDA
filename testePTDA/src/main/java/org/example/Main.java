@@ -182,24 +182,26 @@ public class Main {
         }
     }
 
-    public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+    public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            // Formatar as datas no padrão esperado pelo MySQL
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String formattedTakeOff = dateFormat.format(hTakeOff);
-            String formattedLanding = dateFormat.format(hLanding);
 
-            String sql = "INSERT INTO flight (id_plane, id, maxPassengers, timeTakeOff, timeLanding, destination, source1, codename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat hourFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedTakeOff = hourFormat.format(hTakeOff);
+            String formattedLanding = hourFormat.format(hLanding);
+
+            String sql = "INSERT INTO flight (id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id_Airplane);
             stmt.setInt(2, id_Flight);
             stmt.setInt(3, maxPassengers);
-            stmt.setString(4, formattedTakeOff); // Passa a data formatada
-            stmt.setString(5, formattedLanding); // Passa a data formatada
-            stmt.setString(6, destination);
-            stmt.setString(7, source);
-            stmt.setString(8, codename);
+            stmt.setString(4, dateFormat.format(date1));
+            stmt.setString(5, formattedTakeOff);
+            stmt.setString(6, formattedLanding);
+            stmt.setString(7, destination);
+            stmt.setString(8, source);
+            stmt.setString(9, codename);
 
             stmt.executeUpdate();
             System.out.println("Dados do voo inseridos com sucesso!");
@@ -262,6 +264,7 @@ public class Main {
                 System.out.println("ID do Avião: " + rs.getInt("id_plane"));
                 System.out.println("ID do Voo: " + rs.getInt("id"));
                 System.out.println("Número Máximo de Passageiros: " + rs.getInt("maxPassengers"));
+                System.out.println("Data: " + rs.getString("date1"));
                 System.out.println("Hora de Partida: " + rs.getString("timeTakeOff"));
                 System.out.println("Hora de Chegada: " + rs.getString("timeLanding"));
                 System.out.println("Destino: " + rs.getString("destination"));

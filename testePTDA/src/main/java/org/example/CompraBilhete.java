@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.text.ParseException;
@@ -101,18 +103,37 @@ public class CompraBilhete extends JFrame {
 
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
-        model.setRowCount(0);
+        model.setRowCount(0); // Limpa os dados existentes na tabela
 
-        ArrayList<Flight> filteredFlights = filterFlights(selectedSource, selectedDestination);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            // Query para filtrar voos com base na origem e destino
+            String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, selectedSource); // Define o valor para origem
+            stmt.setString(2, selectedDestination); // Define o valor para destino
 
-        for (Flight flight : filteredFlights) {
-            model.addRow(new Object[]{sdf.format(flight.gethTakeoff()), flight.getSource(), flight.getDestination()});
+            ResultSet rs = stmt.executeQuery();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+            while (rs.next()) {
+                Object[] row = {
+                        rs.getString("date1"),
+                        rs.getString("timeTakeOff"),
+                        rs.getString("source1"),
+                        rs.getString("destination")
+                };
+                model.addRow(row); // Adiciona a linha à tabela
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar voos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+
     private Flight getFlightFromRow(int row) {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
+
         String hora = model.getValueAt(row, 0).toString();
         String origem = model.getValueAt(row, 1).toString();
         String destino = model.getValueAt(row, 2).toString();
@@ -127,16 +148,31 @@ public class CompraBilhete extends JFrame {
 
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
-       /* String[] columns = {"Hora", "Origem", "Destino"};
-        Object[][] flights = {
-                {"10:00", "Lisboa", "Porto"},
-                {"12:30", "Lisboa", "Madrid"},
-                {"14:00", "Porto", "Londres"},
-                {"16:30", "Madrid", "Paris"},
-                {"18:00", "Londres", "Lisboa"}
-        }; */
 
-        tableFlights = new JTable(new DefaultTableModel(new Object[]{"Hora", "Origem", "Destino", "Preço"}, 0));
+        String[] columns = {"Data","Hora", "Origem", "Destino"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        tableFlights = new JTable(model);
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, selectedSource); // Define a origem escolhida pelo passageiro
+            stmt.setString(2, selectedDestination); // Define o destino escolhido pelo passageiro
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Object[] row = {
+                        rs.getString("date1"),
+                        rs.getString("timeTakeOff"),
+                        rs.getString("source1"),
+                        rs.getString("destination")
+                };
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         JScrollPane scrollPane = new JScrollPane(tableFlights);
 
         JButton btnNext = new JButton("Próximo");
@@ -149,11 +185,13 @@ public class CompraBilhete extends JFrame {
                 JOptionPane.showMessageDialog(this, "Selecione um voo!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
+
         panelHourFlight.add(scrollPane, BorderLayout.CENTER);
         panelHourFlight.add(btnNext, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Hora e Voo", panelHourFlight);
     }
+
 
     private void tabClassService() {
         JPanel panelClassService = new JPanel(new GridLayout(6, 1, 10, 10));
@@ -237,7 +275,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Assento", panelSeatPlaceholder);
     }
 
-    // Variáveis temporárias para armazenar as informações do assento
+
     private int selectedSeatId = 0;
     private double selectedSeatPrice = 0.0;
     private Class selectedSeatClass = null;
@@ -438,15 +476,7 @@ public class CompraBilhete extends JFrame {
 
     public static void main(String[] args) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        try {
-            Flight.addFlight(33, 200, 255, sdf.parse("10:30"),sdf.parse("11:45"),"Porto","Lisboa","LisboaPorto");
-            Flight.addFlight(34, 301, 280, sdf.parse("12:30"),sdf.parse("14:15"),"Londres","Lisboa","LisboaMadrid");
-            Flight.addFlight(780, 999, 275, sdf.parse("14:00"),sdf.parse("16:50"),"Londres","Porto","PortoLondres");
-            Flight.addFlight(96024, 246, 300, sdf.parse("16:30"), sdf.parse("18:10"),"Paris","Madrid","MadridParis");
-            Flight.addFlight(123456, 678, 260, sdf.parse("18:00"),sdf.parse("19:30"),"Lisboa","Londres","LondresLisboa");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
         new CompraBilhete();
     }
 }

@@ -20,12 +20,12 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private JButton[] seatButtons;
 
     public SkyBoundAdicionarAssento() {
-        /*
+
         setTitle("Escolha o Assento");
         setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        */
+
         panelSeat1 = new JPanel();
         panelSeat1.setLayout(new GridLayout(12, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
         seatButtons = new JButton[64];
