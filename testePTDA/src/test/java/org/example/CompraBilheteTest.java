@@ -11,7 +11,7 @@ public class CompraBilheteTest {
     @BeforeEach
     void setUp() {
         testTicket = new Ticket("Lisboa", "Porto", 12345, 150.00);
-        testPassenger = new Passenger("John Doe", 30, "john@example.com", 1);
+        testPassenger = new Passenger("John Doe", 30, "john@example.com", 2);
     }
 
     @Test
@@ -24,15 +24,15 @@ public class CompraBilheteTest {
     @Test
     void testPassengerValidation() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Passenger("", 30, "john@example.com", 1);
+            new Passenger("", 30, "john@example.com", 2);
         }, "Should throw exception for empty name");
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new Passenger("John Doe", -1, "john@example.com", 1);
+            new Passenger("John Doe", -1, "john@example.com", 2);
         }, "Should throw exception for invalid age");
 
         assertThrows(IllegalArgumentException.class, () -> {
-            new Passenger("John Doe", 30, "invalid-email", 1);
+            new Passenger("John Doe", 30, "invalid-email", 2);
         }, "Should throw exception for invalid email format");
     }
 
