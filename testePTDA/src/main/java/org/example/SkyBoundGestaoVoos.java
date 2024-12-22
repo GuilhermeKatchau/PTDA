@@ -12,11 +12,12 @@ public class SkyBoundGestaoVoos extends JFrame {
 
     private final JTextField id_Airplane, id_Flight, codeName, source, destination;
     private final JFormattedTextField maxPassengers;
-    private final JSpinner hTakeOff, hLanding;
+    private final JSpinner hTakeOff, hLanding, date1;
     private final DefaultListModel<String> flights;
     private final JList<String> registeredFlights;
 
     public SkyBoundGestaoVoos() {
+
         setTitle("Gestão de Voos");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -32,6 +33,9 @@ public class SkyBoundGestaoVoos extends JFrame {
         NumberFormat numberFormat = NumberFormat.getIntegerInstance();
         maxPassengers = new JFormattedTextField(numberFormat);
         maxPassengers.setValue(0);
+
+        date1 = new JSpinner(new SpinnerDateModel());
+        date1.setEditor(new JSpinner.DateEditor(date1, "dd/MM/yyyy"));
 
         hTakeOff = new JSpinner(new SpinnerDateModel());
         hTakeOff.setEditor(new JSpinner.DateEditor(hTakeOff, "dd/MM/yyyy HH:mm"));
@@ -60,7 +64,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         add(formPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        //loadRegisteredFlights();
+
         loadFlights();
         setVisible(true);
     }
@@ -86,6 +90,9 @@ public class SkyBoundGestaoVoos extends JFrame {
         formPanel.add(new JLabel("Limite de Passageiros:"));
         formPanel.add(maxPassengers);
 
+        formPanel.add(new JLabel("Data:"));
+        formPanel.add(date1);
+
         formPanel.add(new JLabel("Tempo de Partida:"));
         formPanel.add(hTakeOff);
 
@@ -97,7 +104,7 @@ public class SkyBoundGestaoVoos extends JFrame {
 
     private JScrollPane FlightList() {
         // Configura o modelo da tabela para exibir os voos
-        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         JTable table = new JTable(model);
 
@@ -112,6 +119,7 @@ public class SkyBoundGestaoVoos extends JFrame {
                         rs.getInt("id_plane"),
                         rs.getInt("id"),
                         rs.getInt("maxPassengers"),
+                        rs.getString("date1"),
                         rs.getString("timeTakeOff"),
                         rs.getString("timeLanding"),
                         rs.getString("destination"),
@@ -168,13 +176,15 @@ public class SkyBoundGestaoVoos extends JFrame {
             String source = this.source.getText();
             String destination = this.destination.getText();
             int maxPassengers = Integer.parseInt(this.maxPassengers.getText());
+            Date date1 = (Date) this.date1.getValue();
             Date hTakeOff = (Date) this.hTakeOff.getValue();
             Date hLanding = (Date) this.hLanding.getValue();
 
-            Flight.addFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
-            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
+            Flight.addFlight(id_Airplane, id_Flight, maxPassengers,date1, hTakeOff, hLanding, destination, source, codename);
+            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers,date1, hTakeOff, hLanding, destination, source, codename);
             loadFlights();
             clearFields();
+
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Os campos ID do Avião, ID do Voo devem ser numéricos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -219,6 +229,7 @@ public class SkyBoundGestaoVoos extends JFrame {
                         rs.getInt("id_plane"),
                         rs.getInt("id"),
                         rs.getInt("maxPassengers"),
+                        rs.getDate("date1"),
                         rs.getTimestamp("timeTakeOff"),
                         rs.getTimestamp("timeLanding"),
                         rs.getString("destination"),

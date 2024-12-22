@@ -3,6 +3,8 @@ package org.example;
 import javax.swing.*;
 import java.util.*;
 
+import static java.lang.String.valueOf;
+
 public class Flight {
 
     private int id_Flight;
@@ -12,20 +14,30 @@ public class Flight {
     private String destination;
     private int maxPassengers;
     private int nCompany;
+    private Date date1;
     private Date hTakeOff;
     private Date hLanding;
 
     private static final ArrayList<Flight> flights = new ArrayList<>();
 
-    public Flight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+    public Flight(int id_Airplane, int id_Flight, int maxPassengers, Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         setId_Airplane(id_Airplane);
         setId_Flight(id_Flight);
         setCodeName(codename);
         setSource(source);
         setDestination(destination);
         setMaxPassengers(maxPassengers);
+        setDate1(date1);
         setHTakeoff(hTakeOff);
         setHLanding(hLanding);
+    }
+
+    private void setDate1(Date date1) {
+        if (date1 != null) {
+            this.date1 = date1;
+        } else {
+            throw new IllegalArgumentException("Data de Voo inválida");
+        }
     }
 
     public int getId_Airplane() {
@@ -118,21 +130,23 @@ public class Flight {
     }
 
 
-    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try {
             if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
                     || source.isEmpty() || destination.isEmpty()) {
                 System.out.println("Por favor, preencha todos os campos!");
 
             }
+            if(String.valueOf(date1).isEmpty()){
+                System.out.println("Por favor, preencha todos os campos!");
+            }
             if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
                 throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
             }
 
-            Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, hTakeOff, hLanding, destination, source, codename);
+            Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
-
-           // JOptionPane.showMessageDialog(this, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IllegalArgumentException e) {
             //JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -159,6 +173,7 @@ public class Flight {
                 " | Code Name: " + codeName +
                 " | Origem: " + source +
                 " | Destino: " + destination +
+                " | Data: " + date1 +
                 " | Partida: " + hTakeOff +
                 " | Chegada: " + hLanding +
                 " | Limite: " + maxPassengers;

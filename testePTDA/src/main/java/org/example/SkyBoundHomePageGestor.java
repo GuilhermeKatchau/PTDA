@@ -27,14 +27,14 @@ public class SkyBoundHomePageGestor {
         for (Flight flight : Flight.getFlights()) {
             model.addElement(flight.toString());
         }
-<<<<<<< HEAD
+
 
         JList<String> list = new JList<>(model);
         frame.add(new JScrollPane(list), BorderLayout.CENTER);
         frame.setSize(400, 300);
-=======
+
         JList<String> list = new JList<>(model);*/
-        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros","Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "SELECT * FROM flight";
@@ -46,6 +46,7 @@ public class SkyBoundHomePageGestor {
                         rs.getInt("id_plane"),
                         rs.getInt("id"),
                         rs.getInt("maxPassengers"),
+                        rs.getString("date1"),
                         rs.getString("timeTakeOff"),
                         rs.getString("timeLanding"),
                         rs.getString("destination"),
