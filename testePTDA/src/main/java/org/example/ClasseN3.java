@@ -32,8 +32,8 @@ public class ClasseN3 extends JFrame{
         panelSeat3 = new JPanel();
         panelSeat3.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
-        seatButtons = new JButton[24];
-        for (int i = 0; i < 24; i += 4) {
+        seatButtons = new JButton[16];
+        for (int i = 0; i < 16; i += 4) {
             // Crie dois sub-painéis (esquerda e direita) para cada linha
             JPanel linha = new JPanel();
             linha.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
