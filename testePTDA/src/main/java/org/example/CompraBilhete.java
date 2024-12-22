@@ -264,12 +264,13 @@ public class CompraBilhete extends JFrame {
             services3.add("");
             services3.add("");
 
-            luxurious = new Class("Luxuosa", 200.00, 24, services1);
+            luxurious = new Class("Luxuosa", 200.00, 16, services1);
             economical = new Class("Económica", 100.00, 64, services2);
             premium = new Class("Premium",150.00,24,services3);
 
             classes.add(economical);
             classes.add(luxurious);
+            classes.add(premium);
         return classes;
     }
     private void tabSeat() {
@@ -334,7 +335,7 @@ public class CompraBilhete extends JFrame {
 
         } else if (selectedClass.equals(economical)) {
             JLabel label = new JLabel("Você escolheu a classe Económica.");
-            ClasseN2 panelSeat2 = new ClasseN2();
+            SkyBoundAdicionarAssento panelSeat2 = new SkyBoundAdicionarAssento();
             JPanel economicalPanel = new JPanel();
             economicalPanel.setLayout(new BoxLayout(economicalPanel, BoxLayout.Y_AXIS));
 
@@ -378,14 +379,14 @@ public class CompraBilhete extends JFrame {
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
             panelSeat.add(scrollPane);
-        } if (selectedClass.equals(economical)) {
-            JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
-            ClasseN3 panelSeat3 = new ClasseN3();
+        } if (selectedClass.equals(premium)) {
+            JLabel label = new JLabel("Você escolheu a classe Premium.");
+            ClasseN2 panelSeat2 = new ClasseN2();
             setSize(700, 600);
             panelSeat.add(label);
-            panelSeat.add(panelSeat3.getPanel());
+            panelSeat.add(panelSeat2.getPanel());
 
-            JButton[] botoesAssentos = panelSeat3.getBotoesAssentos();
+            JButton[] botoesAssentos = panelSeat2.getBotoesAssentos();
             for (int i = 0; i < botoesAssentos.length; i++) {
                 int numeroAssento = i + 1;
                 int finalI = i;
@@ -393,7 +394,7 @@ public class CompraBilhete extends JFrame {
                     // Atualizar informações do assento selecionado
                     selectedSeat.setId_Seat(numeroAssento);
                     selectedSeat.setPrice(calcularPreco(numeroAssento));
-                    selectedSeatClass = economical;
+                    selectedSeatClass = premium;
 
                     JOptionPane.showMessageDialog(
                             tabbedPane,
@@ -415,12 +416,11 @@ public class CompraBilhete extends JFrame {
                     tabbedPane.setSelectedIndex(4);
                 }
             });
-        }
             panelSeat.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
             panelSeat.add(btnNext);
+        }
 
-
-            int index1 = tabbedPane.indexOfTab("Assento");
+        int index1 = tabbedPane.indexOfTab("Assento");
         tabbedPane.setComponentAt(index1, panelSeat);
 
         tabbedPane.revalidate();
@@ -429,9 +429,16 @@ public class CompraBilhete extends JFrame {
 
 
 
-    private double calcularPreco(int seatNumber) {
+    private double calcularPreco(double price) {
         // Lógica para calcular preço com base no número do assento
-        return seatNumber <= 12 ? 200.0 : 150.0; // Exemplo: primeira metade mais cara
+        if (selectedClass.equals(economical)) {
+            price = 100.00;
+        } else if (selectedClass.equals(premium)) {
+            price = 150.00;
+        } else if (selectedClass.equals(luxurious)) {
+            price = 200.00;
+        }
+        return price;
     }
 
     private void tabPassengerInfo() {
@@ -504,7 +511,7 @@ public class CompraBilhete extends JFrame {
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination, ticket.getPrice(), selectedSource, refundable, idTicket);
 
             // Salvar informações do assento no banco de dados
-            if (selectedSeatId != 0 && selectedSeatClass != null) {
+            if (selectedSeat.getId_Seat() != 0 && selectedSeatClass != null) {
                 Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeatClass);
                 System.out.println("Assento salvo com sucesso!");
             } else {
