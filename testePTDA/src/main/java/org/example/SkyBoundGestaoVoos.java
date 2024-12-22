@@ -189,35 +189,7 @@ public class SkyBoundGestaoVoos extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-    /*private void loadRegisteredFlights(){
-        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT * FROM flight";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                Object[] row = {
-                        rs.getInt("id_plane"),
-                        rs.getInt("id"),
-                        rs.getInt("maxPassengers"),
-                        rs.getString("timeTakeOff"),
-                        rs.getString("timeLanding"),
-                        rs.getString("destination"),
-                        rs.getString("source1"),
-                        rs.getString("codename")
-                };
-                model.addRow(row);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        JTable table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
-    }*/
     private void loadFlights() {
         flights.clear();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

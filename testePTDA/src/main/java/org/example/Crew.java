@@ -11,7 +11,7 @@ public class Crew {
     private int experience;
     private ArrayList<Crew> crew;
 
-    public Crew(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
+    public Crew(int id_CrewMember, String name, String shift, int experience) {
         SetId_CrewMember(id_CrewMember);
         setName(name);
         setPhoneNumber(phoneNumber);
@@ -80,24 +80,24 @@ public class Crew {
 
     static class Assistant extends Crew {
 
-        public Assistant(int id_CrewMember, String name, int phoneNumber, String shift, int experience) {
-            super(id_CrewMember, name, phoneNumber, shift,experience);
+        public Assistant(int id_CrewMember, String name, String shift, int experience) {
+            super(id_CrewMember, name, shift,experience);
         }
     }
 
     static class Pilot extends Crew {
         private String rank;
 
-        public Pilot(int id_CrewMember, String name, int phoneNumber, String shift, int experience,String rank) {
-            super(id_CrewMember, name, phoneNumber, shift, experience);
+        public Pilot(int id_CrewMember, String name, String shift, int experience, String rank) {
+            super(id_CrewMember, name, shift, experience);
             setRank(rank);
         }
 
         public void setRank(String rank) {
             System.out.println("Valor recebido no setRank: '" + rank + "'");
-            if (rank == null || rank.trim().isEmpty()) {
+            /*if (rank == null || rank.trim().isEmpty()) {
                 throw new IllegalArgumentException("Cargo não pode ser vazio");
-            }
+            }*/
             this.rank = rank.trim();
         }
 

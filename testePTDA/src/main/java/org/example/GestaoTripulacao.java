@@ -3,7 +3,9 @@ package org.example;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.sql.Connection;
 import java.util.ArrayList;
+import java.sql.*;
 
 public class GestaoTripulacao {
     private Flight flight;
@@ -87,27 +89,75 @@ public class GestaoTripulacao {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        addFormField(inputPanel, "ID:", idField, 0, gbc);
+        int row = 1; // Controla as linhas para organizar os inputs
+
+        // Loop para exibir dados dos tripulantes
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM crew WHERE id_Flight = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, flight.getId_Flight());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int id_Flight = rs.getInt("id_Flight");
+                String name = rs.getString("nome");
+                String shift = rs.getString("shift");
+                int experience = rs.getInt("experience");
+                String rank = rs.getString("ranq");
+
+                Crew crewMember;
+                if (rank == null) {
+                    crewMember = new Crew.Assistant(id, name, shift, experience);
+                } else {
+                    Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience, rank);
+                    crewMember = pilot;
+                }
+
+                // Adiciona tripulante à lista
+                crewMembers.add(crewMember);
+                crewListModel.addElement(formatCrewForList(crewMember));
+
+                // Mostra os dados no painel
+                JLabel crewLabel = new JLabel();
+                crewLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+
+
+                inputPanel.add(crewLabel, gbc);
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Adiciona as labels e os inputs organizados
+        addFormField(inputPanel, "ID do Tripulante:", idField, 0, gbc);
         addFormField(inputPanel, "Nome:", nameField, 1, gbc);
-        addFormField(inputPanel, "Número de Telefone:", phoneField, 2, gbc);
+        addFormField(inputPanel, "Telefone:", phoneField, 2, gbc);
         addFormField(inputPanel, "Turno:", shiftField, 3, gbc);
-        addFormField(inputPanel, "Experiência (Anos):", experienceField, 4, gbc);
+        addFormField(inputPanel, "Experiência (anos):", experienceField, 4, gbc);
         addFormField(inputPanel, "Cargo (Opcional):", rankField, 5, gbc);
 
         return inputPanel;
     }
 
+
+
+
     private void addFormField(JPanel panel, String labelText, JTextField field, int row, GridBagConstraints gbc) {
         gbc.gridy = row;
 
+        // Adiciona a label
         gbc.gridx = 0;
         gbc.weightx = 0.3;
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Arial", Font.BOLD, 14));
         panel.add(label, gbc);
 
+        // Adiciona o campo de texto
         gbc.gridx = 1;
         gbc.weightx = 0.7;
+        field.setPreferredSize(new Dimension(200, 30)); // Define o tamanho do input
         panel.add(field, gbc);
     }
 
@@ -172,9 +222,9 @@ public class GestaoTripulacao {
 
             Crew crewMember;
             if (ranq.isEmpty()) {
-                crewMember = new Crew.Assistant(id, name, phone, shift, experience);
+                crewMember = new Crew.Assistant(id, name, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience,ranq);
+                Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience,ranq);
                 crewMember = pilot;
             }
 
@@ -206,9 +256,9 @@ public class GestaoTripulacao {
 
             Crew crewMember;
             if (ranq.isEmpty()) {
-                crewMember = new Crew.Assistant(id, name, phone, shift, experience);
+                crewMember = new Crew.Assistant(id, name, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, phone, shift, experience,ranq);
+                Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience,ranq);
                 crewMember = pilot;
             }
 
