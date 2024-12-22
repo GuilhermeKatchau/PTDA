@@ -37,6 +37,106 @@ public class GestaoServicosClasses extends JFrame {
 
         setVisible(true);
     }
+    private void adicionarClasseInterativo() {
+        JFrame frameAdicionarClasse = new JFrame("Adicionar Nova Classe");
+        frameAdicionarClasse.setSize(400, 600);
+        frameAdicionarClasse.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        // Campo para o nome da classe
+        JLabel lblNomeClasse = new JLabel("Nome da Classe:");
+        JTextField txtNomeClasse = new JTextField();
+        txtNomeClasse.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
+        // Campo para o preço
+        JLabel lblPreco = new JLabel("Preço da Classe:");
+        JTextField txtPreco = new JTextField();
+        txtPreco.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
+        // Campo para a capacidade
+        JLabel lblCapacidade = new JLabel("Capacidade de Assentos:");
+        JTextField txtCapacidade = new JTextField();
+        txtCapacidade.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
+        // Lista de serviços
+        JLabel lblServicos = new JLabel("Serviços da Classe:");
+        DefaultListModel<String> servicosModel = new DefaultListModel<>();
+        JList<String> listServicos = new JList<>(servicosModel);
+        listServicos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollServicos = new JScrollPane(listServicos);
+        scrollServicos.setPreferredSize(new Dimension(300, 100));
+
+        // Campo para adicionar novos serviços
+        JTextField txtNovoServico = new JTextField();
+        txtNovoServico.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        JButton btnAdicionarServico = new JButton("Adicionar Serviço");
+        btnAdicionarServico.addActionListener(e -> {
+            String servico = txtNovoServico.getText().trim();
+            if (!servico.isEmpty()) {
+                servicosModel.addElement(servico);
+                txtNovoServico.setText("");
+            }
+        });
+
+        JButton btnRemoverServico = new JButton("Remover Serviço Selecionado");
+        btnRemoverServico.addActionListener(e -> {
+            int selectedIndex = listServicos.getSelectedIndex();
+            if (selectedIndex != -1) {
+                servicosModel.remove(selectedIndex);
+            }
+        });
+
+        // Botão para salvar a classe
+        JButton btnSalvarClasse = new JButton("Salvar Classe");
+        btnSalvarClasse.addActionListener(e -> {
+            try {
+                String nomeClasse = txtNomeClasse.getText().trim();
+                double precoClasse = Double.parseDouble(txtPreco.getText().trim());
+                int capacidadeClasse = Integer.parseInt(txtCapacidade.getText().trim());
+
+                ArrayList<String> servicosClasse = new ArrayList<>();
+                for (int i = 0; i < servicosModel.size(); i++) {
+                    servicosClasse.add(servicosModel.getElementAt(i));
+                }
+
+                if (nomeClasse.isEmpty() || capacidadeClasse <= 0 || precoClasse <= 0) {
+                    throw new IllegalArgumentException("Preencha todos os campos corretamente.");
+                }
+
+                // Criar a nova classe
+                Class novaClasse = new Class(nomeClasse, precoClasse, capacidadeClasse, servicosClasse);
+                classList.add(novaClasse);
+                classListModel.addElement(nomeClasse);
+
+                JOptionPane.showMessageDialog(frameAdicionarClasse, "Classe adicionada com sucesso!");
+                frameAdicionarClasse.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frameAdicionarClasse, "Erro ao adicionar classe: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Adicionar componentes ao painel
+        panel.add(lblNomeClasse);
+        panel.add(txtNomeClasse);
+        panel.add(lblPreco);
+        panel.add(txtPreco);
+        panel.add(lblCapacidade);
+        panel.add(txtCapacidade);
+        panel.add(lblServicos);
+        panel.add(scrollServicos);
+        panel.add(txtNovoServico);
+        panel.add(btnAdicionarServico);
+        panel.add(btnRemoverServico);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento
+        panel.add(btnSalvarClasse);
+
+        frameAdicionarClasse.add(panel);
+        frameAdicionarClasse.setVisible(true);
+    }
+
 
     private JPanel criarPainelClasses() {
         JPanel panel = new JPanel(new BorderLayout());
