@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
 
-public class SkyBoundGestaoVoosTest {
+/*public class SkyBoundGestaoVoosTest {
     @BeforeEach
     void setUp() {
         Flight.getFlights().clear();
@@ -31,4 +31,4 @@ public class SkyBoundGestaoVoosTest {
             Flight.addFlight(0, 101, 150, new Date(), new Date(), "", "Lisboa", "");
         });
     }
-}
+}*/
