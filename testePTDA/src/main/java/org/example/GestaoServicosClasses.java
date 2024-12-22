@@ -19,8 +19,7 @@ public class GestaoServicosClasses extends JFrame {
         setTitle("Gestão de Classes e Serviços");
         setSize(900, 600);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-        ;
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLayout(new BorderLayout());
 
@@ -32,9 +31,6 @@ public class GestaoServicosClasses extends JFrame {
         // Painel de botões
         JPanel botoesPanel = criarPainelBotoes();
         add(botoesPanel, BorderLayout.SOUTH);
-
-        classJlist.addListSelectionListener(e -> atualizarServicos());
-
         setVisible(true);
     }
     private void adicionarClasseInterativo() {
@@ -153,10 +149,18 @@ public class GestaoServicosClasses extends JFrame {
         JButton btnDetalhesClasse = new JButton("Detalhes da Classe");
         btnDetalhesClasse.addActionListener(e -> visualizarDetalhesClasse());
 
+        JButton btnAdicionarClasseInterativo = new JButton("Adicionar Classe Interativa");
+        btnAdicionarClasseInterativo.addActionListener(e -> adicionarClasseInterativo());
+
+        JButton btnAtualizarServicos = new JButton("Atualizar Serviços");
+        btnAtualizarServicos.addActionListener(e -> atualizarServicos());
+
         JPanel botoes = new JPanel();
         botoes.add(btnAdicionarClasse);
         botoes.add(btnRemoverClasse);
         botoes.add(btnDetalhesClasse);
+        botoes.add(btnAdicionarClasseInterativo);
+        botoes.add(btnAtualizarServicos);
 
         panel.add(botoes, BorderLayout.SOUTH);
         return panel;

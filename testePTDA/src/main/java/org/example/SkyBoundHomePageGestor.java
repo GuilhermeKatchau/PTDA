@@ -10,6 +10,7 @@ public class SkyBoundHomePageGestor {
     private JPanel panel1;
     private JButton addFlightsButton;
     private JButton viewFlightsButton;
+    private JButton manageClassesButton;
 
     public SkyBoundHomePageGestor() {
         JFrame frame = new JFrame("SkyBound Home");
@@ -19,9 +20,11 @@ public class SkyBoundHomePageGestor {
         frame.setVisible(true);
 
         addFlightsButton.addActionListener(e -> new SkyBoundGestaoVoos());
+        viewFlightsButton.addActionListener(e -> mostrarVoos());
+        manageClassesButton.addActionListener(e -> abrirGestaoServicos());
     }
 
-    static void mostrarVoos(DefaultListModel<String> flights) {
+    static void mostrarVoos() {
         JFrame frame = new JFrame("Voos Cadastrados");
         /*DefaultListModel<String> model = new DefaultListModel<>();
         for (Flight flight : Flight.getFlights()) {
@@ -66,6 +69,10 @@ public class SkyBoundHomePageGestor {
         frame.setSize(500, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    static void abrirGestaoServicos() {
+        new GestaoServicosClasses();
     }
 
     public static void main(String[] args) {
