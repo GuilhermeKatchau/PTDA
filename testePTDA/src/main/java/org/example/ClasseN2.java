@@ -30,7 +30,7 @@ public class ClasseN2 extends JFrame{
     private JButton button23;
     private JButton button24;
     private JButton[] seatButtons;
-
+    Dimension buttonSize = new Dimension(80, 40);
     public ClasseN2() {
         setTitle("Escolha o Assento");
         setSize(500, 700);
@@ -52,6 +52,7 @@ public class ClasseN2 extends JFrame{
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelEsquerda.add(seatButtons[i + j]);
             }
 
@@ -59,6 +60,7 @@ public class ClasseN2 extends JFrame{
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelDireita.add(seatButtons[i + j]);
             }
 

@@ -18,7 +18,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
             button61, button62, button63, button64;
 
     private JButton[] seatButtons;
-
+    Dimension buttonSize = new Dimension(80, 40);
     public SkyBoundAdicionarAssento() {
 
         setTitle("Escolha o Assento");
@@ -39,6 +39,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelEsquerda.add(seatButtons[i + j]);
             }
 
@@ -47,6 +48,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelDireita.add(seatButtons[i + j]);
             }
 

@@ -148,7 +148,7 @@ SELECT id  INTO flight_id
     IF id_flight IS NOT NULL THEN 
     UPDATE ticket 
     SET id_flight = flight_id
-    WHERE id = NEW.id
+    WHERE id = NEW.id;
 		ELSE
 	SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'No matching flight found for the ticket.';

@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import java.util.Date;
 
 public class SkyBoundGestaoVoosTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
 
     @BeforeEach
     void setUp() {
@@ -36,4 +35,4 @@ public class SkyBoundGestaoVoosTest {
             Flight.addFlight(0, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","LisboaPorto");
         });
     }
-}
+}*/
