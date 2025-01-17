@@ -73,7 +73,7 @@ public class CompraBilheteTest {
     @Test
     void testFilterFlights() {
         CompraBilhete compraBilhete = new CompraBilhete();
-
+        ArrayList<Flight> flights = new ArrayList<>();
         // Dados de exemplo para voos
         Flight flight1 = new Flight(9212, 9212,64, new Date(), new Date(), new Date(),"Porto","Lisboa","LisboaPorto");
         Flight flight2 = new Flight(9345, 5548,64, new Date(), new Date(), new Date(),"Madrid","Paris","ParisMadrid");
@@ -86,6 +86,7 @@ public class CompraBilheteTest {
 
         // Chama o método de filtragem
         ArrayList<Flight> result = compraBilhete.filterFlights("Lisboa", "Porto");
+
 
         // Verifica se a filtragem foi feita corretamente
         assertEquals(1, result.size());

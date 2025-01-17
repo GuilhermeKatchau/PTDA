@@ -20,10 +20,7 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     JTable tableFlights;
     private Passenger passenger;
-    Class selectedClass;
-    Class luxurious;
-    Class economical;
-    Class premium;
+    Class selectedClass, luxurious, economical, premium;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
@@ -91,7 +88,8 @@ public class CompraBilhete extends JFrame {
     public ArrayList<Flight> filterFlights(String origem, String destino) {
         ArrayList<Flight> filteredFlights = new ArrayList<>();
         for (Flight flight : getAvailableFlights()) {
-            if (flight.getSource().equals(origem) && flight.getDestination().equals(destino)) {
+            if (flight.getSource().trim().equalsIgnoreCase(origem.trim()) &&
+                    flight.getDestination().trim().equalsIgnoreCase(destino.trim())) {
                 filteredFlights.add(flight);
             }
         }
@@ -100,7 +98,10 @@ public class CompraBilhete extends JFrame {
 
     ArrayList<Flight> getAvailableFlights() {
         return Flight.getFlights();
+    }
 
+    public void setAvailableFlights(ArrayList<Flight> flights) {
+        ArrayList<Flight> availableFlights = flights;
     }
 
     private void updateFlights() {

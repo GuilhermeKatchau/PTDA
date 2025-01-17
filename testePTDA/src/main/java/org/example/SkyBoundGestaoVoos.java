@@ -203,17 +203,42 @@ public class SkyBoundGestaoVoos extends JFrame {
     private void loadFlights() {
         flights.clear();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//TEM DE SE TROCAR PARA APARECER OS VOOS DA BD !!!!!
-        for (Flight flight : Flight.getFlights()) {
-            flights.addElement("ID Avião: " + flight.getId_Airplane()
-                    + " | ID Voo: " + flight.getId_Flight()
-                    + " | Code Name: " + flight.getCodeName()
-                    + " | Origem: " + flight.getSource()
-                    + " | Destino: " + flight.getDestination()
-                    + " | Partida: " + dateFormat.format(flight.gethTakeoff())
-                    + " | Chegada: " + dateFormat.format(flight.gethLanding())
-                    + " | Limite: " + flight.getMaxPassengers());
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", // URL do BD
+                "PTDA24_05",                                       // Usuário
+                "Potm%793"                                         // Senha
+        )) {
+            // Consulta para buscar os voos
+            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
+            // Itera pelos resultados da consulta
+            while (rs.next()) {
+                int idAirplane = rs.getInt("id_plane");
+                int idFlight = rs.getInt("id");
+                int maxPassengers = rs.getInt("maxPassengers");
+                String date = rs.getString("date1");
+                String takeoff = rs.getString("timeTakeOff");
+                String landing = rs.getString("timeLanding");
+                String destination = rs.getString("destination");
+                String source = rs.getString("source1");
+                String codename = rs.getString("codename");
+
+                // Adiciona os dados ao modelo flights
+                flights.addElement("ID Avião: " + idAirplane
+                        + " | ID Voo: " + idFlight
+                        + " | Code Name: " + codename
+                        + " | Origem: " + source
+                        + " | Destino: " + destination
+                        + " | Partida: " + date + " " + takeoff
+                        + " | Chegada: " + date + " " + landing
+                        + " | Limite: " + maxPassengers);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar voos da base de dados: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
