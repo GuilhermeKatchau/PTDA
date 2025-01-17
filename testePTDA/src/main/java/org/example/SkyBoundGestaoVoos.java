@@ -13,7 +13,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     private final JTextField id_Airplane, id_Flight, codeName, source, destination;
     private final JFormattedTextField maxPassengers;
     private final JSpinner hTakeOff, hLanding, date1;
-    private final DefaultListModel<String> flights;
+    final DefaultListModel<String> flights;
     private final JList<String> registeredFlights;
 
     public SkyBoundGestaoVoos() {
