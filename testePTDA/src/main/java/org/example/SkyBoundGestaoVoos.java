@@ -55,7 +55,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) { // Clique duplo
+                if (e.getClickCount() == 2) {
                     abrirGestaoTripulacao();
                 }
             }

@@ -7,12 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-<<<<<<< HEAD
+
 public class SkyBoundGestaoVoosTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-=======
-/*public class SkyBoundGestaoVoosTest {
->>>>>>> refs/remotes/origin/main
+
+
     @BeforeEach
     void setUp() {
         Flight.getFlights().clear();
@@ -37,4 +36,4 @@ public class SkyBoundGestaoVoosTest {
             Flight.addFlight(0, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","LisboaPorto");
         });
     }
-}*/
+}

@@ -2,7 +2,14 @@ package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.table.DefaultTableModel;
+
 import static org.junit.jupiter.api.Assertions.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class CompraBilheteTest {
     private Ticket testTicket;
@@ -53,5 +60,56 @@ public class CompraBilheteTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Ticket("Lisboa", "Lisboa", 12345, 150.00);
         }, "Should throw exception when source and destination are the same");
+    }
+
+    @Test
+    void testInvalidDateFormat() {
+        assertThrows(ParseException.class, () -> {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            format.parse("2022-01-01");
+        }, "Should throw exception for invalid date format");
+    }
+
+    @Test
+    void testFilterFlights() {
+        CompraBilhete compraBilhete = new CompraBilhete();
+
+        // Dados de exemplo para voos
+        Flight flight1 = new Flight(9212, 9212,64, new Date(), new Date(), new Date(),"Porto","Lisboa","LisboaPorto");
+        Flight flight2 = new Flight(9345, 5548,64, new Date(), new Date(), new Date(),"Madrid","Paris","ParisMadrid");
+        Flight flight3 = new Flight(1234, 5678,64, new Date(), new Date(), new Date(),"Bolonha","Munique","MuniqueBolonha");
+
+        // Adiciona voos simulados à lista
+        compraBilhete.getAvailableFlights().add(flight1);
+        compraBilhete.getAvailableFlights().add(flight2);
+        compraBilhete.getAvailableFlights().add(flight3);
+
+        // Chama o método de filtragem
+        ArrayList<Flight> result = compraBilhete.filterFlights("Lisboa", "Porto");
+
+        // Verifica se a filtragem foi feita corretamente
+        assertEquals(1, result.size());
+        assertEquals("Lisboa", result.get(0).getSource());
+        assertEquals("Porto", result.get(0).getDestination());
+    }
+
+    @Test
+    void testCalcularPreco() {
+        CompraBilhete compraBilhete = new CompraBilhete();
+
+        // Teste para a classe Luxuosa
+        compraBilhete.selectedClass = compraBilhete.luxurious;
+        double precoLuxuoso = compraBilhete.calcularPreco(0);
+        assertEquals(200.00, precoLuxuoso, 0.01);
+
+        // Teste para a classe Económica
+        compraBilhete.selectedClass = compraBilhete.economical;
+        double precoEconomico = compraBilhete.calcularPreco(0);
+        assertEquals(100.00, precoEconomico, 0.01);
+
+        // Teste para a classe Premium
+        compraBilhete.selectedClass = compraBilhete.premium;
+        double precoPremium = compraBilhete.calcularPreco(0);
+        assertEquals(150.00, precoPremium, 0.01);
     }
 }

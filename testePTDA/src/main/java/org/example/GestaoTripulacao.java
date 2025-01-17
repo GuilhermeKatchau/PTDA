@@ -27,7 +27,7 @@ public class GestaoTripulacao {
 
     private void initializeUI() {
         JFrame frame = new JFrame("Sistema de Gestão de Tripulação");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1100, 600);
         frame.setLocationRelativeTo(null);
 

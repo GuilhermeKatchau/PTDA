@@ -18,10 +18,12 @@ public class CompraBilhete extends JFrame {
     private String selectedSource;
     private String selectedDestination;
     private Flight selectedFlight;
-    private JTable tableFlights;
+    JTable tableFlights;
     private Passenger passenger;
-    private Class selectedClass;
-    private Class luxurious,economical,premium;
+    Class selectedClass;
+    Class luxurious;
+    Class economical;
+    Class premium;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
@@ -86,7 +88,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
-    private ArrayList<Flight> filterFlights(String origem, String destino) {
+    public ArrayList<Flight> filterFlights(String origem, String destino) {
         ArrayList<Flight> filteredFlights = new ArrayList<>();
         for (Flight flight : getAvailableFlights()) {
             if (flight.getSource().equals(origem) && flight.getDestination().equals(destino)) {
@@ -96,7 +98,7 @@ public class CompraBilhete extends JFrame {
         return filteredFlights;
     }
 
-    private ArrayList<Flight> getAvailableFlights() {
+    ArrayList<Flight> getAvailableFlights() {
         return Flight.getFlights();
 
     }
@@ -429,7 +431,7 @@ public class CompraBilhete extends JFrame {
 
 
 
-    private double calcularPreco(double price) {
+    double calcularPreco(double price) {
         // Lógica para calcular preço com base no número do assento
         if (selectedClass.equals(economical)) {
             price = 100.00;
