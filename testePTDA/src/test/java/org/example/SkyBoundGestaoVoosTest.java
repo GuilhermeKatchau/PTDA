@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,12 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-<<<<<<< HEAD
+
 public class SkyBoundGestaoVoosTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-=======
-/*public class SkyBoundGestaoVoosTest {
->>>>>>> refs/remotes/origin/main
+public class SkyBoundGestaoVoosTest {
     @BeforeEach
     void setUp() {
         Flight.getFlights().clear();

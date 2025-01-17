@@ -29,6 +29,7 @@ public class ClasseN3 extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         */
+        Dimension buttonSize = new Dimension(80, 40);
         panelSeat3 = new JPanel();
         panelSeat3.setLayout(new GridLayout(5, 1)); // 12 linhas de 1 coluna que conterá 2 subpainéis de botões
 
@@ -43,6 +44,7 @@ public class ClasseN3 extends JFrame{
             painelEsquerda.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 0; j < 2; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelEsquerda.add(seatButtons[i + j]);
             }
 
@@ -51,6 +53,7 @@ public class ClasseN3 extends JFrame{
             painelDireita.setLayout(new GridLayout(2, 1, 0, 0));
             for (int j = 2; j < 4; j++) {
                 seatButtons[i + j] = new JButton(String.valueOf(i + j + 1));
+                seatButtons[i + j].setPreferredSize(buttonSize);
                 painelDireita.add(seatButtons[i + j]);
             }
 
