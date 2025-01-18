@@ -1,7 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.regex.Pattern;
 
 public class Passenger {
 
@@ -56,10 +56,12 @@ public class Passenger {
     }
 
     public void setEmail(String email) {
-        if (email != null && !email.trim().isEmpty()) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        if (email != null && pattern.matcher(email).matches()) {
             this.email = email;
         } else {
-            throw new IllegalArgumentException("Email não pode ser vazio");
+            throw new IllegalArgumentException("Email inválido");
         }
     }
 

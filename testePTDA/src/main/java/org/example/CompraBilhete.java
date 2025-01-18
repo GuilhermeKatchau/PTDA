@@ -109,6 +109,25 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
+<<<<<<< HEAD
+    public ArrayList<Flight> filterFlights(String origem, String destino) {
+        ArrayList<Flight> filteredFlights = new ArrayList<>();
+        for (Flight flight : getAvailableFlights()) {
+            if (flight.getSource().trim().equalsIgnoreCase(origem.trim()) &&
+                    flight.getDestination().trim().equalsIgnoreCase(destino.trim())) {
+                filteredFlights.add(flight);
+            }
+        }
+        return filteredFlights;
+    }
+
+    ArrayList<Flight> getAvailableFlights() {
+        return Flight.getFlights();
+    }
+
+
+=======
+>>>>>>> refs/remotes/origin/main
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0);

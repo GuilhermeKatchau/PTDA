@@ -6,7 +6,6 @@ import java.awt.*;
 import java.sql.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class SkyBoundGestaoVoos extends JFrame {
@@ -186,22 +185,13 @@ public class SkyBoundGestaoVoos extends JFrame {
             Date hTakeOff = (Date) this.hTakeOff.getValue();
             Date hLanding = (Date) this.hLanding.getValue();
 
-            // Adiciona o voo usando o método da classe Flight
-            Flight.addFlight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
-
-            // Salva os dados no banco de dados
-            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
-
-            // Atualiza a lista de voos na interface
+            Flight.addFlight(id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
+            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers,date1, hTakeOff, hLanding, destination, source, codename);
             loadFlights();
-
-            // Limpa os campos do formulário
             clearFields();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Os campos ID do Avião, ID do Voo e Limite de Passageiros devem ser numéricos!", "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Os campos ID do Avião, ID do Voo devem ser numéricos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -211,22 +201,27 @@ public class SkyBoundGestaoVoos extends JFrame {
         if (selectedRow != -1) {
             int flightId = (int) table.getValueAt(selectedRow, 1);
 
-            // Remove o voo da lista de voos da classe Flight
-            ArrayList<Flight> flights = Flight.getFlights();
-            flights.removeIf(flight -> flight.getId_Flight() == flightId);
-
-            // Remove o voo da base de dados
-            try (Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-                String sql = "DELETE FROM flight WHERE id = ?";
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+                // Query para remover o voo da base de dados
+                String sql = "DELETE FROM flight WHERE id_flight = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, flightId);
-                stmt.executeUpdate();
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Erro ao remover voo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                stmt.setInt(1, flightId); // Define o ID do voo a ser removido
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Voo removido com sucesso da base de dados!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Voo não encontrado na base de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro ao remover voo da base de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
 
-            // Atualiza a tabela de voos
+            // Remover o voo da lista de voos em memória
+            Flight.removeFlight(flightId); // Chamando o método de remoção na classe Flight
+
+            // Atualiza a tabela após a remoção
             loadFlights();
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -234,35 +229,71 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private void loadFlights() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0); // Limpa a tabela antes de carregar os dados
+        flights.clear();
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", // URL do BD
+                "PTDA24_05",                                       // Usuário
+                "Potm%793"                                         // Senha
+        )) {
+            // Consulta para buscar os voos
+            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-        // Obtém a lista de voos da classe Flight
-        ArrayList<Flight> flights = Flight.getFlights();
+            // Itera pelos resultados da consulta
+            while (rs.next()) {
+                int idAirplane = rs.getInt("id_plane");
+                int idFlight = rs.getInt("id");
+                int maxPassengers = rs.getInt("maxPassengers");
+                String date = rs.getString("date1");
+                String takeoff = rs.getString("timeTakeOff");
+                String landing = rs.getString("timeLanding");
+                String destination = rs.getString("destination");
+                String source = rs.getString("source1");
+                String codename = rs.getString("codename");
 
-        // Adiciona cada voo à tabela
-        for (Flight flight : flights) {
-            Object[] row = {
-                    flight.getId_Airplane(),
-                    flight.getId_Flight(),
-                    flight.getMaxPassengers(),
-                    flight.getDate1(),
-                    flight.getHTakeoff(),
-                    flight.getHLanding(),
-                    flight.getDestination(),
-                    flight.getSource(),
-                    flight.getCodeName()
-            };
-            model.addRow(row);
+                // Adiciona os dados ao modelo flights
+                flights.addElement("ID Avião: " + idAirplane
+                        + " | ID Voo: " + idFlight
+                        + " | Code Name: " + codename
+                        + " | Origem: " + source
+                        + " | Destino: " + destination
+                        + " | Partida: " + date + " " + takeoff
+                        + " | Chegada: " + date + " " + landing
+                        + " | Limite: " + maxPassengers);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar voos da base de dados: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void abrirGestaoTripulacao(int selectedRow) {
-        // Obtém o voo selecionado da lista de voos
-        Flight selectedFlight = Flight.getFlights().get(selectedRow);
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM flight LIMIT ?, 1"; // Obtém o voo correspondente à linha selecionada
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, selectedRow);
+            ResultSet rs = stmt.executeQuery();
 
-        // Abre a tela de gestão de tripulação com o voo selecionado
-        new GestaoTripulacao(selectedFlight);
+            if (rs.next()) {
+                Flight selectedFlight = new Flight(
+
+                        rs.getInt("id_plane"),
+                        rs.getInt("id"),
+                        rs.getInt("maxPassengers"),
+                        rs.getDate("date1"),
+                        rs.getTimestamp("timeTakeOff"),
+                        rs.getTimestamp("timeLanding"),
+                        rs.getString("destination"),
+                        rs.getString("source1"),
+                        rs.getString("codename")
+                );
+                new GestaoTripulacao(selectedFlight);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao abrir gestão de tripulação: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void clearFields() {

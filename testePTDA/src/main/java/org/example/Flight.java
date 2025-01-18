@@ -1,17 +1,19 @@
 package org.example;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
+
+import static java.lang.String.valueOf;
 
 public class Flight {
 
-    private int id_Airplane;
     private int id_Flight;
+    private static int id_Airplane;
     private String codeName;
     private String source;
     private String destination;
     private int maxPassengers;
+    private int nCompany;
     private Date date1;
     private Date hTakeOff;
     private Date hLanding;
@@ -29,14 +31,7 @@ public class Flight {
         setHTakeoff(hTakeOff);
         setHLanding(hLanding);
     }
-
-    // Getters and Setters
-
-    public int getId_Airplane() {
-        return id_Airplane;
-    }
-
-    public void setId_Airplane(int id_Airplane) {
+    private void setId_Airplane(int id_Airplane) {
         if (id_Airplane >= 1 && id_Airplane <= 999999999) {
             this.id_Airplane = id_Airplane;
         } else {
@@ -44,58 +39,23 @@ public class Flight {
         }
     }
 
-    public int getId_Flight() {
-        return id_Flight;
+    public int getId_Airplane() {
+        return id_Airplane;
     }
 
-    public void setId_Flight(int id_Flight) {
-        if (id_Flight >= 1 && id_Flight <= 999999999) {
-            this.id_Flight = id_Flight;
+    private void setDate1(Date date1) {
+        if (date1 != null) {
+            this.date1 = date1;
         } else {
-            throw new IllegalArgumentException("ID de Voo inválido");
+            throw new IllegalArgumentException("Data de Voo inválida");
         }
     }
-
-    public String getCodeName() {
-        return codeName;
+    public Date getDate1() {
+        return date1;
     }
 
-    public void setCodeName(String codeName) {
-        if (codeName != null && !codeName.trim().isEmpty()) {
-            this.codeName = codeName;
-        } else {
-            throw new IllegalArgumentException("Código do Voo não pode ser vazio");
-        }
-    }
 
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        if (source != null && !source.trim().isEmpty()) {
-            this.source = source;
-        } else {
-            throw new IllegalArgumentException("Origem não pode ser vazia");
-        }
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        if (destination != null && !destination.trim().isEmpty()) {
-            this.destination = destination;
-        } else {
-            throw new IllegalArgumentException("Destino não pode ser vazio");
-        }
-    }
-
-    public int getMaxPassengers() {
-        return maxPassengers;
-    }
-
+    // Getters e Setters
     public void setMaxPassengers(int maxPassengers) {
         if (maxPassengers > 0 && maxPassengers <= 900) {
             this.maxPassengers = maxPassengers;
@@ -104,57 +64,105 @@ public class Flight {
         }
     }
 
-    public Date getDate1() {
-        return date1;
+    public int getMaxPassengers() {
+        return maxPassengers;
     }
 
-    public void setDate1(Date date1) {
-        if (date1 != null) {
-            this.date1 = date1;
+    public void setId_Flight(int id_Flight) {
+        if (id_Flight >=1 || id_Flight <= 999999999) {
+            this.id_Flight = id_Flight;
         } else {
-            throw new IllegalArgumentException("Data inválida");
+            throw new IllegalArgumentException("ID de Voo inválido");
         }
     }
 
-    public Date getHTakeoff() {
-        return hTakeOff;
+    public int getId_Flight() {
+        return id_Flight;
     }
 
     public void setHTakeoff(Date hTakeoff) {
-        if (hTakeoff != null) {
-            this.hTakeOff = hTakeoff;
-        } else {
-            throw new IllegalArgumentException("Horário de partida inválido");
-        }
+        this.hTakeOff = hTakeoff;
     }
 
-    public Date getHLanding() {
-        return hLanding;
+    public Date gethTakeoff() {
+        return hTakeOff;
     }
 
     public void setHLanding(Date hLanding) {
-        if (hLanding != null) {
-            this.hLanding = hLanding;
+        this.hLanding = hLanding;
+    }
+
+    public Date gethLanding() {
+        return hLanding;
+    }
+
+    public void setDestination(String destination) {
+        if (destination != null && !destination.trim().isEmpty()) {
+            this.destination = destination;
         } else {
-            throw new IllegalArgumentException("Horário de chegada inválido");
+            throw new IllegalArgumentException("Destino de Voo não pode ser vazio");
         }
     }
 
-    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers, Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
-        if (id_Flight <= 0 || codename.isEmpty() || source.isEmpty() || destination.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos corretamente.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setSource(String source) {
+        if (source != null && !source.trim().isEmpty()) {
+            this.source = source;
+        } else {
+            throw new IllegalArgumentException("Origem de Voo não pode ser vazia");
         }
-        if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
-            JOptionPane.showMessageDialog(null, "A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setCodeName(String codeName) {
+        if (codeName != null && !codeName.trim().isEmpty()) {
+            this.codeName = codeName;
+        } else {
+            throw new IllegalArgumentException("Nome de Voo não pode ser vazio");
         }
+    }
+
+    public String getCodeName() {
+        return codeName;
+    }
+
+
+<<<<<<< HEAD
+    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+            if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
+=======
+    public static void addFlight(int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try {
-            Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
+            if (id_Flight==0 || codename.isEmpty()
+>>>>>>> refs/remotes/origin/main
+                    || source.isEmpty() || destination.isEmpty()) {
+                throw new IllegalArgumentException("Por favor, preencha todos os campos!");
+
+            }
+            if(String.valueOf(date1).isEmpty()){
+                throw new IllegalArgumentException("Por favor, preencha todos os campos!");
+            }
+            if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
+                throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
+            }
+
+            Flight newFlight = new Flight(id_Airplane,id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
             JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void removeFlight(int flightIndex) {
+        if (flightIndex >= 0 && flightIndex < flights.size()) {
+            flights.remove(flightIndex);
+            JOptionPane.showMessageDialog(null, "Voo removido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Índice de voo inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -162,16 +170,20 @@ public class Flight {
         return new ArrayList<>(flights);
     }
 
+    public static void removeTestFlights() {
+        flights.removeIf(flight -> flight.getCodeName().startsWith("TEST_"));
+    }
+
     @Override
     public String toString() {
         return "ID Avião: " + id_Airplane +
                 " | ID Voo: " + id_Flight +
-                " | Código: " + codeName +
+                " | Code Name: " + codeName +
                 " | Origem: " + source +
                 " | Destino: " + destination +
                 " | Data: " + date1 +
                 " | Partida: " + hTakeOff +
                 " | Chegada: " + hLanding +
-                " | Passageiros: " + maxPassengers;
+                " | Limite: " + maxPassengers;
     }
 }
