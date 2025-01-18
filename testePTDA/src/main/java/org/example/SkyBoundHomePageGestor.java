@@ -38,7 +38,12 @@ public class SkyBoundHomePageGestor {
 
         JList<String> list = new JList<>(model);*/
         String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros","Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "SELECT * FROM flight";
             PreparedStatement stmt = conn.prepareStatement(sql);
