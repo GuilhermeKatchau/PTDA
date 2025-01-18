@@ -100,9 +100,6 @@ public class CompraBilhete extends JFrame {
         return Flight.getFlights();
     }
 
-    public void setAvailableFlights(ArrayList<Flight> flights) {
-        ArrayList<Flight> availableFlights = flights;
-    }
 
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();

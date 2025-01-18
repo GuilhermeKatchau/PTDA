@@ -201,17 +201,28 @@ public class SkyBoundGestaoVoos extends JFrame {
         if (selectedRow != -1) {
             int flightId = (int) table.getValueAt(selectedRow, 1);
 
-            // Remove o voo da base de dados usando o ID do voo
-            try (Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-                String sql = "DELETE FROM flight WHERE id = ?";
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+                // Query para remover o voo da base de dados
+                String sql = "DELETE FROM flight WHERE id_flight = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, flightId);
-                stmt.executeUpdate();
-                loadFlights(); // Atualiza a tabela após a remoção
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Erro ao remover voo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                stmt.setInt(1, flightId); // Define o ID do voo a ser removido
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Voo removido com sucesso da base de dados!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Voo não encontrado na base de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro ao remover voo da base de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
+
+            // Remover o voo da lista de voos em memória
+            Flight.removeFlight(flightId); // Chamando o método de remoção na classe Flight
+
+            // Atualiza a tabela após a remoção
+            loadFlights();
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -219,7 +230,6 @@ public class SkyBoundGestaoVoos extends JFrame {
 
     private void loadFlights() {
         flights.clear();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", // URL do BD
                 "PTDA24_05",                                       // Usuário

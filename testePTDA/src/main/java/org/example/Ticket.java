@@ -43,7 +43,7 @@ public class Ticket {
     }
 
     public void setSource(String source) {
-        if (source != null && !source.trim().isEmpty()) {
+        if (source != null && !source.trim().isEmpty() && !source.equals(destination)) {
             this.source = source;
         } else {
             throw new IllegalArgumentException("Origem de Voo não pode ser vazia");
@@ -55,7 +55,7 @@ public class Ticket {
     }
 
     public void setDestination(String destination) {
-        if (destination != null && !destination.trim().isEmpty()) {
+        if (destination != null && !destination.trim().isEmpty() && !destination.equals(source)) {
             this.destination = destination;
         } else {
             throw new IllegalArgumentException("Destino de Voo não pode ser vazio");

@@ -131,14 +131,13 @@ public class Flight {
 
 
     public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
-        try {
             if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
                     || source.isEmpty() || destination.isEmpty()) {
-                System.out.println("Por favor, preencha todos os campos!");
+                throw new IllegalArgumentException("Por favor, preencha todos os campos!");
 
             }
             if(String.valueOf(date1).isEmpty()){
-                System.out.println("Por favor, preencha todos os campos!");
+                throw new IllegalArgumentException("Por favor, preencha todos os campos!");
             }
             if (!hTakeOff.before(hLanding) || (hLanding.getTime() - hTakeOff.getTime()) < 60000) {
                 throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
@@ -147,9 +146,6 @@ public class Flight {
             Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
             JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            //JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     public static void removeFlight(int flightIndex) {
@@ -165,6 +161,9 @@ public class Flight {
         return new ArrayList<>(flights);
     }
 
+    public static void removeTestFlights() {
+        flights.removeIf(flight -> flight.getCodeName().startsWith("TEST_"));
+    }
 
     @Override
     public String toString() {
