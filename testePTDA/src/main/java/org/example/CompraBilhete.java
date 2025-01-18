@@ -18,11 +18,12 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     JTable tableFlights;
     private Passenger passenger;
-    private Class selectedClass, luxurious, economical, premium;
+    private Class selectedClass;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
-    private Seat selectedSeat;
+    private Seat selectedSeat = new Seat(); // Inicializado para evitar NullPointerException
+    private Class selectedSeatClass; // Inicializado para evitar NullPointerException
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -42,13 +43,23 @@ public class CompraBilhete extends JFrame {
         add(tabbedPane);
         setVisible(true);
     }
+
     private Flight getFlightFromRow(int row) {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
-        String date = (String) model.getValueAt(row, 0);
-        String time = (String) model.getValueAt(row, 1);
-        String source = (String) model.getValueAt(row, 2);
-        String destination = (String) model.getValueAt(row, 3);
-        return new Flight(date, time, source, destination);
+
+        // Recupera os dados da linha selecionada na tabela
+        int idAirplane = (int) model.getValueAt(row, 0); // ID do avião (correto: id_Airplane, não idAirplane)
+        int idFlight = (int) model.getValueAt(row, 1); // ID do voo (correto: id, não id_Flight)
+        int maxPassengers = (int) model.getValueAt(row, 2); // Número máximo de passageiros
+        Date date1 = (Date) model.getValueAt(row, 3); // Data do voo
+        Date hTakeOff = (Date) model.getValueAt(row, 4); // Hora de partida (correto: timeTakeOff, não hTakeOff)
+        Date hLanding = (Date) model.getValueAt(row, 5); // Hora de chegada (correto: timeLanding, não hLanding)
+        String destination = (String) model.getValueAt(row, 6); // Destino
+        String source = (String) model.getValueAt(row, 7); // Origem
+        String codename = (String) model.getValueAt(row, 8); // Código do voo
+
+        // Retorna um novo objeto Flight com todos os dados
+        return new Flight(idAirplane,idFlight ,maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
     }
 
     private void tabDestinationSource() {
@@ -95,22 +106,27 @@ public class CompraBilhete extends JFrame {
         model.setRowCount(0); // Limpa os dados existentes na tabela
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
+            // Query corrigida para usar as colunas corretas
+            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight WHERE source1 = ? AND destination = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, selectedSource);
             stmt.setString(2, selectedDestination);
 
             ResultSet rs = stmt.executeQuery();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
             while (rs.next()) {
                 Object[] row = {
-                        rs.getString("date1"),
-                        rs.getString("timeTakeOff"),
-                        rs.getString("source1"),
-                        rs.getString("destination")
+                        rs.getInt("id_plane"), // ID do avião (correto: id_Airplane, não idAirplane)
+                        rs.getInt("id"), // ID do voo (correto: id, não id_Flight)
+                        rs.getInt("maxPassengers"), // Número máximo de passageiros
+                        rs.getDate("date1"), // Data do voo
+                        rs.getTime("timeTakeOff"), // Hora de partida (correto: timeTakeOff, não hTakeOff)
+                        rs.getTime("timeLanding"), // Hora de chegada (correto: timeLanding, não hLanding)
+                        rs.getString("destination"), // Destino
+                        rs.getString("source1"), // Origem
+                        rs.getString("codename") // Código do voo
                 };
-                model.addRow(row);
+                model.addRow(row); // Adiciona a linha à tabela
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,12 +137,13 @@ public class CompraBilhete extends JFrame {
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
 
-        String[] columns = {"Data", "Hora", "Origem", "Destino"};
+        // Colunas da tabela
+        String[] columns = {"ID Avião", "ID Voo", "Max Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         tableFlights = new JTable(model);
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
+            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight WHERE source1 = ? AND destination = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, selectedSource);
             stmt.setString(2, selectedDestination);
@@ -134,10 +151,15 @@ public class CompraBilhete extends JFrame {
 
             while (rs.next()) {
                 Object[] row = {
-                        rs.getString("date1"),
-                        rs.getString("timeTakeOff"),
-                        rs.getString("source1"),
-                        rs.getString("destination")
+                        rs.getInt("id_plane"), // ID do avião
+                        rs.getInt("id"), // ID do voo
+                        rs.getInt("maxPassengers"), // Número máximo de passageiros
+                        rs.getDate("date1"), // Data do voo
+                        rs.getTime("timeTakeOff"), // Hora de partida
+                        rs.getTime("timeLanding"), // Hora de chegada
+                        rs.getString("destination"), // Destino
+                        rs.getString("source1"), // Origem
+                        rs.getString("codename") // Código do voo
                 };
                 model.addRow(row);
             }
@@ -151,8 +173,8 @@ public class CompraBilhete extends JFrame {
         btnNext.addActionListener(e -> {
             int selectedRow = tableFlights.getSelectedRow();
             if (selectedRow != -1) {
-                selectedFlight = getFlightFromRow(selectedRow);
-                tabbedPane.setSelectedIndex(2);
+                selectedFlight = getFlightFromRow(selectedRow); // Cria o objeto Flight
+                tabbedPane.setSelectedIndex(2); // Avança para a próxima aba
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um voo!", "Erro", JOptionPane.ERROR_MESSAGE);
             }

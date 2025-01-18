@@ -8,7 +8,7 @@ import static java.lang.String.valueOf;
 public class Flight {
 
     private int id_Flight;
-    private int id_Airplane;
+    private static int id_Airplane;
     private String codeName;
     private String source;
     private String destination;
@@ -31,6 +31,17 @@ public class Flight {
         setHTakeoff(hTakeOff);
         setHLanding(hLanding);
     }
+    private void setId_Airplane(int id_Airplane) {
+        if (id_Airplane >= 1 && id_Airplane <= 999999999) {
+            this.id_Airplane = id_Airplane;
+        } else {
+            throw new IllegalArgumentException("ID de Avião inválido");
+        }
+    }
+
+    public int getId_Airplane() {
+        return id_Airplane;
+    }
 
     private void setDate1(Date date1) {
         if (date1 != null) {
@@ -39,18 +50,10 @@ public class Flight {
             throw new IllegalArgumentException("Data de Voo inválida");
         }
     }
-
-    public int getId_Airplane() {
-        return id_Airplane;
+    public Date getDate1() {
+        return date1;
     }
 
-    public void setId_Airplane(int id_Airplane) {
-        if (id_Airplane >=1 || id_Airplane <= 999999999) {
-            this.id_Airplane = id_Airplane;
-        } else {
-            throw new IllegalArgumentException("ID de Avião inválido");
-        }
-    }
 
     // Getters e Setters
     public void setMaxPassengers(int maxPassengers) {
@@ -130,9 +133,9 @@ public class Flight {
     }
 
 
-    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+    public static void addFlight(int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try {
-            if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
+            if (id_Flight==0 || codename.isEmpty()
                     || source.isEmpty() || destination.isEmpty()) {
                 System.out.println("Por favor, preencha todos os campos!");
 
@@ -144,7 +147,7 @@ public class Flight {
                 throw new IllegalArgumentException("A data e hora de partida devem ser ANTES da data e hora de chegada, com pelo menos 1 minuto de diferença.");
             }
 
-            Flight newFlight = new Flight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
+            Flight newFlight = new Flight(id_Airplane,id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
             flights.add(newFlight);
             JOptionPane.showMessageDialog(null, "Voo adicionado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IllegalArgumentException e) {
