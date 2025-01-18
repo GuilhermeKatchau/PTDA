@@ -25,9 +25,9 @@ public class Main {
         String destination = scanner.nextLine();
 
         System.out.println("Qual tipo de classe gostaria de estar? (varia o preço do bilhete)");
-        System.out.println("1 - Luxuosa (200€)");
-        System.out.println("2 - Intermédia (150€)");
-        System.out.println("3 - Normal (100€)");
+        System.out.println("1 - Premium (200€)");
+        System.out.println("2 - Luxuosa (150€)");
+        System.out.println("3 - Económica (100€)");
         int classChoice = scanner.nextInt();
         int price = 0;
 

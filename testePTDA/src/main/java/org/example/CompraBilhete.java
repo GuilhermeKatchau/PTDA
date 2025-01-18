@@ -3,13 +3,11 @@ package org.example;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.text.ParseException;
+import java.util.Date;
 
 public class CompraBilhete extends JFrame {
     private final JTabbedPane tabbedPane;
@@ -20,10 +18,11 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     JTable tableFlights;
     private Passenger passenger;
-    Class selectedClass, luxurious, economical, premium;
+    private Class selectedClass, luxurious, economical, premium;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
+    private Seat selectedSeat;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -43,6 +42,14 @@ public class CompraBilhete extends JFrame {
         add(tabbedPane);
         setVisible(true);
     }
+    private Flight getFlightFromRow(int row) {
+        DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
+        String date = (String) model.getValueAt(row, 0);
+        String time = (String) model.getValueAt(row, 1);
+        String source = (String) model.getValueAt(row, 2);
+        String destination = (String) model.getValueAt(row, 3);
+        return new Flight(date, time, source, destination);
+    }
 
     private void tabDestinationSource() {
         panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
@@ -58,7 +65,6 @@ public class CompraBilhete extends JFrame {
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
 
-
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
             selectedSource = comboOrigem.getSelectedItem().toString();
@@ -72,7 +78,6 @@ public class CompraBilhete extends JFrame {
             }
         });
 
-
         panelDestinoOrigemData.add(labelOrigem);
         panelDestinoOrigemData.add(comboOrigem);
         panelDestinoOrigemData.add(labelDestino);
@@ -85,35 +90,15 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
-    public ArrayList<Flight> filterFlights(String origem, String destino) {
-        ArrayList<Flight> filteredFlights = new ArrayList<>();
-        for (Flight flight : getAvailableFlights()) {
-            if (flight.getSource().trim().equalsIgnoreCase(origem.trim()) &&
-                    flight.getDestination().trim().equalsIgnoreCase(destino.trim())) {
-                filteredFlights.add(flight);
-            }
-        }
-        return filteredFlights;
-    }
-
-    ArrayList<Flight> getAvailableFlights() {
-        return Flight.getFlights();
-    }
-
-    public void setAvailableFlights(ArrayList<Flight> flights) {
-        ArrayList<Flight> availableFlights = flights;
-    }
-
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0); // Limpa os dados existentes na tabela
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            // Query para filtrar voos com base na origem e destino
             String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, selectedSource); // Define o valor para origem
-            stmt.setString(2, selectedDestination); // Define o valor para destino
+            stmt.setString(1, selectedSource);
+            stmt.setString(2, selectedDestination);
 
             ResultSet rs = stmt.executeQuery();
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -125,7 +110,7 @@ public class CompraBilhete extends JFrame {
                         rs.getString("source1"),
                         rs.getString("destination")
                 };
-                model.addRow(row); // Adiciona a linha à tabela
+                model.addRow(row);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,34 +118,18 @@ public class CompraBilhete extends JFrame {
         }
     }
 
-
-    private Flight getFlightFromRow(int row) {
-        DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
-
-        String hora = model.getValueAt(row, 0).toString();
-        String origem = model.getValueAt(row, 1).toString();
-        String destino = model.getValueAt(row, 2).toString();
-
-        for (Flight flight : filterFlights(selectedSource, selectedDestination)) {
-            if (flight.getSource().equals(origem) && flight.getDestination().equals(destino)) {
-                return flight;
-            }
-        }
-        return null;
-    }
-
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
 
-        String[] columns = {"Data","Hora", "Origem", "Destino"};
+        String[] columns = {"Data", "Hora", "Origem", "Destino"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         tableFlights = new JTable(model);
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "SELECT date1, timeTakeOff, source1, destination FROM flight WHERE source1 = ? AND destination = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, selectedSource); // Define a origem escolhida pelo passageiro
-            stmt.setString(2, selectedDestination); // Define o destino escolhido pelo passageiro
+            stmt.setString(1, selectedSource);
+            stmt.setString(2, selectedDestination);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -195,14 +164,23 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Hora e Voo", panelHourFlight);
     }
 
-
     private void tabClassService() {
         JPanel panelClassService = new JPanel(new GridLayout(6, 1, 10, 10));
         JLabel labelClass = new JLabel("Escolha a Classe:");
 
-        ArrayList<Class> availableClasses = getAvailableClasses(); // Método que retorna classes disponíveis
+        ArrayList<Class> availableClasses = getAvailableClasses();
         JComboBox<Class> comboClass = new JComboBox<>(availableClasses.toArray(new Class[0]));
+        comboClass.setSelectedIndex(0); // Seleciona o primeiro item por padrão
         selectedClass = (Class) comboClass.getSelectedItem();
+
+        // Botão para atualizar as classes
+        JButton btnAtualizar = new JButton("Atualizar Classes");
+        btnAtualizar.addActionListener(e -> {
+            availableClasses.clear();
+            availableClasses.addAll(getAvailableClasses());
+            comboClass.setModel(new DefaultComboBoxModel<>(availableClasses.toArray(new Class[0])));
+            JOptionPane.showMessageDialog(this, "Classes atualizadas com sucesso!", "Atualização", JOptionPane.INFORMATION_MESSAGE);
+        });
 
         JLabel labelService = new JLabel("Serviços Adicionais:");
         JPanel panelServices = new JPanel(new GridLayout(0, 1));
@@ -216,19 +194,19 @@ public class CompraBilhete extends JFrame {
                     JCheckBox serviceCheckBox = new JCheckBox(service);
                     panelServices.add(serviceCheckBox);
                 }
+                carregarAssentosDisponiveis(selectedClass.getId());
             }
             panelServices.revalidate();
             panelServices.repaint();
         });
 
         btnNext.addActionListener(e -> {
+            selectedClass = (Class) comboClass.getSelectedItem();
             if (selectedClass == null) {
                 JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione uma classe!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             StringBuilder selectedServices = new StringBuilder();
-
-            // Coleta os serviços selecionados
             for (Component component : panelServices.getComponents()) {
                 if (component instanceof JCheckBox && ((JCheckBox) component).isSelected()) {
                     selectedServices.append(((JCheckBox) component).getText()).append(", ");
@@ -239,209 +217,66 @@ public class CompraBilhete extends JFrame {
             JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass +
                     "\nServiços Adicionais: " + (services.isEmpty() ? "Nenhum" : services), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
 
-            updateTabSeat();
-            tabbedPane.setSelectedIndex(3); // Próxima aba
+            tabbedPane.setSelectedIndex(3);
         });
 
         panelClassService.add(labelClass);
         panelClassService.add(comboClass);
+        panelClassService.add(btnAtualizar);
         panelClassService.add(labelService);
         panelClassService.add(panelServices);
         panelClassService.add(btnNext);
-
 
         tabbedPane.addTab("Classe e Serviços", panelClassService);
     }
 
     private ArrayList<Class> getAvailableClasses() {
-            classes = new ArrayList<>();
-            ArrayList<String> services1 = new ArrayList<>();
-            services1.add("Bagagem Extra");
-            services1.add("Refeição Gourmet");
+        ArrayList<Class> classes = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM class";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-            ArrayList<String> services2 = new ArrayList<>();
-            services2.add("Embarque Prioritário");
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                double preco = rs.getDouble("price");
+                int capacidade = rs.getInt("capacity");
+                ArrayList<String> servicos = new ArrayList<>(Arrays.asList(rs.getString("services").split(",")));
 
-            ArrayList<String> services3 = new ArrayList<>();
-            services3.add("");
-            services3.add("");
-            services3.add("");
-
-            luxurious = new Class("Luxuosa", 200.00, 16, services1);
-            economical = new Class("Económica", 100.00, 64, services2);
-            premium = new Class("Premium",150.00,24,services3);
-
-            classes.add(economical);
-            classes.add(luxurious);
-            classes.add(premium);
+                Class novaClasse = new Class(nome, preco, capacidade, servicos);
+                classes.add(novaClasse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar classes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
         return classes;
     }
-    private void tabSeat() {
 
+    private void carregarAssentosDisponiveis(int classId) {
+        ArrayList<Integer> assentosDisponiveis = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT id_Seat FROM seat WHERE class = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, classId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                assentosDisponiveis.add(rs.getInt("id_Seat"));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar assentos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
+        System.out.println("Assentos disponíveis para a classe " + classId + ": " + assentosDisponiveis);
+    }
+
+    private void tabSeat() {
         JPanel panelSeatPlaceholder = new JPanel();
         JLabel placeholderLabel = new JLabel("Por favor, selecione uma classe primeiro.");
         panelSeatPlaceholder.add(placeholderLabel);
 
         tabbedPane.addTab("Assento", panelSeatPlaceholder);
-    }
-
-
-    private int selectedSeatId = 0;
-    private double selectedSeatPrice = 0.0;
-    private Class selectedSeatClass = null;
-    Seat selectedSeat = new Seat();
-
-    private void updateTabSeat() {
-        JPanel panelSeat = new JPanel();
-        panelSeat.setLayout(new BoxLayout(panelSeat, BoxLayout.Y_AXIS)); // Define o layout como BoxLayout
-
-        if (selectedClass.equals(luxurious)) {
-            JLabel label = new JLabel("Você escolheu a classe Luxuosa.");
-            ClasseN3 panelSeat3 = new ClasseN3();
-            setSize(700, 600);
-            panelSeat.add(label);
-            panelSeat.add(panelSeat3.getPanel());
-
-            JButton[] botoesAssentos = panelSeat3.getBotoesAssentos();
-            for (int i = 0; i < botoesAssentos.length; i++) {
-                int numeroAssento = i + 1;
-                int finalI = i;
-                botoesAssentos[i].addActionListener(e -> {
-                    // Atualizar informações do assento selecionado
-                    selectedSeat.setId_Seat(numeroAssento);
-                    selectedSeat.setPrice(calcularPreco(numeroAssento));
-                    selectedSeatClass = luxurious;
-
-                    JOptionPane.showMessageDialog(
-                            tabbedPane,
-                            "Assento selecionado: " + selectedSeat.getId_Seat() +
-                                    "\nPreço: " + selectedSeat.getPrice()
-                    );
-                    botoesAssentos[finalI].setBackground(Color.orange);
-                });
-            }
-
-            JButton btnNext = new JButton("Próximo");
-            btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-            btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
-            btnNext.addActionListener(e -> {
-                if (selectedSeat.getId_Seat() == 0) {
-                    JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(tabbedPane, "Assento selecionado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    tabbedPane.setSelectedIndex(4);
-                }
-            });
-
-            panelSeat.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
-            panelSeat.add(btnNext);
-
-        } else if (selectedClass.equals(economical)) {
-            JLabel label = new JLabel("Você escolheu a classe Económica.");
-            SkyBoundAdicionarAssento panelSeat2 = new SkyBoundAdicionarAssento();
-            JPanel economicalPanel = new JPanel();
-            economicalPanel.setLayout(new BoxLayout(economicalPanel, BoxLayout.Y_AXIS));
-
-            economicalPanel.add(label);
-            economicalPanel.add(panelSeat2.getPanel());
-
-            JButton[] botoesAssentos = panelSeat2.getBotoesAssentos();
-            for (int i = 0; i < botoesAssentos.length; i++) {
-                int numeroAssento = i + 1;
-                botoesAssentos[i].addActionListener(e -> {
-                    // Atualizar informações do assento selecionado
-                    selectedSeat.setId_Seat(numeroAssento);
-                    selectedSeat.setPrice(calcularPreco(numeroAssento));
-                    selectedSeatClass = economical;
-
-                    JOptionPane.showMessageDialog(
-                            tabbedPane,
-                            "Assento selecionado: " + selectedSeatId +
-                                    "\nPreço: " + selectedSeatPrice
-                    );
-                });
-            }
-
-            JButton btnNext = new JButton("Próximo");
-            btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-            btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
-            btnNext.addActionListener(e -> {
-                if (selectedSeat.getId_Seat() == 0) {
-                    JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(tabbedPane, "Assento selecionado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    tabbedPane.setSelectedIndex(4);
-                }
-            });
-
-            economicalPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
-            economicalPanel.add(btnNext);
-
-            JScrollPane scrollPane = new JScrollPane(economicalPanel);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-            panelSeat.add(scrollPane);
-        } if (selectedClass.equals(premium)) {
-            JLabel label = new JLabel("Você escolheu a classe Premium.");
-            ClasseN2 panelSeat2 = new ClasseN2();
-            setSize(700, 600);
-            panelSeat.add(label);
-            panelSeat.add(panelSeat2.getPanel());
-
-            JButton[] botoesAssentos = panelSeat2.getBotoesAssentos();
-            for (int i = 0; i < botoesAssentos.length; i++) {
-                int numeroAssento = i + 1;
-                int finalI = i;
-                botoesAssentos[i].addActionListener(e -> {
-                    // Atualizar informações do assento selecionado
-                    selectedSeat.setId_Seat(numeroAssento);
-                    selectedSeat.setPrice(calcularPreco(numeroAssento));
-                    selectedSeatClass = premium;
-
-                    JOptionPane.showMessageDialog(
-                            tabbedPane,
-                            "Assento selecionado: " + selectedSeat.getId_Seat() +
-                                    "\nPreço: " + selectedSeat.getPrice()
-                    );
-                    botoesAssentos[finalI].setBackground(Color.orange);
-                });
-            }
-
-            JButton btnNext = new JButton("Próximo");
-            btnNext.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-            btnNext.setAlignmentX(JButton.CENTER_ALIGNMENT);
-            btnNext.addActionListener(e -> {
-                if (selectedSeat.getId_Seat() == 0) {
-                    JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione um assento antes de continuar!", "Erro", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(tabbedPane, "Assento selecionado com sucesso!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    tabbedPane.setSelectedIndex(4);
-                }
-            });
-            panelSeat.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento entre assentos e botão
-            panelSeat.add(btnNext);
-        }
-
-        int index1 = tabbedPane.indexOfTab("Assento");
-        tabbedPane.setComponentAt(index1, panelSeat);
-
-        tabbedPane.revalidate();
-        tabbedPane.repaint();
-    }
-
-
-
-    double calcularPreco(double price) {
-        // Lógica para calcular preço com base no número do assento
-        if (selectedClass.equals(economical)) {
-            price = 100.00;
-        } else if (selectedClass.equals(premium)) {
-            price = 150.00;
-        } else if (selectedClass.equals(luxurious)) {
-            price = 200.00;
-        }
-        return price;
     }
 
     private void tabPassengerInfo() {
@@ -475,7 +310,7 @@ public class CompraBilhete extends JFrame {
             } else if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
                 JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-                int id = new Random().nextInt(1000000); // Gerando um ID aleatório para o passageiro
+                int id = new Random().nextInt(1000000);
                 passenger = new Passenger(name, age, email, id);
                 Main.SavePassengerData(name, age, email, id);
                 checkInData.setCheckIn(isAutomatic);
@@ -510,10 +345,8 @@ public class CompraBilhete extends JFrame {
             ticket = new Ticket("Lisboa", "Porto", idTicket, 150.00);
             boolean refundable = true;
 
-            // Salvar o ticket no banco de dados
             Main.SaveTicket(passenger.getId_Passenger(), selectedDestination, ticket.getPrice(), selectedSource, refundable, idTicket);
 
-            // Salvar informações do assento no banco de dados
             if (selectedSeat.getId_Seat() != 0 && selectedSeatClass != null) {
                 Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeatClass);
                 System.out.println("Assento salvo com sucesso!");
@@ -529,10 +362,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Finalizar", panelFinalize);
     }
 
-
     public static void main(String[] args) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
         new CompraBilhete();
     }
 }
