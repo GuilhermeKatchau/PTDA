@@ -5,25 +5,27 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Random;
 
 public class CompraBilhete extends JFrame {
-    private final JTabbedPane tabbedPane;
-    private final CheckIn checkInData = new CheckIn();
-    JPanel panelDestinoOrigemData;
+    private JTabbedPane tabbedPane;
+    private CheckIn checkInData = new CheckIn();
+    private JPanel panelDestinoOrigemData;
     private String selectedSource;
     private String selectedDestination;
     private Flight selectedFlight;
-    JTable tableFlights;
-    private Passenger passenger;
+    private JTable tableFlights;
+    private ArrayList<Passenger> passengers = new ArrayList<>();
     private Class selectedClass;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
-    private Seat selectedSeat = new Seat(); // Inicializado para evitar NullPointerException
-    private Class selectedSeatClass; // Inicializado para evitar NullPointerException
+    private Seat selectedSeat = new Seat();
+    private int numberOfPassengers = 1;
+    private JSpinner numPassengersSpinner;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -33,11 +35,11 @@ public class CompraBilhete extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        tabDestinationSource();
+        tabDestinationSourceData();
         tabHourFlight();
-        tabClassService();
-        tabSeat();
         tabPassengerInfo();
+        tabClassService();
+        updateTabSeat(null); // Initialize seat tab with no class selected
         tabFinalize();
 
         add(tabbedPane);
@@ -46,28 +48,25 @@ public class CompraBilhete extends JFrame {
 
     private Flight getFlightFromRow(int row) {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
-
-        // Recupera os dados da linha selecionada na tabela
-        int idAirplane = (int) model.getValueAt(row, 0); // ID do avião (correto: id_Airplane, não idAirplane)
-        int idFlight = (int) model.getValueAt(row, 1); // ID do voo (correto: id, não id_Flight)
-        int maxPassengers = (int) model.getValueAt(row, 2); // Número máximo de passageiros
-        Date date1 = (Date) model.getValueAt(row, 3); // Data do voo
-        Date hTakeOff = (Date) model.getValueAt(row, 4); // Hora de partida (correto: timeTakeOff, não hTakeOff)
-        Date hLanding = (Date) model.getValueAt(row, 5); // Hora de chegada (correto: timeLanding, não hLanding)
-        String destination = (String) model.getValueAt(row, 6); // Destino
-        String source = (String) model.getValueAt(row, 7); // Origem
-        String codename = (String) model.getValueAt(row, 8); // Código do voo
-
-        // Retorna um novo objeto Flight com todos os dados
-        return new Flight(idAirplane,idFlight ,maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
+        int idAirplane = (int) model.getValueAt(row, 0);
+        int idFlight = (int) model.getValueAt(row, 1);
+        int maxPassengers = (int) model.getValueAt(row, 2);
+        Date date1 = (Date) model.getValueAt(row, 3);
+        Date hTakeOff = (Date) model.getValueAt(row, 4);
+        Date hLanding = (Date) model.getValueAt(row, 5);
+        String destination = (String) model.getValueAt(row, 6);
+        String source = (String) model.getValueAt(row, 7);
+        String codename = (String) model.getValueAt(row, 8);
+        return new Flight(idAirplane, idFlight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
     }
 
-    private void tabDestinationSource() {
-        panelDestinoOrigemData = new JPanel(new GridLayout(4, 2, 10, 10));
+    private void tabDestinationSourceData() {
+        panelDestinoOrigemData = new JPanel(new GridLayout(5, 2, 10, 10));
 
         JLabel labelOrigem = new JLabel("Origem:");
         JLabel labelDestino = new JLabel("Destino:");
         JLabel labelData = new JLabel("Data (dd/MM/yyyy):");
+        JLabel labelNumPassengers = new JLabel("Número de Passageiros:");
 
         String[] locais = {"Lisboa", "Porto", "Madrid", "Londres", "Paris"};
         JComboBox<String> comboOrigem = new JComboBox<>(locais);
@@ -76,10 +75,17 @@ public class CompraBilhete extends JFrame {
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
 
+        numPassengersSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        if (numberOfPassengers < 1 || numberOfPassengers > 10) {
+            JOptionPane.showMessageDialog(this, "O número de passageiros deve ser entre 1 e 10!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         JButton btnProximo = new JButton("Próximo");
         btnProximo.addActionListener(e -> {
             selectedSource = comboOrigem.getSelectedItem().toString();
             selectedDestination = comboDestino.getSelectedItem().toString();
+            numberOfPassengers = (int) numPassengersSpinner.getValue();
 
             if (selectedSource.equals(selectedDestination)) {
                 JOptionPane.showMessageDialog(this, "A origem e o destino não podem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -95,6 +101,8 @@ public class CompraBilhete extends JFrame {
         panelDestinoOrigemData.add(comboDestino);
         panelDestinoOrigemData.add(labelData);
         panelDestinoOrigemData.add(fieldData);
+        panelDestinoOrigemData.add(labelNumPassengers);
+        panelDestinoOrigemData.add(numPassengersSpinner);
         panelDestinoOrigemData.add(new JLabel());
         panelDestinoOrigemData.add(btnProximo);
 
@@ -103,11 +111,12 @@ public class CompraBilhete extends JFrame {
 
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
-        model.setRowCount(0); // Limpa os dados existentes na tabela
+        model.setRowCount(0);
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            // Query corrigida para usar as colunas corretas
-            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight WHERE source1 = ? AND destination = ?";
+            String sql = "SELECT f.id_plane, f.id, f.maxPassengers, f.date1, f.timeTakeOff, f.timeLanding, f.destination, f.source1, f.codename, " +
+                    "f.maxPassengers - (SELECT COUNT(*) FROM seat WHERE id_flight = f.id) AS available_seats " +
+                    "FROM flight f WHERE f.source1 = ? AND f.destination = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, selectedSource);
             stmt.setString(2, selectedDestination);
@@ -116,56 +125,30 @@ public class CompraBilhete extends JFrame {
 
             while (rs.next()) {
                 Object[] row = {
-                        rs.getInt("id_plane"), // ID do avião (correto: id_Airplane, não idAirplane)
-                        rs.getInt("id"), // ID do voo (correto: id, não id_Flight)
-                        rs.getInt("maxPassengers"), // Número máximo de passageiros
-                        rs.getDate("date1"), // Data do voo
-                        rs.getTime("timeTakeOff"), // Hora de partida (correto: timeTakeOff, não hTakeOff)
-                        rs.getTime("timeLanding"), // Hora de chegada (correto: timeLanding, não hLanding)
-                        rs.getString("destination"), // Destino
-                        rs.getString("source1"), // Origem
-                        rs.getString("codename") // Código do voo
+                        rs.getInt("id_plane"),
+                        rs.getInt("id"),
+                        rs.getInt("maxPassengers"),
+                        rs.getDate("date1"),
+                        rs.getTime("timeTakeOff"),
+                        rs.getTime("timeLanding"),
+                        rs.getString("destination"),
+                        rs.getString("source1"),
+                        rs.getString("codename")
                 };
-                model.addRow(row); // Adiciona a linha à tabela
+                model.addRow(row);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao carregar voos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar voos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void tabHourFlight() {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
 
-        // Colunas da tabela
-        String[] columns = {"ID Avião", "ID Voo", "Max Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        String[] columns = {"ID Avião", "ID Voo", "Max Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código", "Available Seats"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         tableFlights = new JTable(model);
-
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename FROM flight WHERE source1 = ? AND destination = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, selectedSource);
-            stmt.setString(2, selectedDestination);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Object[] row = {
-                        rs.getInt("id_plane"), // ID do avião
-                        rs.getInt("id"), // ID do voo
-                        rs.getInt("maxPassengers"), // Número máximo de passageiros
-                        rs.getDate("date1"), // Data do voo
-                        rs.getTime("timeTakeOff"), // Hora de partida
-                        rs.getTime("timeLanding"), // Hora de chegada
-                        rs.getString("destination"), // Destino
-                        rs.getString("source1"), // Origem
-                        rs.getString("codename") // Código do voo
-                };
-                model.addRow(row);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         JScrollPane scrollPane = new JScrollPane(tableFlights);
 
@@ -173,8 +156,8 @@ public class CompraBilhete extends JFrame {
         btnNext.addActionListener(e -> {
             int selectedRow = tableFlights.getSelectedRow();
             if (selectedRow != -1) {
-                selectedFlight = getFlightFromRow(selectedRow); // Cria o objeto Flight
-                tabbedPane.setSelectedIndex(2); // Avança para a próxima aba
+                selectedFlight = getFlightFromRow(selectedRow);
+                tabbedPane.setSelectedIndex(2);
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um voo!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -186,16 +169,102 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Hora e Voo", panelHourFlight);
     }
 
+    private void tabPassengerInfo() {
+        JPanel panelPassageiro = new JPanel();
+        panelPassageiro.setLayout(new BoxLayout(panelPassageiro, BoxLayout.Y_AXIS));
+
+        // Atualizar os arrays com o tamanho correto
+        JTextField[] passengerName = new JTextField[numberOfPassengers];
+        JLabel[] labelAge = new JLabel[numberOfPassengers];
+        JSpinner[] passengerAge = new JSpinner[numberOfPassengers];
+        JLabel[] labelEmail = new JLabel[numberOfPassengers];
+        JTextField[] passengerEmail = new JTextField[numberOfPassengers];
+        JLabel[] labelCheckIn = new JLabel[numberOfPassengers];
+        JRadioButton[][] checkInOptions = new JRadioButton[numberOfPassengers][2]; // Certifique-se de inicializar corretamente
+
+        for (int i = 0; i < numberOfPassengers; i++) {
+            JPanel panelPassenger = new JPanel(new GridLayout(0, 2, 10, 10));
+
+            passengerName[i] = new JTextField();
+            labelAge[i] = new JLabel("Idade:");
+            passengerAge[i] = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
+            labelEmail[i] = new JLabel("Email:");
+            passengerEmail[i] = new JTextField();
+            labelCheckIn[i] = new JLabel("Check-in:");
+            checkInOptions[i][0] = new JRadioButton("Automático");
+            checkInOptions[i][1] = new JRadioButton("Manual");
+
+            ButtonGroup group = new ButtonGroup();
+            group.add(checkInOptions[i][0]);
+            group.add(checkInOptions[i][1]);
+
+            panelPassenger.add(new JLabel("Nome:"));
+            panelPassenger.add(passengerName[i]);
+            panelPassenger.add(labelAge[i]);
+            panelPassenger.add(passengerAge[i]);
+            panelPassenger.add(labelEmail[i]);
+            panelPassenger.add(passengerEmail[i]);
+            panelPassenger.add(labelCheckIn[i]);
+            panelPassenger.add(checkInOptions[i][0]);
+            panelPassenger.add(new JLabel());
+            panelPassenger.add(checkInOptions[i][1]);
+
+            panelPassageiro.add(panelPassenger);
+        }
+
+        JButton btnNext = new JButton("Próximo");
+        btnNext.addActionListener(e -> {
+            ArrayList<Passenger> passengers = new ArrayList<>();
+            for (int i = 0; i < numberOfPassengers; i++) {
+                if (passengerName[i] == null || passengerAge[i] == null || passengerEmail[i] == null ||
+                        checkInOptions[i][0] == null || checkInOptions[i][1] == null) {
+                    JOptionPane.showMessageDialog(this, "Erro interno: Informações de passageiro não foram inicializadas corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String name = passengerName[i].getText().trim();
+                int age = (int) passengerAge[i].getValue();
+                String email = passengerEmail[i].getText().trim();
+                boolean isAutomatic = checkInOptions[i][0].isSelected();
+
+                // Validação de campos
+                if (name.isEmpty() || email.isEmpty() || (!checkInOptions[i][0].isSelected() && !checkInOptions[i][1].isSelected())) {
+                    JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos para todos os passageiros!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
+                    JOptionPane.showMessageDialog(this, "Insira um email válido para o passageiro " + (i + 1), "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int id = new Random().nextInt(1000000);
+                Passenger p = new Passenger(name, age, email, id);
+                passengers.add(p);
+                Main.SavePassengerData(name, age, email, id);
+                checkInData.setCheckIn(isAutomatic);
+            }
+
+            this.passengers = passengers;
+            JOptionPane.showMessageDialog(this, "Passageiros Registrados com Sucesso!", "Resumo", JOptionPane.INFORMATION_MESSAGE);
+            tabbedPane.setSelectedIndex(3);
+        });
+
+
+        panelPassageiro.add(btnNext);
+        tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
+    }
+
+
     private void tabClassService() {
         JPanel panelClassService = new JPanel(new GridLayout(6, 1, 10, 10));
         JLabel labelClass = new JLabel("Escolha a Classe:");
 
         ArrayList<Class> availableClasses = getAvailableClasses();
         JComboBox<Class> comboClass = new JComboBox<>(availableClasses.toArray(new Class[0]));
-        comboClass.setSelectedIndex(0); // Seleciona o primeiro item por padrão
+        comboClass.setSelectedIndex(0);
         selectedClass = (Class) comboClass.getSelectedItem();
 
-        // Botão para atualizar as classes
         JButton btnAtualizar = new JButton("Atualizar Classes");
         btnAtualizar.addActionListener(e -> {
             availableClasses.clear();
@@ -228,6 +297,7 @@ public class CompraBilhete extends JFrame {
                 JOptionPane.showMessageDialog(tabbedPane, "Por favor, selecione uma classe!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             StringBuilder selectedServices = new StringBuilder();
             for (Component component : panelServices.getComponents()) {
                 if (component instanceof JCheckBox && ((JCheckBox) component).isSelected()) {
@@ -236,10 +306,10 @@ public class CompraBilhete extends JFrame {
             }
 
             String services = selectedServices.toString().replaceAll(", $", "");
-            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass +
-                    "\nServiços Adicionais: " + (services.isEmpty() ? "Nenhum" : services), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Classe Selecionada: " + selectedClass + "\nServiços Adicionais: " + (services.isEmpty() ? "Nenhum" : services), "Resumo - Classe e Serviços", JOptionPane.INFORMATION_MESSAGE);
 
-            tabbedPane.setSelectedIndex(3);
+            updateTabSeat(selectedClass);
+            tabbedPane.setSelectedIndex(4);
         });
 
         panelClassService.add(labelClass);
@@ -268,95 +338,78 @@ public class CompraBilhete extends JFrame {
                 Class novaClasse = new Class(nome, preco, capacidade, servicos);
                 classes.add(novaClasse);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao carregar classes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar classes: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
         return classes;
+    }
+
+    private void updateTabSeat(Class selectedClass) {
+        JPanel panelSeat = new JPanel();
+        panelSeat.setLayout(new BoxLayout(panelSeat, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel("Assentos disponíveis para a classe: " + (selectedClass != null ? selectedClass.getClassName() : "Nenhuma classe selecionada"));
+        panelSeat.add(label);
+
+        if (selectedClass != null) {
+            ArrayList<Integer> assentosDisponiveis = selectedClass.generateSeats();
+            JPanel panelAssentos = new JPanel(new GridLayout(0, 4, 10, 10));
+
+            for (int assento : assentosDisponiveis) {
+                JButton btnAssento = new JButton(String.valueOf(assento));
+                btnAssento.addActionListener(e -> {
+                    selectedSeat.setId_Seat(assento);
+                    selectedSeat.setPrice(selectedClass.getPrice());
+                    selectedSeat.setSeatClass(selectedClass);
+                    JOptionPane.showMessageDialog(this, "Assento selecionado: " + assento, "Informação", JOptionPane.INFORMATION_MESSAGE);
+                    btnAssento.setBackground(Color.ORANGE);
+                });
+                panelAssentos.add(btnAssento);
+            }
+
+            JScrollPane scrollPane = new JScrollPane(panelAssentos);
+            panelSeat.add(scrollPane);
+
+            JButton btnNext = new JButton("Próximo");
+            btnNext.addActionListener(e -> {
+                if (selectedSeat.getId_Seat() == 0) {
+                    JOptionPane.showMessageDialog(this, "Por favor, selecione um assento!", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // Chamada corrigida para SkyBoundAdicionarAssento
+                    new SkyBoundAdicionarAssento(idTicket, passengers.get(0).getName(), selectedClass.getPrice(), selectedClass, selectedFlight.getId_Flight(), numberOfPassengers).setVisible(true);
+                    tabbedPane.setSelectedIndex(5);
+                }
+            });
+
+            panelSeat.add(btnNext);
+        }
+
+        int index = tabbedPane.indexOfTab("Assento");
+        if (index == -1) {
+            tabbedPane.addTab("Assento", panelSeat);
+        } else {
+            tabbedPane.setComponentAt(index, panelSeat);
+        }
+        tabbedPane.revalidate();
+        tabbedPane.repaint();
     }
 
     private void carregarAssentosDisponiveis(int classId) {
         ArrayList<Integer> assentosDisponiveis = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT id_Seat FROM seat WHERE class = ?";
+            String sql = "SELECT id_Seat FROM seat WHERE class = ? AND id_flight = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, classId);
+            stmt.setInt(2, selectedFlight.getId_Flight());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 assentosDisponiveis.add(rs.getInt("id_Seat"));
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar assentos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar assentos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-
-        System.out.println("Assentos disponíveis para a classe " + classId + ": " + assentosDisponiveis);
-    }
-
-    private void tabSeat() {
-        JPanel panelSeatPlaceholder = new JPanel();
-        JLabel placeholderLabel = new JLabel("Por favor, selecione uma classe primeiro.");
-        panelSeatPlaceholder.add(placeholderLabel);
-
-        tabbedPane.addTab("Assento", panelSeatPlaceholder);
-    }
-
-    private void tabPassengerInfo() {
-        JPanel panelPassageiro = new JPanel(new GridLayout(6, 2, 10, 10));
-
-        JLabel labelName = new JLabel("Nome:");
-        JTextField passengerName = new JTextField();
-
-        JLabel labelAge = new JLabel("Idade:");
-        JSpinner passengerAge = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
-
-        JLabel labelEmail = new JLabel("Email:");
-        JTextField passengerEmail = new JTextField();
-
-        JLabel labelCheckIn = new JLabel("Check-in:");
-        JRadioButton radioButtonAutomatic = new JRadioButton("Automático");
-        JRadioButton radioButtonManual = new JRadioButton("Manual");
-        ButtonGroup CheckIn = new ButtonGroup();
-        CheckIn.add(radioButtonAutomatic);
-        CheckIn.add(radioButtonManual);
-
-        JButton btnNext = new JButton("Próximo");
-        btnNext.addActionListener(e -> {
-            String name = passengerName.getText().trim();
-            int age = (int) passengerAge.getValue();
-            String email = passengerEmail.getText().trim();
-            boolean isAutomatic = radioButtonAutomatic.isSelected();
-
-            if (name.isEmpty() || email.isEmpty() || CheckIn.getSelection() == null) {
-                JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } else if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
-                JOptionPane.showMessageDialog(this, "Insira um email válido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } else {
-                int id = new Random().nextInt(1000000);
-                passenger = new Passenger(name, age, email, id);
-                Main.SavePassengerData(name, age, email, id);
-                checkInData.setCheckIn(isAutomatic);
-
-                JOptionPane.showMessageDialog(this, "Passageiro Registrado:\n" + passenger.toString() +
-                        "\nCheck-in: " + (isAutomatic ? "Automático" : "Manual"), "Resumo", JOptionPane.INFORMATION_MESSAGE);
-                tabbedPane.setSelectedIndex(5);
-            }
-        });
-
-        panelPassageiro.add(labelName);
-        panelPassageiro.add(passengerName);
-        panelPassageiro.add(labelAge);
-        panelPassageiro.add(passengerAge);
-        panelPassageiro.add(labelEmail);
-        panelPassageiro.add(passengerEmail);
-        panelPassageiro.add(labelCheckIn);
-        panelPassageiro.add(radioButtonAutomatic);
-        panelPassageiro.add(new JLabel());
-        panelPassageiro.add(radioButtonManual);
-        panelPassageiro.add(new JLabel());
-        panelPassageiro.add(btnNext);
-
-        tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
     }
 
     private void tabFinalize() {
@@ -364,23 +417,20 @@ public class CompraBilhete extends JFrame {
         JButton btnFinalize = new JButton("Finalizar Compra");
 
         btnFinalize.addActionListener(e -> {
-            ticket = new Ticket("Lisboa", "Porto", idTicket, 150.00);
             boolean refundable = true;
 
-            Main.SaveTicket(passenger.getId_Passenger(), selectedDestination, ticket.getPrice(), selectedSource, refundable, idTicket);
+            int idFlight = selectedFlight.getId_Flight();
 
-            if (selectedSeat.getId_Seat() != 0 && selectedSeatClass != null) {
-                Main.saveSeatInfo(idTicket, selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeatClass);
-                System.out.println("Assento salvo com sucesso!");
-            } else {
-                System.out.println("Nenhum assento foi selecionado.");
+            for (Passenger passenger : passengers) {
+                Main.SaveTicket(String.valueOf(idTicket), passenger.getId_Passenger(), passenger.getName(), selectedSeat.getId_Seat(), selectedDestination, selectedClass.getPrice(), selectedSource, refundable, idFlight);
+                Main.saveSeatInfo(String.valueOf(idTicket), passenger.getName(), selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeat.getSeatClass(), idFlight);
             }
 
-            JOptionPane.showMessageDialog(this, "Bilhete Criado:\n" + ticket.toString(), "Bilhete", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Compra Finalizada com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });
-        panelFinalize.add(btnFinalize, BorderLayout.CENTER);
 
+        panelFinalize.add(btnFinalize, BorderLayout.CENTER);
         tabbedPane.addTab("Finalizar", panelFinalize);
     }
 

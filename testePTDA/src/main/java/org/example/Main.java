@@ -1,15 +1,16 @@
 package org.example;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.Date;
 import java.util.Scanner;
 import java.text.SimpleDateFormat;
-
+import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-//VAI PARA PASSENGER
+
         // Captura de dados do utilizador
         System.out.print("Introduza o nome da pessoa: ");
         String name = scanner.nextLine();
@@ -47,13 +48,17 @@ public class Main {
                 price = 100;
         }
 
+
         // Conexão com a base de dados e inserção de dados
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             connection.setAutoCommit(false); // Transações manuais para consistência
 
-            // Obtém o próximo ID
-            int nextId = getNextIDTicket(connection);
+            // Obtém o próximo ID do passageiro e do ticket
+            int nextId = getNextIDPassenger(connection);
             int numTicket = getNextIDTicket(connection);
+
+            // Obtém o próximo ID do voo (exemplo, ajuste conforme necessário)
+            int idFlight = getNextIDFlight(connection);
 
             // Inserção na tabela passenger
             String sqlPassenger = "INSERT INTO passenger (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
@@ -68,14 +73,19 @@ public class Main {
                     System.out.println("Nova pessoa adicionada com sucesso!");
                 }
             }
-//VAI PARA CLASSE TICKET
+
             // Inserção na tabela ticket
-            String sqlTicket = "INSERT INTO ticket (id_passenger, destination, price, id) VALUES (?, ?, ?, ?)";
+            String sqlTicket = "INSERT INTO ticket (id_passenger, name_passenger, seat, destination, price, trip, refundable, id, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement statementTicket = connection.prepareStatement(sqlTicket)) {
                 statementTicket.setInt(1, nextId); // O ID do passageiro
-                statementTicket.setString(2, destination);
-                statementTicket.setInt(3, price);
-                statementTicket.setInt(4, numTicket);
+                statementTicket.setString(2, name); // Nome do passageiro
+                statementTicket.setInt(3, 1); // ID do assento (exemplo, ajuste conforme necessário)
+                statementTicket.setString(4, destination);
+                statementTicket.setInt(5, price);
+                statementTicket.setString(6, "Lisboa"); // Origem (exemplo, ajuste conforme necessário)
+                statementTicket.setBoolean(7, true); // Refundable (exemplo, ajuste conforme necessário)
+                statementTicket.setInt(8, numTicket);
+                statementTicket.setInt(9, idFlight); // ID do voo
 
                 int rowsInsertedTicket = statementTicket.executeUpdate();
                 if (rowsInsertedTicket > 0) {
@@ -93,15 +103,42 @@ public class Main {
     }
 
     // Função para obter o próximo ID na tabela passenger
-    //VAI PARA A CLASSE PASSENGER
+    public static int getNextIDPassenger(Connection connection) throws SQLException {
+        String query = "SELECT MAX(id) FROM passenger";
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1) + 1; // Incrementa o próximo ID
+        } else {
+            return 1; // Se não houver nenhum passageiro, retorna 1
+        }
+    }
 
     // Função para obter o próximo número de bilhete na tabela ticket
-    //ISTO VAI PARA A CLASSE TICKET
+    public static int getNextIDTicket(Connection connection) throws SQLException {
+        String query = "SELECT MAX(id) FROM ticket";
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1) + 1; // Incrementa o próximo ID
+        } else {
+            return 1; // Se não houver nenhum ticket, retorna 1
+        }
+    }
 
-        // Certifique-se de que o método é estátic
+    // Função para obter o próximo ID na tabela flight
+    public static int getNextIDFlight(Connection connection) throws SQLException {
+        String query = "SELECT MAX(id) FROM flight";
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1) + 1; // Incrementa o próximo ID
+        } else {
+            return 1; // Se não houver nenhum voo, retorna 1
+        }
+    }
 
-        // Outros métodos da classe Main...
-
+    // Método para salvar dados do passageiro
     public static void SavePassengerData(String name_passenger, int age, String email, int id) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "INSERT INTO passenger (name_passenger, age, email, id) VALUES (?, ?, ?, ?)";
@@ -118,27 +155,32 @@ public class Main {
             System.out.println("Erro ao guardar os dados do passageiro!");
         }
     }
-
-    public static void SaveTicket(int id_passenger,String destination, double price, String source1,Boolean refundable, int id) {
+    String idTicket = UUID.randomUUID().toString();
+    // Método para salvar dados do ticket
+    public static void SaveTicket(String idTicket, int idPassenger, String namePassenger, int idSeat, String destination, double price, String source, boolean refundable, int idFlight) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO ticket (id_passenger,destination,price,trip,refundable,id) VALUES (?,?,?,?,?,?)";
+            String sql = "INSERT INTO ticket (id, id_passenger, name_passenger, id_seat, destination, price, source1, refundable, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id_passenger);
-            stmt.setString(2, destination);
-            stmt.setDouble(3, price);
-            stmt.setString(4,source1);
-            stmt.setBoolean(5,refundable);
-            stmt.setInt(6,id);
+            stmt.setString(1, idTicket);
+            stmt.setInt(2, idPassenger);
+            stmt.setString(3, namePassenger);
+            stmt.setInt(4, idSeat);
+            stmt.setString(5, destination);
+            stmt.setDouble(6, price);
+            stmt.setString(7, source);
+            stmt.setBoolean(8, refundable);
+            stmt.setInt(9, idFlight);
             stmt.executeUpdate();
-            System.out.println("Dados inseridos com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Erro ao guardar os dados!");
+            JOptionPane.showMessageDialog(null, "Erro ao salvar o ticket: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    // Método para salvar dados da tripulação
     public static void saveCrewData(int idCrewMember, int idFlight, String name, String shift, int experience, String ranq) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO crew (id, id_flight, nome, shift, experience, ranq) VALUES (?,?,?,?,?,?)";
+            String sql = "INSERT INTO crew (id, id_flight, nome, shift, experience, ranq) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idCrewMember);
             stmt.setInt(2, idFlight);
@@ -147,51 +189,52 @@ public class Main {
             stmt.setInt(5, experience);
             stmt.setString(6, ranq);
             stmt.executeUpdate();
-            System.out.println("Dados inseridos com sucesso!");
+            System.out.println("Dados da tripulação inseridos com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Erro ao guardar os dados!");
+            System.out.println("Erro ao guardar os dados da tripulação!");
         }
     }
 
+    // Método para deletar dados da tripulação
     public static void deleteCrewData(int id) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "DELETE FROM crew WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1,id);
+            stmt.setInt(1, id);
             stmt.executeUpdate();
-            System.out.println("Dados apagados com sucesso!");
+            System.out.println("Dados da tripulação apagados com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Erro ao apagar os dados!");
+            System.out.println("Erro ao apagar os dados da tripulação!");
         }
     }
 
-        public static void salvarDadosAirplane(String destination, int id, String source1) {
+    // Método para salvar dados do avião
+    public static void salvarDadosAirplane(String destination, int id, String source1) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO airplane (id,destination,source1) VALUES (?,?,?)";
+            String sql = "INSERT INTO airplane (id, destination, source1) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, destination);
-            stmt.setInt(2, id);
-            stmt.setString(3,source1);
+            stmt.setInt(1, id);
+            stmt.setString(2, destination);
+            stmt.setString(3, source1);
             stmt.executeUpdate();
-            System.out.println("Dados inseridos com sucesso!");
+            System.out.println("Dados do avião inseridos com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Erro ao guardar os dados!");
+            System.out.println("Erro ao guardar os dados do avião!");
         }
     }
 
-    public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
-
+    // Método para salvar dados do voo
+    public static void salvarDadosFlight(int id_Airplane, int id_Flight, int maxPassengers, Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat hourFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String formattedTakeOff = hourFormat.format(hTakeOff);
             String formattedLanding = hourFormat.format(hLanding);
 
-            String sql = "INSERT INTO flight (id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO flight (id_plane, id, maxPassengers, date1, timeTakeOff, timeLanding, destination, source1, codename) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id_Airplane);
             stmt.setInt(2, id_Flight);
@@ -210,57 +253,51 @@ public class Main {
             System.out.println("Erro ao guardar os dados do voo!");
         }
     }
-    public static int getNextIDTicket(Connection connection) throws SQLException {
-        // Lógica para obter o próximo número de ticket
-        String query = "SELECT MAX(ticket_id) FROM ticket"; // Exemplo de SQL
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-        if (rs.next()) {
-            return rs.getInt(1) + 1; // Incrementa o próximo ID
-        } else {
-            return 1; // Se não houver nenhum ticket, retorna 1
-        }
-    }
 
-    public static void linkServiceToClass(int idClass,String className, String service, int idService) {
-        String sql = "INSERT INTO class (id, name,service, price) VALUES (?, ? ,?, ?)";
-
+    // Método para associar serviço à classe
+    public static void linkServiceToClass(int idClass, String className, String service, int idService) {
+        String sql = "INSERT INTO class (id, nome, services, price) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793");
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, idClass);
             stmt.setString(2, className);
             stmt.setString(3, service);
             stmt.setInt(4, idService);
             stmt.executeUpdate();
             System.out.println("Serviço associado à classe com sucesso!");
-
         } catch (SQLException e) {
             System.err.println("Erro ao associar serviço à classe: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public static void saveSeatInfo(int idTicket, int idSeat, double price, Class classe){
-        try(Connection conn= DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
-            String sql = "INSERT INTO seat (id_Ticket, id_Seat, price, class) VALUES (?, ?, ?, ?)";
+    // Método para salvar informações do assento
+    public static void saveSeatInfo(String idTicket, String namePassenger, int idSeat, double price, Class classe, int idFlight) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "INSERT INTO seat (id_ticket, name_passenger, id_seat, price, class, id_flight) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idTicket);
-            stmt.setInt(2, idSeat);
-            stmt.setDouble(3, price);
-            stmt.setString(4, String.valueOf(classe));
+            stmt.setString(1, idTicket);
+            stmt.setString(2, namePassenger);
+            stmt.setInt(3, idSeat);
+            stmt.setDouble(4, price);
+            stmt.setString(5, classe.getClassName());
+            stmt.setInt(6, idFlight);
+
             stmt.executeUpdate();
-            System.out.println("Dados do assento inseridos com sucesso!");
+            System.out.println("Assento salvo com sucesso no banco de dados!");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            System.out.println("Erro ao salvar o assento no banco de dados: " + e.getMessage());
         }
     }
-    public static void showRegisteredFlights(){
-        try(Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")){
+
+    // Método para mostrar voos registrados
+    public static void showRegisteredFlights() {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "SELECT * FROM flight";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 System.out.println("ID do Avião: " + rs.getInt("id_plane"));
                 System.out.println("ID do Voo: " + rs.getInt("id"));
                 System.out.println("Número Máximo de Passageiros: " + rs.getInt("maxPassengers"));
@@ -273,8 +310,8 @@ public class Main {
                 System.out.println();
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            System.out.println("Erro ao mostrar os voos registrados!");
         }
     }
-
 }

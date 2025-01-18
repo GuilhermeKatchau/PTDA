@@ -81,7 +81,7 @@ public class Class {
     public ArrayList<Integer> generateSeats() {
         ArrayList<Integer> seats = new ArrayList<>();
         for (int i = 1; i <= seatCapacity; i++) {
-            seats.add(i);
+            seats.add(i); // Gera assentos de 1 até seatCapacity
         }
         return seats;
     }

@@ -4,6 +4,7 @@ public class Seat {
 
     private int id_Seat;
     private double price;
+    private Class seatClass; // Referência à classe do assento
 
     public void setId_Seat(int id_Seat) {
         if (id_Seat >= 1 && id_Seat <= 999999999) {
@@ -29,5 +30,11 @@ public class Seat {
         return price;
     }
 
+    public Class getSeatClass() {
+        return seatClass;
+    }
 
+    public void setSeatClass(Class seatClass) {
+        this.seatClass = seatClass;
+    }
 }

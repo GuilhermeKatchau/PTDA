@@ -157,13 +157,35 @@ public class GestaoServicosClasses extends JFrame {
         String sql = "INSERT INTO seat (id_Seat, price, class) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (int i = 1; i <= capacidade; i++) {
-                stmt.setInt(1, i);
-                stmt.setDouble(2, preco);
-                stmt.setInt(3, classId);
+                stmt.setInt(1, i); // ID do assento
+                stmt.setDouble(2, preco); // Preço do assento
+                stmt.setInt(3, classId); // ID da classe
                 stmt.addBatch();
             }
             stmt.executeBatch();
         }
+    }
+    private JPanel criarPainelAssentos(int capacidade) {
+        JPanel panel = new JPanel(new GridLayout(0, 3)); // 3 colunas: 1 para a fila esquerda e 2 para as filas direitas
+
+        int assentosPorFila = capacidade / 3;
+        int assentoAtual = 1;
+
+        // Fila do lado esquerdo
+        for (int i = 1; i <= assentosPorFila; i++) {
+            JButton btnAssento = new JButton(String.valueOf(assentoAtual));
+            panel.add(btnAssento);
+            assentoAtual++;
+        }
+
+        // Filas do lado direito
+        for (int i = 1; i <= 2 * assentosPorFila; i++) {
+            JButton btnAssento = new JButton(String.valueOf(assentoAtual));
+            panel.add(btnAssento);
+            assentoAtual++;
+        }
+
+        return panel;
     }
 
     private JPanel criarPainelClasses() {
@@ -263,6 +285,9 @@ public class GestaoServicosClasses extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecione uma classe para remover.");
         }
     }
+    public void abrirTelaSelecaoAssentos(Class classeSelecionada, int idTicket, String namePassenger, double price, int idFlight, int numberOfPassengers) {
+        SwingUtilities.invokeLater(() -> new SkyBoundAdicionarAssento(idTicket, namePassenger, price, classeSelecionada, idFlight, numberOfPassengers));
+    }
 
     private void visualizarDetalhesClasse() {
         int index = classJlist.getSelectedIndex();
@@ -276,7 +301,20 @@ public class GestaoServicosClasses extends JFrame {
             for (String servico : classe.getServices()) {
                 detalhes.append("- ").append(servico).append("\n");
             }
-            JOptionPane.showMessageDialog(this, detalhes.toString());
+
+            // Botão para abrir a tela de seleção de assentos
+            JButton btnSelecionarAssentos = new JButton("Selecionar Assentos");
+            btnSelecionarAssentos.addActionListener(e -> {
+                int idTicket = 1; // Exemplo de ID do ticket
+                String namePassenger = "João Silva"; // Exemplo de nome do passageiro
+                double price = classe.getPrice(); // Preço da classe
+                int idFlight = 123; // Exemplo de ID do voo
+                int numberOfPassengers = 1; // Exemplo de número de passageiros
+                abrirTelaSelecaoAssentos(classe, idTicket, namePassenger, price, idFlight, numberOfPassengers);
+            });
+
+            // Exibir os detalhes e o botão
+            JOptionPane.showMessageDialog(this, new Object[]{detalhes.toString(), btnSelecionarAssentos}, "Detalhes da Classe", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma classe para ver os detalhes.");
         }
