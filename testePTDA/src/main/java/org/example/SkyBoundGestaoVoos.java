@@ -15,6 +15,7 @@ public class SkyBoundGestaoVoos extends JFrame {
     private final JSpinner hTakeOff, hLanding, date1;
     final DefaultListModel<String> flights;
     private final JList<String> registeredFlights;
+    private JTable table;
 
     public SkyBoundGestaoVoos() {
 
@@ -22,6 +23,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
+
 
         id_Airplane = new JTextField();
         id_Flight = new JTextField();
@@ -105,8 +107,13 @@ public class SkyBoundGestaoVoos extends JFrame {
     private JScrollPane FlightList() {
         // Configura o modelo da tabela para exibir os voos
         String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        JTable table = new JTable(model);
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Impede a edição de qualquer célula
+            }
+        };
+        table = new JTable(model);
 
         // Carrega os dados da base de dados no modelo da tabela
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
@@ -135,11 +142,9 @@ public class SkyBoundGestaoVoos extends JFrame {
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 1) { // Clique único
+                if (e.getClickCount() == 2) { // Clique único
                     int selectedRow = table.getSelectedRow(); // Obtém a linha selecionada
-                    if (selectedRow != -1) {
                         abrirGestaoTripulacao(selectedRow);
-                    }
                 }
             }
         });
@@ -191,10 +196,22 @@ public class SkyBoundGestaoVoos extends JFrame {
     }
 
     private void removeFlight() {
-        int selectedIndex = registeredFlights.getSelectedIndex();
-        if (selectedIndex != -1) {
-            Flight.removeFlight(selectedIndex);
-            loadFlights();
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow != -1) {
+            int flightId = (int) table.getValueAt(selectedRow, 1);
+
+            // Remove o voo da base de dados usando o ID do voo
+            try (Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+                String sql = "DELETE FROM flight WHERE id = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, flightId);
+                stmt.executeUpdate();
+                loadFlights(); // Atualiza a tabela após a remoção
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Erro ao remover voo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
