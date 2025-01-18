@@ -109,7 +109,7 @@ public class CompraBilhete extends JFrame {
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
     }
 
-<<<<<<< HEAD
+
     public ArrayList<Flight> filterFlights(String origem, String destino) {
         ArrayList<Flight> filteredFlights = new ArrayList<>();
         for (Flight flight : getAvailableFlights()) {
@@ -126,8 +126,7 @@ public class CompraBilhete extends JFrame {
     }
 
 
-=======
->>>>>>> refs/remotes/origin/main
+
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0);

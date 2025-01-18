@@ -133,14 +133,13 @@ public class Flight {
     }
 
 
-<<<<<<< HEAD
-    public static void addFlight(int id_Airplane, int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
-            if (id_Airplane ==0 || id_Flight==0 || codename.isEmpty()
-=======
+
+
+
     public static void addFlight(int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
-        try {
+
             if (id_Flight==0 || codename.isEmpty()
->>>>>>> refs/remotes/origin/main
+
                     || source.isEmpty() || destination.isEmpty()) {
                 throw new IllegalArgumentException("Por favor, preencha todos os campos!");
 
