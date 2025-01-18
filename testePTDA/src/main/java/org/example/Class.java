@@ -1,7 +1,6 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Class {
 
@@ -9,11 +8,12 @@ public class Class {
     private String className;
     private double price;
     private int seatCapacity;
-    static ArrayList<Class> classes;
+    private int id; // Add this line
+    static ArrayList<Class> classes = new ArrayList<>();
     private ArrayList<String> services;
 
     // Construtor para inicializar os atributos da classe
-    public Class(String className, double price, int seatCapacity,  ArrayList<String> services) {
+    public Class(String className, double price, int seatCapacity, ArrayList<String> services) {
         this.className = className;
         this.price = price;
         this.seatCapacity = seatCapacity;
@@ -21,7 +21,6 @@ public class Class {
     }
 
     // Métodos getters e setters para aceder e alterar os valores dos atributos
-
     public String getClassName() {
         return className;
     }
@@ -73,8 +72,27 @@ public class Class {
     public void addClass(Class classe) {
         classes.add(classe);
     }
+
     public void removeClass(Class classe) {
         classes.remove(classe);
     }
 
+    // Método para gerar números de assentos com base na capacidade de assentos
+    public ArrayList<Integer> generateSeats() {
+        ArrayList<Integer> seats = new ArrayList<>();
+        for (int i = 1; i <= seatCapacity; i++) {
+            seats.add(i);
+        }
+        return seats;
+    }
+
+    // Add this method
+    public int getId() {
+        return id;
+    }
+
+    // Add this method
+    public void setId(int id) {
+        this.id = id;
+    }
 }

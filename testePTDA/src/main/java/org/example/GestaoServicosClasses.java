@@ -20,9 +20,7 @@ public class GestaoServicosClasses extends JFrame {
     public GestaoServicosClasses() {
         setTitle("Gestão de Classes e Serviços");
         setSize(900, 600);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setLayout(new BorderLayout());
 
         // Dividir a interface em Classes e Serviços
@@ -34,9 +32,8 @@ public class GestaoServicosClasses extends JFrame {
         JPanel botoesPanel = criarPainelBotoes();
         add(botoesPanel, BorderLayout.SOUTH);
         setVisible(true);
-
-
     }
+
     private void adicionarClasseInterativo() {
         JFrame frameAdicionarClasse = new JFrame("Adicionar Nova Classe");
         frameAdicionarClasse.setSize(400, 600);
@@ -109,6 +106,8 @@ public class GestaoServicosClasses extends JFrame {
                 Class novaClasse = new Class(nomeClasse, precoClasse, capacidadeClasse, servicosClasse);
                 classList.add(novaClasse);
                 classListModel.addElement(nomeClasse);
+
+                // Salvar a classe no banco de dados
                 try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
                     String sql = "INSERT INTO class (nome, price, capacity, services) VALUES (?, ?, ?, ?)";
                     PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -116,12 +115,18 @@ public class GestaoServicosClasses extends JFrame {
                     stmt.setDouble(2, precoClasse);
                     stmt.setInt(3, capacidadeClasse);
                     stmt.setString(4, String.join(",", servicosClasse));
-                    stmt.setString(4, String.join(",", servicosClasse));
                     stmt.executeUpdate();
 
+                    // Gerar e salvar assentos no banco de dados
+                    ResultSet generatedKeys = stmt.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        int classId = generatedKeys.getInt(1);
+                        gerarAssentos(conn, classId, capacidadeClasse, precoClasse);
+                    }
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Erro ao adicionar classe: " + ex.getMessage());
                 }
+
                 JOptionPane.showMessageDialog(this, "Classe adicionada com sucesso!");
                 frameAdicionarClasse.dispose();
             } catch (Exception ex) {
@@ -141,7 +146,6 @@ public class GestaoServicosClasses extends JFrame {
         panel.add(txtNovoServico);
         panel.add(btnAdicionarServico);
         panel.add(btnRemoveService);
-
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espaçamento
         panel.add(btnSaveClass);
 
@@ -149,6 +153,18 @@ public class GestaoServicosClasses extends JFrame {
         frameAdicionarClasse.setVisible(true);
     }
 
+    private void gerarAssentos(Connection conn, int classId, int capacidade, double preco) throws SQLException {
+        String sql = "INSERT INTO seat (id_Seat, price, class) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 1; i <= capacidade; i++) {
+                stmt.setInt(1, i);
+                stmt.setDouble(2, preco);
+                stmt.setInt(3, classId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
 
     private JPanel criarPainelClasses() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -192,13 +208,10 @@ public class GestaoServicosClasses extends JFrame {
                 int capacidade = rs.getInt("capacity");
                 ArrayList<String> servicos = new ArrayList<>(Arrays.asList(rs.getString("services").split(",")));
 
-
                 Class novaClasse = new Class(nome, preco, capacidade, servicos);
-
                 classList.add(novaClasse);
                 classListModel.addElement(nome);
             }
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar classes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -224,7 +237,6 @@ public class GestaoServicosClasses extends JFrame {
         return botoes;
     }
 
-
     private JPanel criarPainelServicos() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Serviços"));
@@ -240,8 +252,6 @@ public class GestaoServicosClasses extends JFrame {
         panel.add(btnSair);
         return panel;
     }
-
-
 
     private void removerClasse() {
         int index = classJlist.getSelectedIndex();
@@ -282,8 +292,6 @@ public class GestaoServicosClasses extends JFrame {
             }
         }
     }
-
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GestaoServicosClasses::new);
