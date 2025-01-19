@@ -375,7 +375,7 @@ public class CompraBilhete extends JFrame {
                 String nome = rs.getString("nome");
                 double preco = rs.getDouble("price");
                 int capacidade = rs.getInt("capacity");
-                List<String> servicos = new ArrayList<>(Arrays.asList(rs.getString("services").split(",")));
+                ArrayList<String> servicos = new ArrayList<>(Arrays.asList(rs.getString("services").split(",")));
 
                 Class novaClasse = new Class(nome, preco, capacidade, servicos);
                 classes.add(novaClasse);
