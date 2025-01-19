@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GestaoServicosClassesTest {
     private Class testClass;
@@ -28,7 +29,7 @@ public class GestaoServicosClassesTest {
 
     @Test
     void testServicesList() {
-        ArrayList<String> services = testClass.getServices();
+        List<String> services = testClass.getServices();
         assertNotNull(services, "Services list should not be null");
         assertEquals(2, services.size(), "Should have correct number of services");
         assertTrue(services.contains("Bagagem Extra"), "Should contain added service");

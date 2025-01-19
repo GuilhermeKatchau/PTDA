@@ -163,7 +163,12 @@ public class CompraBilhete extends JFrame {
         JPanel panelHourFlight = new JPanel(new BorderLayout());
 
         String[] columns = {"ID Avião", "ID Voo", "Max Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código", "Available Seats"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tableFlights = new JTable(model);
 
         JScrollPane scrollPane = new JScrollPane(tableFlights);
@@ -508,9 +513,21 @@ public class CompraBilhete extends JFrame {
 
                 // Salva o assento no banco de dados
                 Main.saveSeatInfo(String.valueOf(ticketId), passenger.getName(), seat.getId_Seat(), seat.getPrice(), true, seat.getSeatClass(), idFlight);
+
+                // Gera o PDF do bilhete
+                String fileName = "Bilhete_" + passenger.getName() + "_" + ticketId + ".pdf";
+                PDFGenerator.generateTicketPDF(
+                        fileName,
+                        selectedSource,
+                        selectedDestination,
+                        selectedFlight.getCodeName(), // Corrigido: getCodeName() em vez de getCodename()
+                        passenger.getName(),
+                        String.valueOf(seat.getId_Seat()),
+                        seat.getPrice()
+                );
             }
 
-            JOptionPane.showMessageDialog(this, "Compra Finalizada com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Compra Finalizada com Sucesso! PDFs gerados.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(0);
         });
 

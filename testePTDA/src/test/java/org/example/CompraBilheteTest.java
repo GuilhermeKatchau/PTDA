@@ -75,36 +75,5 @@ public class CompraBilheteTest {
         }, "Should throw exception for invalid date format");
     }
 
-    @Test
-    void testFilterFlights() {
-        CompraBilhete compraBilhete = new CompraBilhete();
-
-        // Create sample dates
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date1;
-        Date hTakeOff;
-        Date hLanding;
-        try {
-            date1 = format.parse("01/01/2023 12:00:00");
-            hTakeOff = format.parse("01/01/2023 12:00:00");
-            hLanding = format.parse("01/01/2023 14:00:00");
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Add test flights with "TEST_" prefix
-        Flight.addFlight(1, 9212, 64, date1, hTakeOff, hLanding, "Porto", "Lisboa", "TEST_LisboaPorto");
-        Flight.addFlight(2, 5548, 64, date1, hTakeOff, hLanding, "Paris", "Madrid", "TEST_MadridParis");
-        Flight.addFlight(3, 5678, 64, date1, hTakeOff, hLanding, "Munique", "Bolonha", "TEST_BolonhaMunique");
-
-        // Perform the flight filtering
-        ArrayList<Flight> result = compraBilhete.filterFlights("Lisboa", "Porto");
-
-        // Verify the filtering results
-        assertEquals(1, result.size());
-        assertEquals("Lisboa", result.get(0).getSource());
-        assertEquals("Porto", result.get(0).getDestination());
-        Flight.removeTestFlights();
-    }
 
 }

@@ -3,21 +3,19 @@ package org.example;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class GestaoTripulacao {
     private Flight flight;
-    private JTextField idField, nameField, phoneField, shiftField, experienceField, rankField;
+    private JTextField idField, nameField, shiftField, experienceField, rankField;
     private JLabel messageLabel;
     private final DefaultListModel<String> crewListModel;
-    private ArrayList<Crew>  crewMembers = new ArrayList<>();
+    private ArrayList<Crew> crewMembers = new ArrayList<>();
     private JList<String> crewListDisplay;
     private static final Color PRIMARY_COLOR = new Color(51, 153, 255);
     private static final Color SUCCESS_COLOR = new Color(75, 181, 67);
     private static final Color ERROR_COLOR = new Color(220, 53, 69);
-    private static int id;
 
     public GestaoTripulacao(Flight flight) {
         this.flight = flight;
@@ -31,13 +29,15 @@ public class GestaoTripulacao {
         frame.setSize(1100, 600);
         frame.setLocationRelativeTo(null);
 
+        // Carrega os tripulantes do banco de dados
+        loadCrewFromDatabase();
+
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         mainPanel.setBackground(Color.WHITE);
 
         idField = createStyledTextField();
         nameField = createStyledTextField();
-        phoneField = createStyledTextField();
         shiftField = createStyledTextField();
         experienceField = createStyledTextField();
         rankField = createStyledTextField();
@@ -77,6 +77,35 @@ public class GestaoTripulacao {
         frame.setVisible(true);
     }
 
+    private void loadCrewFromDatabase() {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT * FROM crew WHERE id_flight = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, flight.getId_Flight());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("nome");
+                String shift = rs.getString("shift");
+                int experience = rs.getInt("experience");
+                String rank = rs.getString("ranq");
+
+                Crew crewMember;
+                if (rank == null || rank.isEmpty()) {
+                    crewMember = new Crew.Assistant(id, name, shift, experience);
+                } else {
+                    crewMember = new Crew.Pilot(id, name, shift, experience, rank);
+                }
+
+                crewMembers.add(crewMember);
+                crewListModel.addElement(formatCrewForList(crewMember));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao carregar tripulantes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private JPanel createInputPanel() {
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setBackground(Color.WHITE);
@@ -89,60 +118,15 @@ public class GestaoTripulacao {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        int row = 1; // Controla as linhas para organizar os inputs
-
-        // Loop para exibir dados dos tripulantes
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT * FROM crew WHERE id_Flight = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, flight.getId_Flight());
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                int id_Flight = rs.getInt("id_Flight");
-                String name = rs.getString("nome");
-                String shift = rs.getString("shift");
-                int experience = rs.getInt("experience");
-                String rank = rs.getString("ranq");
-
-                Crew crewMember;
-                if (rank == null) {
-                    crewMember = new Crew.Assistant(id, name, shift, experience);
-                } else {
-                    Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience, rank);
-                    crewMember = pilot;
-                }
-
-                // Adiciona tripulante à lista
-                crewMembers.add(crewMember);
-                crewListModel.addElement(formatCrewForList(crewMember));
-
-                // Mostra os dados no painel
-                JLabel crewLabel = new JLabel();
-                crewLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-
-
-                inputPanel.add(crewLabel, gbc);
-
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         // Adiciona as labels e os inputs organizados
         addFormField(inputPanel, "ID do Tripulante:", idField, 0, gbc);
         addFormField(inputPanel, "Nome:", nameField, 1, gbc);
-        addFormField(inputPanel, "Telefone:", phoneField, 2, gbc);
-        addFormField(inputPanel, "Turno:", shiftField, 3, gbc);
-        addFormField(inputPanel, "Experiência (anos):", experienceField, 4, gbc);
-        addFormField(inputPanel, "Cargo (Opcional):", rankField, 5, gbc);
+        addFormField(inputPanel, "Turno:", shiftField, 2, gbc);
+        addFormField(inputPanel, "Experiência (anos):", experienceField, 3, gbc);
+        addFormField(inputPanel, "Cargo (Opcional):", rankField, 4, gbc);
 
         return inputPanel;
     }
-
-
-
 
     private void addFormField(JPanel panel, String labelText, JTextField field, int row, GridBagConstraints gbc) {
         gbc.gridy = row;
@@ -213,26 +197,24 @@ public class GestaoTripulacao {
     private void addCrew() {
         try {
             validateRequiredFields();
-            id = Integer.parseInt(idField.getText());
+            int id = Integer.parseInt(idField.getText());
             String name = nameField.getText();
-            int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
             int experience = Integer.parseInt(experienceField.getText());
-            String ranq = rankField.getText().trim();
+            String rank = rankField.getText().trim();
 
             Crew crewMember;
-            if (ranq.isEmpty()) {
+            if (rank.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience,ranq);
-                crewMember = pilot;
+                crewMember = new Crew.Pilot(id, name, shift, experience, rank);
             }
 
             crewMembers.add(crewMember);
             crewListModel.addElement(formatCrewForList(crewMember));
             showMessage("Tripulante adicionado com sucesso!", SUCCESS_COLOR);
             clearFields();
-            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, ranq);
+            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, rank);
         } catch (IllegalArgumentException e) {
             showMessage(e.getMessage(), ERROR_COLOR);
         }
@@ -249,23 +231,21 @@ public class GestaoTripulacao {
 
             int id = Integer.parseInt(idField.getText());
             String name = nameField.getText();
-            int phone = Integer.parseInt(phoneField.getText());
             String shift = shiftField.getText();
             int experience = Integer.parseInt(experienceField.getText());
-            String ranq = rankField.getText();
+            String rank = rankField.getText();
 
             Crew crewMember;
-            if (ranq.isEmpty()) {
+            if (rank.isEmpty()) {
                 crewMember = new Crew.Assistant(id, name, shift, experience);
             } else {
-                Crew.Pilot pilot = new Crew.Pilot(id, name, shift, experience,ranq);
-                crewMember = pilot;
+                crewMember = new Crew.Pilot(id, name, shift, experience, rank);
             }
 
             crewMembers.set(selectedIndex, crewMember);
             crewListModel.set(selectedIndex, formatCrewForList(crewMember));
             showMessage("Tripulante atualizado com sucesso!", SUCCESS_COLOR);
-            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, ranq);
+            Main.saveCrewData(id, flight.getId_Flight(), name, shift, experience, rank);
             clearFields();
         } catch (Exception e) {
             showMessage(e.getMessage(), ERROR_COLOR);
@@ -275,10 +255,13 @@ public class GestaoTripulacao {
     private void deleteCrew() {
         try {
             int selectedIndex = crewListDisplay.getSelectedIndex();
-            Main.deleteCrewData(id);
             if (selectedIndex == -1) {
                 throw new IllegalArgumentException("Por favor, selecione um tripulante na lista para remover.");
             }
+
+            Crew selectedCrew = crewMembers.get(selectedIndex);
+            Main.deleteCrewData(selectedCrew.getId_CrewMember());
+
             crewMembers.remove(selectedIndex);
             crewListModel.remove(selectedIndex);
             showMessage("Tripulante removido com sucesso!", SUCCESS_COLOR);
@@ -295,7 +278,6 @@ public class GestaoTripulacao {
 
             idField.setText(String.valueOf(selectedCrew.getId_CrewMember()));
             nameField.setText(selectedCrew.getName());
-            phoneField.setText(String.valueOf(selectedCrew.getPhoneNumber()));
             shiftField.setText(selectedCrew.getShift());
             experienceField.setText(String.valueOf(selectedCrew.getExperience()));
 
@@ -308,15 +290,15 @@ public class GestaoTripulacao {
     }
 
     private void validateRequiredFields() {
-        if (idField.getText().isEmpty() || nameField.getText().isEmpty() || phoneField.getText().isEmpty() ||
+        if (idField.getText().isEmpty() || nameField.getText().isEmpty() ||
                 shiftField.getText().isEmpty() || experienceField.getText().isEmpty()) {
             throw new IllegalArgumentException("Por favor, preencha todos os campos obrigatórios.");
         }
     }
 
     private String formatCrewForList(Crew crewMember) {
-        String base = String.format("ID: %d, Nome: %s, Telefone: %d, Turno: %s, Experiência: %d anos",
-                crewMember.getId_CrewMember(), crewMember.getName(), crewMember.getPhoneNumber(),
+        String base = String.format("ID: %d, Nome: %s, Turno: %s, Experiência: %d anos",
+                crewMember.getId_CrewMember(), crewMember.getName(),
                 crewMember.getShift(), crewMember.getExperience());
         if (crewMember instanceof Crew.Pilot) {
             base += ", Cargo: " + ((Crew.Pilot) crewMember).getRank();
@@ -327,7 +309,6 @@ public class GestaoTripulacao {
     private void clearFields() {
         idField.setText("");
         nameField.setText("");
-        phoneField.setText("");
         shiftField.setText("");
         experienceField.setText("");
         rankField.setText("");
@@ -337,10 +318,4 @@ public class GestaoTripulacao {
         messageLabel.setText(message);
         messageLabel.setForeground(color);
     }
-/*
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GestaoTripulacao::new);
-    }
-
- */
 }
