@@ -20,6 +20,12 @@ public class Class {
         this.seatCapacity = seatCapacity;
         this.services = services;
     }
+    public Class(String className, double price, int seatCapacity, ArrayList<String> services) {
+        setClassName(className);
+        setPrice(price);
+        setSeatCapacity(seatCapacity);
+        setServices(services);
+    }
 
     // metodos getters e setters para aceder e alterar os valores dos atributos
 
@@ -31,6 +37,11 @@ public class Class {
     // define o nome da classe
     public void setClassName(String className) {
         this.className = className;
+        if (className != null && !className.trim().isEmpty()) {
+            this.className = className;
+        } else {
+            throw new IllegalArgumentException("Nome de Classe não pode ser vazio");
+        }
     }
 
     // retorna o preco da classe
@@ -41,6 +52,11 @@ public class Class {
     // define o preco da classe
     public void setPrice(double price) {
         this.price = price;
+        if (price < 0) {
+            throw new IllegalArgumentException("Preço não pode ser negativo");
+        } else {
+            this.price = price;
+        }
     }
 
     // retorna a capacidade de assentos da classe
@@ -51,6 +67,11 @@ public class Class {
     // define a capacidade de assentos da classe
     public void setSeatCapacity(int seatCapacity) {
         this.seatCapacity = seatCapacity;
+        if (seatCapacity < 0) {
+            throw new IllegalArgumentException("Capacidade de assentos não pode ser negativa");
+        } else {
+            this.seatCapacity = seatCapacity;
+        }
     }
 
     // retorna a lista de servicos da classe
@@ -60,9 +81,13 @@ public class Class {
 
     // define a lista de servicos da classe
     public void setServices(List<String> services) {
-        this.services = services;
+        if (services == null) {
+            throw new NullPointerException("Tem de haver pelo menos 1 serviço!");
+        } else {
+            this.services = services;
+        }
     }
-
+    
     // metodo para verificar se ha lugares disponiveis
     public boolean hasAvailableSeats(int bookedSeats) {
         // retorna verdadeiro se o numero de lugares reservados for menor que a capacidade total
