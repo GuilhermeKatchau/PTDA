@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CompraBilhete extends JFrame {
     private JTabbedPane tabbedPane;
@@ -128,6 +127,7 @@ public class CompraBilhete extends JFrame {
     }
 
 
+
     private void updateFlights() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0);
@@ -193,69 +193,41 @@ public class CompraBilhete extends JFrame {
         JPanel panelPassageiro = new JPanel();
         panelPassageiro.setLayout(new BoxLayout(panelPassageiro, BoxLayout.Y_AXIS));
 
-        numberOfPassengers = (int) numPassengersSpinner.getValue();
-
-        // Use ArrayLists for dynamic sizing
-        ArrayList<JTextField> passengerName = new ArrayList<>();
-        ArrayList<JSpinner> passengerAge = new ArrayList<>();
-        ArrayList<JTextField> passengerEmail = new ArrayList<>();
-        ArrayList<ButtonGroup> checkInGroups = new ArrayList<>();
-        ArrayList<JRadioButton> checkInAutomatic = new ArrayList<>();
-        ArrayList<JRadioButton> checkInManual = new ArrayList<>();
-
-        // AtomicBoolean to track the first passenger's check-in option
-        AtomicBoolean primeiroCheckInAutomatico = new AtomicBoolean(true);
+        // Atualizar os arrays com o tamanho correto
+        JTextField[] passengerName = new JTextField[numberOfPassengers];
+        JLabel[] labelAge = new JLabel[numberOfPassengers];
+        JSpinner[] passengerAge = new JSpinner[numberOfPassengers];
+        JLabel[] labelEmail = new JLabel[numberOfPassengers];
+        JTextField[] passengerEmail = new JTextField[numberOfPassengers];
+        JLabel[] labelCheckIn = new JLabel[numberOfPassengers];
+        JRadioButton[][] checkInOptions = new JRadioButton[numberOfPassengers][2]; // Certifique-se de inicializar corretamente
 
         for (int i = 0; i < numberOfPassengers; i++) {
             JPanel panelPassenger = new JPanel(new GridLayout(0, 2, 10, 10));
 
-            // Create components for each passenger
-            JTextField nameField = new JTextField();
-            passengerName.add(nameField);
-            JSpinner ageSpinner = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
-            passengerAge.add(ageSpinner);
-            JTextField emailField = new JTextField();
-            passengerEmail.add(emailField);
+            passengerName[i] = new JTextField();
+            labelAge[i] = new JLabel("Idade:");
+            passengerAge[i] = new JSpinner(new SpinnerNumberModel(18, 1, 120, 1));
+            labelEmail[i] = new JLabel("Email:");
+            passengerEmail[i] = new JTextField();
+            labelCheckIn[i] = new JLabel("Check-in:");
+            checkInOptions[i][0] = new JRadioButton("Automático");
+            checkInOptions[i][1] = new JRadioButton("Manual");
 
-            // Check-in options
-            JRadioButton automatic = new JRadioButton("Automático");
-            JRadioButton manual = new JRadioButton("Manual");
             ButtonGroup group = new ButtonGroup();
-            group.add(automatic);
-            group.add(manual);
+            group.add(checkInOptions[i][0]);
+            group.add(checkInOptions[i][1]);
 
-            // Only the first passenger's check-in option affects others
-            if (i == 0) {
-                automatic.addActionListener(e -> {
-                    primeiroCheckInAutomatico.set(true);
-                    checkInAutomatic.forEach(rb -> rb.setSelected(true));
-                    checkInManual.forEach(rb -> rb.setSelected(false));
-                });
-                manual.addActionListener(e -> {
-                    primeiroCheckInAutomatico.set(false);
-                    checkInAutomatic.forEach(rb -> rb.setSelected(false));
-                    checkInManual.forEach(rb -> rb.setSelected(true));
-                });
-            } else {
-                automatic.setSelected(primeiroCheckInAutomatico.get());
-                manual.setSelected(!primeiroCheckInAutomatico.get());
-            }
-
-            checkInAutomatic.add(automatic);
-            checkInManual.add(manual);
-            checkInGroups.add(group);
-
-            // Add components to the panel
             panelPassenger.add(new JLabel("Nome:"));
-            panelPassenger.add(nameField);
-            panelPassenger.add(new JLabel("Idade:"));
-            panelPassenger.add(ageSpinner);
-            panelPassenger.add(new JLabel("Email:"));
-            panelPassenger.add(emailField);
-            panelPassenger.add(new JLabel("Check-in:"));
-            panelPassenger.add(automatic);
+            panelPassenger.add(passengerName[i]);
+            panelPassenger.add(labelAge[i]);
+            panelPassenger.add(passengerAge[i]);
+            panelPassenger.add(labelEmail[i]);
+            panelPassenger.add(passengerEmail[i]);
+            panelPassenger.add(labelCheckIn[i]);
+            panelPassenger.add(checkInOptions[i][0]);
             panelPassenger.add(new JLabel());
-            panelPassenger.add(manual);
+            panelPassenger.add(checkInOptions[i][1]);
 
             panelPassageiro.add(panelPassenger);
         }
@@ -263,37 +235,41 @@ public class CompraBilhete extends JFrame {
         JButton btnNext = new JButton("Próximo");
         btnNext.addActionListener(e -> {
             ArrayList<Passenger> passengers = new ArrayList<>();
+            for (int i = 0; i < numberOfPassengers; i++) {
+                if (passengerName[i] == null || passengerAge[i] == null || passengerEmail[i] == null ||
+                        checkInOptions[i][0] == null || checkInOptions[i][1] == null) {
+                    JOptionPane.showMessageDialog(this, "Erro interno: Informações de passageiro não foram inicializadas corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
+                String name = passengerName[i].getText().trim();
+                int age = (int) passengerAge[i].getValue();
+                String email = passengerEmail[i].getText().trim();
+                boolean isAutomatic = checkInOptions[i][0].isSelected();
 
-            String name = passengerName.get().getText().trim();
-            int age = (int) passengerAge.get().getValue();
-            String email = passengerEmail.get().getText().trim();
-            boolean isAutomatic = checkInAutomatic.get().isSelected();
+                // Validação de campos
+                if (name.isEmpty() || email.isEmpty() || (!checkInOptions[i][0].isSelected() && !checkInOptions[i][1].isSelected())) {
+                    JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos para todos os passageiros!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-            // Validation
-            if (name.isEmpty() || email.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos para o passageiro " + (i + 1), "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
+                if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
+                    JOptionPane.showMessageDialog(this, "Insira um email válido para o passageiro " + (i + 1), "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int id = new Random().nextInt(1000000);
+                Passenger p = new Passenger(name, age, email, id);
+                passengers.add(p);
+                Main.SavePassengerData(name, age, email, id);
+                checkInData.setCheckIn(isAutomatic);
             }
 
-            if (!email.matches("^[a-zA-Z0-9][a-zA-Z0-9\\._%\\+\\-]{0,63}@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,30}$")) {
-                JOptionPane.showMessageDialog(this, "Email inválido para o passageiro " + (i + 1), "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Create and save passenger data
-            int id = new Random().nextInt(1000000);
-            Passenger p = new Passenger(name, age, email, id);
-            passengers.add(p);
-            Main.SavePassengerData(name, age, email, id);
-            checkInData.setCheckIn(isAutomatic);
-
-
-            // Update the passengers list and proceed
             this.passengers = passengers;
             JOptionPane.showMessageDialog(this, "Passageiros Registrados com Sucesso!", "Resumo", JOptionPane.INFORMATION_MESSAGE);
             tabbedPane.setSelectedIndex(3);
         });
+
 
         panelPassageiro.add(btnNext);
         tabbedPane.addTab("Informação do Passageiro", panelPassageiro);
@@ -513,8 +489,8 @@ public class CompraBilhete extends JFrame {
             if (rs.next()) {
                 String className = rs.getString("class");
                 // Aqui você pode criar um objeto Class, ou retornar diretamente o nome da classe
-                seatClass = new Class(selectedClass.getClassName(), selectedClass.getPrice(),
-                        selectedClass.getSeatCapacity(), selectedClass.getServices());
+                seatClass = new Class(selectedClass.getClassName(),selectedClass.getPrice(),
+                        selectedClass.getSeatCapacity(),selectedClass.getServices());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -547,7 +523,7 @@ public class CompraBilhete extends JFrame {
 
             for (Passenger passenger : passengers) {
                 Main.SaveTicket(String.valueOf(idTicket), passenger.getId_Passenger(), passenger.getName(), selectedSeat.getId_Seat(), selectedDestination, selectedClass.getPrice(), selectedSource, refundable, idFlight);
-                Main.saveSeatInfo(String.valueOf(idTicket), passenger.getName(), selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeat.getOccupied(), selectedSeat.getSeatClass(), idFlight);
+                Main.saveSeatInfo(String.valueOf(idTicket), passenger.getName(), selectedSeat.getId_Seat(), selectedSeat.getPrice(),selectedSeat.getOccupied(), selectedSeat.getSeatClass(), idFlight);
             }
 
             JOptionPane.showMessageDialog(this, "Compra Finalizada com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -557,6 +533,7 @@ public class CompraBilhete extends JFrame {
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
         tabbedPane.addTab("Finalizar", panelFinalize);
     }
+
 
 
     public static void main(String[] args) {
