@@ -95,15 +95,5 @@ public class Ticket {
         return flight;
     }
 
-    public void displayPassengerServices() {
-        System.out.println("Passageiro: " + passenger.getName());
-        System.out.println("Id: " + passenger.getId_Passenger());
-        System.out.println("Classe: " + flightClass.getClassName());
-        System.out.println("Serviços disponíveis: ");
-         for (String service : flightClass.getServices()) {
-             System.out.println("- " + service);
-         }
-        System.out.println();
-    }
 
 }

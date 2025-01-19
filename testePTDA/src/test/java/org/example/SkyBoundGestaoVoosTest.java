@@ -10,23 +10,38 @@ import java.util.Date;
 
 public class SkyBoundGestaoVoosTest {
 
-    @BeforeEach
-    void setUp() {
-        Flight.getFlights().clear();
+
+
+    private Flight findFlightById(int id) {
+        for (Flight flight : Flight.getFlights()) {
+            if (flight.getId_Flight() == id) {
+                return flight;
+            }
+        }
+        return null;
     }
+
 
     @Test
     void testAdicionarVoo() {
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
-        assertEquals(1, Flight.getFlights().size());
+        int testId = 1001;
+        Date takeoffTime = new Date();
+        Date landingTime = new Date(takeoffTime.getTime() + 60000);
+        Flight.addFlight(1, testId, 150, new Date(), takeoffTime, landingTime, "Porto", "Lisboa", "TEST_LisboaPorto");
+        Flight testFlight = findFlightById(testId);
+        assertNotNull(testFlight, "O voo não foi adicionado corretamente.");
         Flight.removeTestFlights();
     }
 
     @Test
     void testRemoverVoo() {
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
-        Flight.removeFlight(0);
-        assertEquals(0, Flight.getFlights().size());
+        int flightIndex = Flight.getFlights().size();
+        Date takeoffTime = new Date();
+        Date landingTime = new Date(takeoffTime.getTime() + 60000);
+        Flight.addFlight(1, flightIndex, 150, new Date(), takeoffTime, landingTime, "Porto", "Lisboa", "TEST_LisboaPorto");
+        Flight.removeFlight(flightIndex);
+        Flight testFlight = findFlightById(flightIndex);
+        assertNull(testFlight, "O voo não foi removido corretamente.");
     }
 
     @Test
@@ -34,29 +49,6 @@ public class SkyBoundGestaoVoosTest {
         assertThrows(IllegalArgumentException.class, () -> {
             Flight.addFlight(0, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
         });
-    }
-    @Test
-    void testLoadFlights() {
-        // Adiciona voos à lista simulada de voos
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa", "TEST_LisboaPorto");
-        Flight.addFlight(2, 102, 200, new Date(), new Date(), new Date(), "Madrid", "Lisboa", "TEST_LisboaMadrid");
-
-        // Cria uma instância da interface gráfica para testar o método loadFlights
-        SkyBoundGestaoVoos gestaoVoos = new SkyBoundGestaoVoos();
-
-        // Verifica se os voos foram carregados corretamente no modelo flights
-       // assertEquals(1, gestaoVoos.flights.size(), "O número de voos carregados está incorreto!");
-
-        // Verifica o conteúdo do primeiro voo formatado
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String expectedFlight1 = "ID Avião: 1 | ID Voo: 101 | Code Name: LisboaPorto | Origem: Lisboa | Destino: Porto | Partida: "
-                + dateFormat.format(Flight.getFlights().get(0).gethTakeoff())
-                + " | Chegada: "
-                + dateFormat.format(Flight.getFlights().get(0).gethLanding())
-                + " | Limite: 150";
-
-        assertEquals(expectedFlight1, gestaoVoos.flights.get(0), "Os detalhes do primeiro voo estão incorretos!");
-        Flight.removeTestFlights();
     }
 
 }

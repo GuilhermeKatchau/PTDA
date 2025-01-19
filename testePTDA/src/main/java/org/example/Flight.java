@@ -39,6 +39,8 @@ public class Flight {
         }
     }
 
+
+
     public int getId_Airplane() {
         return id_Airplane;
     }
@@ -138,9 +140,7 @@ public class Flight {
 
     public static void addFlight(int id_Airplane,int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
 
-            if (id_Flight==0 || codename.isEmpty()
-
-                    || source.isEmpty() || destination.isEmpty()) {
+            if ( codename.isEmpty() || source.isEmpty() || destination.isEmpty()) {
                 throw new IllegalArgumentException("Por favor, preencha todos os campos!");
 
             }

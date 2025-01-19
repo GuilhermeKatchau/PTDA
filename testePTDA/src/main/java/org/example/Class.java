@@ -9,16 +9,16 @@ public class Class {
     private String className;
     private double price;
     private int seatCapacity;
-    private int id; // Add this line
+    private int id;
     static List<Class> classes = new ArrayList<>();
-    private List<String> services;
+    private ArrayList<String> services;
 
     // Construtor para inicializar os atributos da classe
-    public Class(String className, double price, int seatCapacity, List<String> services) {
-        this.className = className;
-        this.price = price;
-        this.seatCapacity = seatCapacity;
-        this.services = services;
+    public Class(String className, double price, int seatCapacity, ArrayList<String> services) {
+       setClassName(className);
+        setPrice(price);
+        setSeatCapacity(seatCapacity);
+        setServices(services);
     }
 
     // Métodos getters e setters para aceder e alterar os valores dos atributos
@@ -27,7 +27,11 @@ public class Class {
     }
 
     public void setClassName(String className) {
-        this.className = className;
+        if (className != null && !className.trim().isEmpty()) {
+            this.className = className;
+        } else {
+            throw new IllegalArgumentException("Nome de Classe não pode ser vazio");
+        }
     }
 
     public double getPrice() {
@@ -35,7 +39,12 @@ public class Class {
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        if (price < 0) {
+            throw new IllegalArgumentException("Preço não pode ser negativo");
+        } else {
+            this.price = price;
+        }
+
     }
 
     public int getSeatCapacity() {
@@ -43,15 +52,25 @@ public class Class {
     }
 
     public void setSeatCapacity(int seatCapacity) {
-        this.seatCapacity = seatCapacity;
+        if (seatCapacity < 0) {
+            throw new IllegalArgumentException("Capacidade de assentos não pode ser negativa");
+        } else {
+            this.seatCapacity = seatCapacity;
+        }
+
     }
 
-    public List<String> getServices() {
+    public ArrayList<String> getServices() {
         return services;
     }
 
-    public void setServices(List<String> services) {
-        this.services = services;
+    public void setServices(ArrayList<String> services) {
+        if (services == null) {
+            throw new NullPointerException("Tem de haver pelo menos 1 serviço!");
+        } else {
+            this.services = services;
+        }
+
     }
 
     // Método para verificar se há lugares disponíveis

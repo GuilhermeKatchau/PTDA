@@ -228,7 +228,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         }
     }
 
-    private void loadFlights() {
+     void loadFlights() {
         flights.clear();
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", // URL do BD
