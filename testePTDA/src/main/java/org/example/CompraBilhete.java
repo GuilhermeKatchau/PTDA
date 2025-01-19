@@ -383,6 +383,8 @@ public class CompraBilhete extends JFrame {
                     selectedSeat.setId_Seat(assento);
                     selectedSeat.setPrice(selectedClass.getPrice());
                     selectedSeat.setSeatClass(selectedClass);
+                    marcarAssentoComoOcupado(selectedSeat.getId_Seat());
+                    carregarAssentosDisponiveis(selectedClass.getId());
                     btnAssento.setEnabled(false);
                     JOptionPane.showMessageDialog(this, "Assento selecionado: " + assento, "Informação", JOptionPane.INFORMATION_MESSAGE);
                     btnAssento.setBackground(Color.ORANGE);
@@ -418,42 +420,47 @@ public class CompraBilhete extends JFrame {
     }
 
     private void carregarAssentosDisponiveis(int classId) {
-        ArrayList<Integer> assentosDisponiveis = new ArrayList<>();
+        panelAssentos.removeAll();
+        ArrayList<Integer> allSeats = selectedClass.generateSeats();
+        ArrayList<Integer> occupiedSeats = getOccupiedSeats(classId);
+
+        // Filtra assentos Ocupados
+        allSeats.removeAll(occupiedSeats);
+
+        for (int seatId : allSeats) {
+            JButton btnAssento = new JButton(String.valueOf(seatId));
+            btnAssento.addActionListener(e -> {
+                selectedSeat.setId_Seat(seatId);
+                marcarAssentoComoOcupado(seatId);
+                carregarAssentosDisponiveis(classId);
+                btnAssento.setEnabled(false);
+                JOptionPane.showMessageDialog(this, "Assento selecionado: " + seatId, "Informação", JOptionPane.INFORMATION_MESSAGE);
+                btnAssento.setBackground(Color.ORANGE);
+            });
+            panelAssentos.add(btnAssento);
+        }
+
+        panelAssentos.revalidate();
+        panelAssentos.repaint();
+    }
+
+    private ArrayList<Integer> getOccupiedSeats(int classId) {
+        ArrayList<Integer> occupiedSeats = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT id_Seat,occupied FROM seat WHERE class = ? AND id_flight = ?";
+            String sql = "SELECT id_Seat FROM seat WHERE class = ? AND id_flight = ? AND occupied = TRUE";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, classId);
+            stmt.setString(1, selectedClass.getClassName());
             stmt.setInt(2, selectedFlight.getId_Flight());
             ResultSet rs = stmt.executeQuery();
 
-            for (Component comp : panelAssentos.getComponents()) {
-                if (comp instanceof JButton) {
-                    JButton seatButton = (JButton) comp;
-                    seatButton.setEnabled(true); // Habilita todos os botões antes de atualizá-los
-                    seatButton.setBackground(null);
-                }
-            }
-
             while (rs.next()) {
                 int seatId = rs.getInt("id_Seat");
-                boolean occupied = rs.getBoolean("occupied");
-
-                for (Component comp : panelAssentos.getComponents()) {
-                    if (comp instanceof JButton) {
-                        JButton seatButton = (JButton) comp;
-                        if (Integer.parseInt(seatButton.getText()) == seatId) {
-                            seatButton.setEnabled(!occupied);
-                            seatButton.setBackground(occupied ? Color.ORANGE : null);
-                        }
-                    }
-                }
+                occupiedSeats.add(seatId);
             }
-
-            panelAssentos.revalidate();
-            panelAssentos.repaint();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar assentos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao carregar assentos ocupados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
+        return occupiedSeats;
     }
 
     private void atualizarAssentos() {
