@@ -17,25 +17,27 @@ public class SkyBoundGestaoVoos extends JFrame {
     private final JList<String> registeredFlights;
     private JTable table;
 
+    // Construtor da classe SkyBoundGestaoVoos
     public SkyBoundGestaoVoos() {
 
-        setTitle("Gestão de Voos");
+        setTitle("Gestao de Voos");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-
+        // Inicializacao dos campos de texto
         id_Airplane = new JTextField();
         id_Flight = new JTextField();
-
         codeName = new JTextField();
         source = new JTextField();
         destination = new JTextField();
 
+        // Configuracao do campo de texto formatado para numeros inteiros
         NumberFormat numberFormat = NumberFormat.getIntegerInstance();
         maxPassengers = new JFormattedTextField(numberFormat);
         maxPassengers.setValue(0);
 
+        // Configuracao dos spinners para datas e horas
         date1 = new JSpinner(new SpinnerDateModel());
         date1.setEditor(new JSpinner.DateEditor(date1, "dd/MM/yyyy"));
 
@@ -45,36 +47,34 @@ public class SkyBoundGestaoVoos extends JFrame {
         hLanding = new JSpinner(new SpinnerDateModel());
         hLanding.setEditor(new JSpinner.DateEditor(hLanding, "dd/MM/yyyy HH:mm"));
 
+        // Inicializacao da lista de voos registrados
         flights = new DefaultListModel<>();
         registeredFlights = new JList<>(flights);
 
+        // Criacao do painel de formulario e da lista de voos
         JPanel formPanel = Form();
         JScrollPane scrollPane = FlightList(); // Atualizado para carregar os dados da base de dados
         add(scrollPane, BorderLayout.CENTER);
 
+        // Criacao do painel de botoes
         JPanel buttonPanel = Buttons();
-        /*
-        registeredFlights.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    abrirGestaoTripulacao();
-                }
-            }
-        }); */
 
+        // Adiciona os paineis ao frame
         add(formPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Carrega os voos da base de dados e torna o frame visivel
         loadFlights();
         setVisible(true);
     }
 
+    // Metodo para criar o painel de formulario
     private JPanel Form() {
         JPanel formPanel = new JPanel(new GridLayout(5, 4, 10, 10));
 
-        formPanel.add(new JLabel("ID do Avião:"));
+        // Adiciona os campos de texto e labels ao painel de formulario
+        formPanel.add(new JLabel("ID do Aviao:"));
         formPanel.add(id_Airplane);
 
         formPanel.add(new JLabel("ID do Voo:"));
@@ -104,13 +104,14 @@ public class SkyBoundGestaoVoos extends JFrame {
         return formPanel;
     }
 
+    // Metodo para criar a lista de voos
     private JScrollPane FlightList() {
         // Configura o modelo da tabela para exibir os voos
-        String[] columnNames = {"ID Avião", "ID Voo", "Máx. Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Código"};
+        String[] columnNames = {"ID Aviao", "ID Voo", "Max. Passageiros", "Data", "Hora Partida", "Hora Chegada", "Destino", "Origem", "Codigo"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Impede a edição de qualquer célula
+                return false; // Impede a edicao de qualquer celula
             }
         };
         table = new JTable(model);
@@ -139,12 +140,13 @@ public class SkyBoundGestaoVoos extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao carregar voos da base de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
 
+        // Adiciona um listener para abrir a gestao de tripulacao ao clicar duas vezes na linha
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) { // Clique único
-                    int selectedRow = table.getSelectedRow(); // Obtém a linha selecionada
-                        abrirGestaoTripulacao(selectedRow);
+                if (e.getClickCount() == 2) { // Clique unico
+                    int selectedRow = table.getSelectedRow(); // Obtem a linha selecionada
+                    abrirGestaoTripulacao(selectedRow);
                 }
             }
         });
@@ -156,25 +158,29 @@ public class SkyBoundGestaoVoos extends JFrame {
         return scrollPane;
     }
 
-
+    // Metodo para criar o painel de botoes
     private JPanel Buttons() {
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
+        // Botao para adicionar voo
         JButton btnAdicionar = new JButton("Adicionar Voo");
         btnAdicionar.addActionListener(e -> addFlight());
 
+        // Botao para remover voo
         JButton btnRemover = new JButton("Remover Voo");
         btnRemover.addActionListener(e -> removeFlight());
 
+        // Adiciona os botoes ao painel
         buttonPanel.add(btnAdicionar);
         buttonPanel.add(btnRemover);
 
         return buttonPanel;
     }
 
+    // Metodo para adicionar um voo
     private void addFlight() {
         try {
-            // Verifica se ID do Avião e ID do Voo são numéricos
+            // Verifica se ID do Aviao e ID do Voo sao numericos
             int id_Airplane = Integer.parseInt(this.id_Airplane.getText());
             int id_Flight = Integer.parseInt(this.id_Flight.getText());
             String codename = codeName.getText();
@@ -185,16 +191,18 @@ public class SkyBoundGestaoVoos extends JFrame {
             Date hTakeOff = (Date) this.hTakeOff.getValue();
             Date hLanding = (Date) this.hLanding.getValue();
 
-            Flight.addFlight(id_Airplane,id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
-            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers,date1, hTakeOff, hLanding, destination, source, codename);
+            // Adiciona o voo a base de dados e atualiza a lista de voos
+            Flight.addFlight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
+            Main.salvarDadosFlight(id_Airplane, id_Flight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
             loadFlights();
             clearFields();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Os campos ID do Avião, ID do Voo devem ser numéricos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Os campos ID do Aviao, ID do Voo devem ser numericos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Metodo para remover um voo
     private void removeFlight() {
         int selectedRow = table.getSelectedRow();
 
@@ -211,28 +219,29 @@ public class SkyBoundGestaoVoos extends JFrame {
                 if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(this, "Voo removido com sucesso da base de dados!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Voo não encontrado na base de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Voo nao encontrado na base de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Erro ao remover voo da base de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
 
-            // Remover o voo da lista de voos em memória
-            Flight.removeFlight(flightId); // Chamando o método de remoção na classe Flight
+            // Remove o voo da lista de voos em memoria
+            Flight.removeFlight(flightId); // Chamando o metodo de remocao na classe Flight
 
-            // Atualiza a tabela após a remoção
+            // Atualiza a tabela apos a remocao
             loadFlights();
         } else {
             JOptionPane.showMessageDialog(this, "Selecione um voo para remover!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Metodo para carregar os voos da base de dados
     private void loadFlights() {
         flights.clear();
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", // URL do BD
-                "PTDA24_05",                                       // Usuário
+                "PTDA24_05",                                       // Usuario
                 "Potm%793"                                         // Senha
         )) {
             // Consulta para buscar os voos
@@ -253,7 +262,7 @@ public class SkyBoundGestaoVoos extends JFrame {
                 String codename = rs.getString("codename");
 
                 // Adiciona os dados ao modelo flights
-                flights.addElement("ID Avião: " + idAirplane
+                flights.addElement("ID Aviao: " + idAirplane
                         + " | ID Voo: " + idFlight
                         + " | Code Name: " + codename
                         + " | Origem: " + source
@@ -269,16 +278,16 @@ public class SkyBoundGestaoVoos extends JFrame {
         }
     }
 
+    // Metodo para abrir a gestao de tripulacao
     private void abrirGestaoTripulacao(int selectedRow) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT * FROM flight LIMIT ?, 1"; // Obtém o voo correspondente à linha selecionada
+            String sql = "SELECT * FROM flight LIMIT ?, 1"; // Obtem o voo correspondente a linha selecionada
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, selectedRow);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 Flight selectedFlight = new Flight(
-
                         rs.getInt("id_plane"),
                         rs.getInt("id"),
                         rs.getInt("maxPassengers"),
@@ -292,10 +301,11 @@ public class SkyBoundGestaoVoos extends JFrame {
                 new GestaoTripulacao(selectedFlight);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao abrir gestão de tripulação: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao abrir gestao de tripulacao: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Metodo para limpar os campos do formulario
     private void clearFields() {
         id_Airplane.setText("");
         id_Flight.setText("");
@@ -307,6 +317,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         hLanding.setValue(new Date());
     }
 
+    // Metodo principal para iniciar a aplicacao
     public static void main(String[] args) {
         new SkyBoundGestaoVoos();
     }
