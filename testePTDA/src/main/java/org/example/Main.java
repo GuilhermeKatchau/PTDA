@@ -157,23 +157,23 @@ public class Main {
     }
     String idTicket = UUID.randomUUID().toString();
     // Método para salvar dados do ticket
-    public static void SaveTicket(String idTicket, int idPassenger, String namePassenger, int idSeat, String destination, double price, String source, boolean refundable, int idFlight) {
+    public static void SaveTicket(String idTicket, int idPassenger, String name, int seatId, String destination, double price, String source, boolean refundable, int idFlight) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "INSERT INTO ticket (id, id_passenger, name_passenger, id_seat, destination, price, source1, refundable, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, idTicket);
             stmt.setInt(2, idPassenger);
-            stmt.setString(3, namePassenger);
-            stmt.setInt(4, idSeat);
+            stmt.setString(3, name);
+            stmt.setInt(4, seatId);
             stmt.setString(5, destination);
             stmt.setDouble(6, price);
             stmt.setString(7, source);
             stmt.setBoolean(8, refundable);
             stmt.setInt(9, idFlight);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao salvar o ticket: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao salvar bilhete: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -272,23 +272,21 @@ public class Main {
     }
 
     // Método para salvar informações do assento
-    public static void saveSeatInfo(String idTicket, String namePassenger, int idSeat, double price,boolean occupied, Class classe, int idFlight) {
+    public static void saveSeatInfo(String idTicket, String name, int seatId, double price, boolean occupied, Class seatClass, int idFlight) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO seat (id_Ticket, name_passenger, id_Seat, price, occupied, class, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO seat (id_ticket, name_passenger, id_seat, price, occupied, class, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, idTicket);
-            stmt.setString(2, namePassenger);
-            stmt.setInt(3, idSeat);
+            stmt.setString(2, name);
+            stmt.setInt(3, seatId);
             stmt.setDouble(4, price);
-            stmt.setBoolean(5,occupied);
-            stmt.setString(6, classe.getClassName());
+            stmt.setBoolean(5, occupied);
+            stmt.setString(6, seatClass.getClassName());
             stmt.setInt(7, idFlight);
-
             stmt.executeUpdate();
-            System.out.println("Assento salvo com sucesso no banco de dados!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Erro ao salvar o assento no banco de dados: " + e.getMessage());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao salvar assento: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

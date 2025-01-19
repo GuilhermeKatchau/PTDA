@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Class {
 
@@ -9,11 +10,11 @@ public class Class {
     private double price;
     private int seatCapacity;
     private int id; // Add this line
-    static ArrayList<Class> classes = new ArrayList<>();
-    private ArrayList<String> services;
+    static List<Class> classes = new ArrayList<>();
+    private List<String> services;
 
     // Construtor para inicializar os atributos da classe
-    public Class(String className, double price, int seatCapacity, ArrayList<String> services) {
+    public Class(String className, double price, int seatCapacity, List<String> services) {
         this.className = className;
         this.price = price;
         this.seatCapacity = seatCapacity;
@@ -45,11 +46,11 @@ public class Class {
         this.seatCapacity = seatCapacity;
     }
 
-    public ArrayList<String> getServices() {
+    public List<String> getServices() {
         return services;
     }
 
-    public void setServices(ArrayList<String> services) {
+    public void setServices(List<String> services) {
         this.services = services;
     }
 
@@ -65,7 +66,7 @@ public class Class {
         return "Class [Nome: " + className + ", Preço: " + price + ", Capacidade: " + seatCapacity + ", Serviços: " + services + "]";
     }
 
-    public ArrayList<Class> getClasses() {
+    public List<Class> getClasses() {
         return classes;
     }
 
