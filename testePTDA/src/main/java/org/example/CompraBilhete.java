@@ -6,9 +6,12 @@ import java.awt.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
+
+import static org.example.Flight.flights;
 
 public class CompraBilhete extends JFrame {
     private JTabbedPane tabbedPane;
@@ -19,7 +22,7 @@ public class CompraBilhete extends JFrame {
     private Flight selectedFlight;
     private JTable tableFlights;
     private ArrayList<Passenger> passengers = new ArrayList<>();
-    private Class selectedClass;
+     Class selectedClass;
     private ArrayList<Class> classes = new ArrayList<>();
     private int idTicket = new Random().nextInt(1000000);
     private Ticket ticket;
@@ -27,6 +30,24 @@ public class CompraBilhete extends JFrame {
     private int numberOfPassengers=1;
     JSpinner numPassengersSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
     private JPanel panelAssentos = new JPanel(new GridLayout(0, 4, 10, 10)); // Para não dar Null Pointer Exception
+
+    private ArrayList<JPanel> passengerPanels = new ArrayList<>();
+    private ArrayList<JTextField> passengerNames = new ArrayList<>();
+    private ArrayList<JSpinner> passengerAges = new ArrayList<>();
+    private ArrayList<JTextField> passengerEmails = new ArrayList<>();
+    private ArrayList<ButtonGroup> checkInGroups = new ArrayList<>();
+
+    private JComboBox<Class> classComboBox;
+    private JPanel servicePanel;
+
+    ArrayList<Flight> mockFlights = new ArrayList<>();
+
+
+
+    public void getAvailableFlightsTest(Flight flight) {
+
+        mockFlights.add(flight);
+    }
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -47,7 +68,7 @@ public class CompraBilhete extends JFrame {
         setVisible(true);
     }
 
-    private Flight getFlightFromRow(int row) {
+     Flight getFlightFromRow(int row) {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         int idAirplane = (int) model.getValueAt(row, 0);
         int idFlight = (int) model.getValueAt(row, 1);
@@ -60,6 +81,8 @@ public class CompraBilhete extends JFrame {
         String codename = (String) model.getValueAt(row, 8);
         return new Flight(idAirplane, idFlight, maxPassengers, date1, hTakeOff, hLanding, destination, source, codename);
     }
+
+
 
     private void tabDestinationSourceData() {
         panelDestinoOrigemData = new JPanel(new GridLayout(5, 2, 10, 10));
@@ -506,6 +529,21 @@ public class CompraBilhete extends JFrame {
     private void resetFlightHourTab() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0);
+    }
+
+    private void resetPassengerInfoTab() {
+        for (JTextField textField : passengerNames) {
+            textField.setText("");
+        }
+        for (JSpinner spinner : passengerAges) {
+            spinner.setValue(18);
+        }
+        for (JTextField email : passengerEmails) {
+            email.setText("");
+        }
+        for (ButtonGroup group : checkInGroups) {
+            group.clearSelection();
+        }
     }
 
     public static void main(String[] args) {

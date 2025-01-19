@@ -18,7 +18,7 @@ public class Flight {
     private Date hTakeOff;
     private Date hLanding;
 
-    private static final ArrayList<Flight> flights = new ArrayList<>();
+    protected static final ArrayList<Flight> flights = new ArrayList<>();
 
     public Flight(int id_Airplane, int id_Flight, int maxPassengers, Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
         setId_Airplane(id_Airplane);
@@ -136,7 +136,7 @@ public class Flight {
 
 
 
-    public static void addFlight(int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
+    public static void addFlight(int id_Airplane,int id_Flight, int maxPassengers,Date date1, Date hTakeOff, Date hLanding, String destination, String source, String codename) {
 
             if (id_Flight==0 || codename.isEmpty()
 
