@@ -77,7 +77,7 @@ public class CompraBilhete extends JFrame {
         fieldData.setValue(new Date());
 
         numPassengersSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        if (numberOfPassengers < 1 || numberOfPassengers > 10) {
+        if ((int) numPassengersSpinner.getValue() < 1 || (int) numPassengersSpinner.getValue()> 10) {
             JOptionPane.showMessageDialog(this, "O número de passageiros deve ser entre 1 e 10!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -86,7 +86,6 @@ public class CompraBilhete extends JFrame {
         btnProximo.addActionListener(e -> {
             selectedSource = comboOrigem.getSelectedItem().toString();
             selectedDestination = comboDestino.getSelectedItem().toString();
-            numberOfPassengers = (int) numPassengersSpinner.getValue();
 
             if (selectedSource.equals(selectedDestination)) {
                 JOptionPane.showMessageDialog(this, "A origem e o destino não podem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
