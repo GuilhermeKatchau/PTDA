@@ -28,6 +28,14 @@ public class CompraBilhete extends JFrame {
     private JSpinner numPassengersSpinner;
     private JPanel panelAssentos = new JPanel(new GridLayout(0, 4, 10, 10)); // Para não dar Null Pointer Exception
 
+    private ArrayList<JPanel> passengerPanels = new ArrayList<>();
+    private ArrayList<JTextField> passengerNames = new ArrayList<>();
+    private ArrayList<JSpinner> passengerAges = new ArrayList<>();
+    private ArrayList<JTextField> passengerEmails = new ArrayList<>();
+    private ArrayList<ButtonGroup> checkInGroups = new ArrayList<>();
+
+    private JComboBox<Class> classComboBox;
+    private JPanel servicePanel;
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
         setSize(800, 800);
@@ -507,6 +515,21 @@ public class CompraBilhete extends JFrame {
     private void resetFlightHourTab() {
         DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
         model.setRowCount(0);
+    }
+
+    private void resetPassengerInfoTab() {
+        for (JTextField textField : passengerNames) {
+            textField.setText("");
+        }
+        for (JSpinner spinner : passengerAges) {
+            spinner.setValue(18);
+        }
+        for (JTextField email : passengerEmails) {
+            email.setText("");
+        }
+        for (ButtonGroup group : checkInGroups) {
+            group.clearSelection();
+        }
     }
 
     public static void main(String[] args) {
