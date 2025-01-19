@@ -13,6 +13,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private Class flightClass; // Classe do voo
     private int idFlight; // ID do voo
     private int numberOfPassengers;
+    private boolean occupied;
 
     // Construtor atualizado para receber os parâmetros necessários
     public SkyBoundAdicionarAssento(int idTicket, String namePassenger, double price, Class flightClass, int idFlight, int numberOfPassengers) {
@@ -60,11 +61,11 @@ public class SkyBoundAdicionarAssento extends JFrame {
     private void enviarInformacoesAssento(int numeroAssento) {
         // Lógica para enviar as informações do botão e número do assento
         System.out.println("Assento selecionado: " + numeroAssento);
-        saveSeat(idTicket, idFlight, namePassenger, numeroAssento, price, flightClass);
+        saveSeat(idTicket, idFlight, namePassenger, numeroAssento, price,occupied, flightClass);
     }
 
-    private void saveSeat(int idTicket, int idFlight, String namePassenger, int idSeat, double price, Class classe) {
-        Main.saveSeatInfo(String.valueOf(idTicket), namePassenger, idSeat, price, classe, idFlight);
+    private void saveSeat(int idTicket, int idFlight, String namePassenger, int idSeat, double price,boolean occupied, Class classe) {
+        Main.saveSeatInfo(String.valueOf(idTicket), namePassenger, idSeat, price,occupied, classe, idFlight);
     }
 
     public JPanel getPanel() {

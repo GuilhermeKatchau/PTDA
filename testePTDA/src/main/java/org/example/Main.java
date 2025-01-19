@@ -272,16 +272,17 @@ public class Main {
     }
 
     // Método para salvar informações do assento
-    public static void saveSeatInfo(String idTicket, String namePassenger, int idSeat, double price, Class classe, int idFlight) {
+    public static void saveSeatInfo(String idTicket, String namePassenger, int idSeat, double price,boolean occupied, Class classe, int idFlight) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO seat (id_ticket, name_passenger, id_seat, price, class, id_flight) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO seat (id_Ticket, name_passenger, id_Seat, price, occupied, class, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, idTicket);
             stmt.setString(2, namePassenger);
             stmt.setInt(3, idSeat);
             stmt.setDouble(4, price);
-            stmt.setString(5, classe.getClassName());
-            stmt.setInt(6, idFlight);
+            stmt.setBoolean(5,occupied);
+            stmt.setString(6, classe.getClassName());
+            stmt.setInt(7, idFlight);
 
             stmt.executeUpdate();
             System.out.println("Assento salvo com sucesso no banco de dados!");

@@ -26,6 +26,7 @@ public class CompraBilhete extends JFrame {
     private Seat selectedSeat = new Seat();
     private int numberOfPassengers = 1;
     private JSpinner numPassengersSpinner;
+    private JPanel panelAssentos;
 
     public CompraBilhete() {
         setTitle("Compra de Bilhete");
@@ -39,7 +40,7 @@ public class CompraBilhete extends JFrame {
         tabHourFlight();
         tabPassengerInfo();
         tabClassService();
-        updateTabSeat(null); // Initialize seat tab with no class selected
+        updateTabSeat(null);
         tabFinalize();
 
         add(tabbedPane);
@@ -151,7 +152,8 @@ public class CompraBilhete extends JFrame {
                         rs.getTime("timeLanding"),
                         rs.getString("destination"),
                         rs.getString("source1"),
-                        rs.getString("codename")
+                        rs.getString("codename"),
+                        rs.getInt("available_seats")
                 };
                 model.addRow(row);
             }
@@ -372,7 +374,7 @@ public class CompraBilhete extends JFrame {
 
         if (selectedClass != null) {
             ArrayList<Integer> assentosDisponiveis = selectedClass.generateSeats();
-            JPanel panelAssentos = new JPanel(new GridLayout(0, 4, 10, 10));
+            panelAssentos = new JPanel(new GridLayout(0, 4, 10, 10));
 
             for (int assento : assentosDisponiveis) {
                 JButton btnAssento = new JButton(String.valueOf(assento));
@@ -380,6 +382,7 @@ public class CompraBilhete extends JFrame {
                     selectedSeat.setId_Seat(assento);
                     selectedSeat.setPrice(selectedClass.getPrice());
                     selectedSeat.setSeatClass(selectedClass);
+                    marcarAssentoComoOcupado(assento);
                     JOptionPane.showMessageDialog(this, "Assento selecionado: " + assento, "Informação", JOptionPane.INFORMATION_MESSAGE);
                     btnAssento.setBackground(Color.ORANGE);
                 });
@@ -416,17 +419,96 @@ public class CompraBilhete extends JFrame {
     private void carregarAssentosDisponiveis(int classId) {
         ArrayList<Integer> assentosDisponiveis = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT id_Seat FROM seat WHERE class = ? AND id_flight = ?";
+            String sql = "SELECT id_Seat,occupied FROM seat WHERE class = ? AND id_flight = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, classId);
             stmt.setInt(2, selectedFlight.getId_Flight());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                assentosDisponiveis.add(rs.getInt("id_Seat"));
+                int seatId = rs.getInt("id_Seat");
+                boolean occupied = rs.getBoolean("occupied");
+
+                JButton seatButton = new JButton(String.valueOf(seatId));
+                if (occupied) {
+                    seatButton.setBackground(Color.ORANGE);
+                    seatButton.setEnabled(false); // Desabilita o botão para evitar seleção
+                } else {
+                    seatButton.addActionListener(e -> selecionarAssento(seatId));
+                }
+                panelAssentos.add(seatButton);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar assentos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void selecionarAssento(int idAssento) {
+        // Verificar se o assento já foi selecionado
+        if (selectedSeat != null && selectedSeat.getId_Seat() == idAssento) {
+            // Desmarcar o assento se o mesmo for selecionado novamente
+            selectedSeat = null;
+            JOptionPane.showMessageDialog(this, "Assento desmarcado!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Marcar o novo assento selecionado
+            selectedSeat = new Seat();
+            selectedSeat.setId_Seat(idAssento);
+            selectedSeat.setPrice(getPriceForSeat(idAssento));  // Método para obter o preço do assento
+            selectedSeat.setSeatClass(getClassForSeat(idAssento));  // Método para obter a classe do assento
+            // Notificar o usuário sobre a seleção
+            JOptionPane.showMessageDialog(this, "Assento selecionado: " + idAssento, "Informação", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private double getPriceForSeat(int idAssento) {
+        double price = 0;
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT price FROM seat WHERE id_Seat = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idAssento);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                price = rs.getDouble("price");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar preço do assento: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        return price;
+    }
+
+    private Class getClassForSeat(int idAssento) {
+        Class seatClass = null;
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "SELECT class FROM seat WHERE id_Seat = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idAssento);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String className = rs.getString("class");
+                // Aqui você pode criar um objeto Class, ou retornar diretamente o nome da classe
+                seatClass = new Class(selectedClass.getClassName(),selectedClass.getPrice(),
+                        selectedClass.getSeatCapacity(),selectedClass.getServices());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar classe do assento: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        return seatClass;
+    }
+
+    private void marcarAssentoComoOcupado(int idAssento) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
+            String sql = "UPDATE seat SET occupied = ? WHERE id_Seat = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, idAssento);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao marcar assento como ocupado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -441,7 +523,7 @@ public class CompraBilhete extends JFrame {
 
             for (Passenger passenger : passengers) {
                 Main.SaveTicket(String.valueOf(idTicket), passenger.getId_Passenger(), passenger.getName(), selectedSeat.getId_Seat(), selectedDestination, selectedClass.getPrice(), selectedSource, refundable, idFlight);
-                Main.saveSeatInfo(String.valueOf(idTicket), passenger.getName(), selectedSeat.getId_Seat(), selectedSeat.getPrice(), selectedSeat.getSeatClass(), idFlight);
+                Main.saveSeatInfo(String.valueOf(idTicket), passenger.getName(), selectedSeat.getId_Seat(), selectedSeat.getPrice(),selectedSeat.getOccupied(), selectedSeat.getSeatClass(), idFlight);
             }
 
             JOptionPane.showMessageDialog(this, "Compra Finalizada com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -451,6 +533,8 @@ public class CompraBilhete extends JFrame {
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
         tabbedPane.addTab("Finalizar", panelFinalize);
     }
+
+
 
     public static void main(String[] args) {
         new CompraBilhete();

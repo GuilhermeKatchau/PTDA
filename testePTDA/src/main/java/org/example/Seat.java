@@ -5,6 +5,7 @@ public class Seat {
     private int id_Seat;
     private double price;
     private Class seatClass; // Referência à classe do assento
+    private boolean occupied;
 
     public void setId_Seat(int id_Seat) {
         if (id_Seat >= 1 && id_Seat <= 999999999) {
@@ -24,6 +25,14 @@ public class Seat {
         } else {
             throw new IllegalArgumentException("Preço inválido");
         }
+    }
+
+    public void setOccupied(boolean occupied) {
+        this.occupied = occupied;
+    }
+
+    public boolean getOccupied() {
+        return occupied;
     }
 
     public double getPrice() {
