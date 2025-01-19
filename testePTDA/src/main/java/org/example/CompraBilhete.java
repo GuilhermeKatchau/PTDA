@@ -463,65 +463,6 @@ public class CompraBilhete extends JFrame {
         return occupiedSeats;
     }
 
-    private void atualizarAssentos() {
-        carregarAssentosDisponiveis(selectedClass.getId());  // Apenas recarrega os assentos
-    }
-
-    private void selecionarAssento(int idAssento) {
-        // Verificar se o assento já foi selecionado
-        if (selectedSeat != null && selectedSeat.getId_Seat() == idAssento) {
-            // Desmarcar o assento se o mesmo for selecionado novamente
-            selectedSeat = null;
-            JOptionPane.showMessageDialog(this, "Assento desmarcado!", "Informação", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            // Marcar o novo assento selecionado
-            selectedSeat = new Seat();
-            selectedSeat.setId_Seat(idAssento);
-            selectedSeat.setPrice(getPriceForSeat(idAssento));  // Método para obter o preço do assento
-            selectedSeat.setSeatClass(getClassForSeat(idAssento));  // Método para obter a classe do assento
-            // Notificar o utilizador sobre a seleção
-            JOptionPane.showMessageDialog(this, "Assento selecionado: " + idAssento, "Informação", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private double getPriceForSeat(int idAssento) {
-        double price = 0;
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT price FROM seat WHERE id_Seat = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idAssento);
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                price = rs.getDouble("price");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao carregar preço do assento: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        return price;
-    }
-
-    private Class getClassForSeat(int idAssento) {
-        Class seatClass = null;
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "SELECT class FROM seat WHERE id_Seat = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idAssento);
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String className = rs.getString("class");
-                seatClass = new Class(selectedClass.getClassName(),selectedClass.getPrice(),
-                        selectedClass.getSeatCapacity(),selectedClass.getServices());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao carregar classe do assento: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        return seatClass;
-    }
-
     private void marcarAssentoComoOcupado(int idAssento) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
             String sql = "UPDATE seat SET occupied = TRUE WHERE id_Seat = ?";
@@ -554,6 +495,18 @@ public class CompraBilhete extends JFrame {
 
         panelFinalize.add(btnFinalize, BorderLayout.CENTER);
         tabbedPane.addTab("Finalizar", panelFinalize);
+    }
+
+    private void resetDestinationSourceData() {
+        ((JComboBox<String>) panelDestinoOrigemData.getComponent(1)).setSelectedIndex(0);
+        ((JComboBox<String>) panelDestinoOrigemData.getComponent(3)).setSelectedIndex(0);
+        ((JSpinner) panelDestinoOrigemData.getComponent(7)).setValue(1);
+        numberOfPassengers = 1;
+    }
+
+    private void resetFlightHourTab() {
+        DefaultTableModel model = (DefaultTableModel) tableFlights.getModel();
+        model.setRowCount(0);
     }
 
     public static void main(String[] args) {
