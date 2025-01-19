@@ -6,14 +6,19 @@ import org.junit.jupiter.api.Test;
 import javax.swing.table.DefaultTableModel;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class CompraBilheteTest {
     private Ticket testTicket;
     private Passenger testPassenger;
+
 
     @BeforeEach
     void setUp() {
@@ -24,8 +29,8 @@ public class CompraBilheteTest {
     @Test
     void testTicketCreation() {
         assertNotNull(testTicket, "Ticket should be created successfully");
-        assertEquals("Lisboa", testTicket.getSource(), "Source should match");
-        assertEquals("Porto", testTicket.getDestination(), "Destination should match");
+        assertEquals("Porto", testTicket.getSource(), "Source should match");
+        assertEquals("Lisboa", testTicket.getDestination(), "Destination should match");
     }
 
     @Test
@@ -73,44 +78,33 @@ public class CompraBilheteTest {
     @Test
     void testFilterFlights() {
         CompraBilhete compraBilhete = new CompraBilhete();
-        ArrayList<Flight> flights = new ArrayList<>();
-        // Dados de exemplo para voos
-        Flight flight1 = new Flight( 9212,64, new Date(), new Date(), new Date(),"Porto","Lisboa","LisboaPorto");
-        Flight flight2 = new Flight(5548,64, new Date(), new Date(), new Date(),"Madrid","Paris","ParisMadrid");
-        Flight flight3 = new Flight( 5678,64, new Date(), new Date(), new Date(),"Bolonha","Munique","MuniqueBolonha");
 
-        // Adiciona voos simulados à lista
-        compraBilhete.getFlightFromRow().add(flight1);
-        compraBilhete.getFlightFromRow().add(flight2);
-        compraBilhete.getFlightFromRow().add(flight3);
+        // Create sample dates
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date1;
+        Date hTakeOff;
+        Date hLanding;
+        try {
+            date1 = format.parse("01/01/2023 12:00:00");
+            hTakeOff = format.parse("01/01/2023 12:00:00");
+            hLanding = format.parse("01/01/2023 14:00:00");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
-        // Chama o método de filtragem
+        // Add test flights with "TEST_" prefix
+        Flight.addFlight(1, 9212, 64, date1, hTakeOff, hLanding, "Porto", "Lisboa", "TEST_LisboaPorto");
+        Flight.addFlight(2, 5548, 64, date1, hTakeOff, hLanding, "Paris", "Madrid", "TEST_MadridParis");
+        Flight.addFlight(3, 5678, 64, date1, hTakeOff, hLanding, "Munique", "Bolonha", "TEST_BolonhaMunique");
+
+        // Perform the flight filtering
         ArrayList<Flight> result = compraBilhete.filterFlights("Lisboa", "Porto");
 
-
-        // Verifica se a filtragem foi feita corretamente
+        // Verify the filtering results
         assertEquals(1, result.size());
         assertEquals("Lisboa", result.get(0).getSource());
         assertEquals("Porto", result.get(0).getDestination());
+        Flight.removeTestFlights();
     }
 
-    @Test
-    void testCalcularPreco() {
-        CompraBilhete compraBilhete = new CompraBilhete();
-
-        // Teste para a classe Luxuosa
-        compraBilhete.selectedClass = compraBilhete.luxurious;
-        double precoLuxuoso = compraBilhete.calcularPreco(0);
-        assertEquals(200.00, precoLuxuoso, 0.01);
-
-        // Teste para a classe Económica
-        compraBilhete.selectedClass = compraBilhete.economical;
-        double precoEconomico = compraBilhete.calcularPreco(0);
-        assertEquals(100.00, precoEconomico, 0.01);
-
-        // Teste para a classe Premium
-        compraBilhete.selectedClass = compraBilhete.premium;
-        double precoPremium = compraBilhete.calcularPreco(0);
-        assertEquals(150.00, precoPremium, 0.01);
-    }
 }

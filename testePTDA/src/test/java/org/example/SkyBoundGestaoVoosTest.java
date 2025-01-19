@@ -9,7 +9,6 @@ import java.util.Date;
 
 
 public class SkyBoundGestaoVoosTest {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @BeforeEach
     void setUp() {
@@ -18,13 +17,14 @@ public class SkyBoundGestaoVoosTest {
 
     @Test
     void testAdicionarVoo() {
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","LisboaPorto");
+        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
         assertEquals(1, Flight.getFlights().size());
+        Flight.removeTestFlights();
     }
 
     @Test
     void testRemoverVoo() {
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","LisboaPorto");
+        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
         Flight.removeFlight(0);
         assertEquals(0, Flight.getFlights().size());
     }
@@ -32,14 +32,14 @@ public class SkyBoundGestaoVoosTest {
     @Test
     void testVooSemDadosObrigatorios() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Flight.addFlight(0, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","LisboaPorto");
+            Flight.addFlight(0, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa","TEST_LisboaPorto");
         });
     }
     @Test
     void testLoadFlights() {
         // Adiciona voos à lista simulada de voos
-        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa", "LisboaPorto");
-        Flight.addFlight(2, 102, 200, new Date(), new Date(), new Date(), "Madrid", "Lisboa", "LisboaMadrid");
+        Flight.addFlight(1, 101, 150, new Date(), new Date(), new Date(), "Porto", "Lisboa", "TEST_LisboaPorto");
+        Flight.addFlight(2, 102, 200, new Date(), new Date(), new Date(), "Madrid", "Lisboa", "TEST_LisboaMadrid");
 
         // Cria uma instância da interface gráfica para testar o método loadFlights
         SkyBoundGestaoVoos gestaoVoos = new SkyBoundGestaoVoos();
@@ -56,6 +56,7 @@ public class SkyBoundGestaoVoosTest {
                 + " | Limite: 150";
 
         assertEquals(expectedFlight1, gestaoVoos.flights.get(0), "Os detalhes do primeiro voo estão incorretos!");
+        Flight.removeTestFlights();
     }
 
 }
