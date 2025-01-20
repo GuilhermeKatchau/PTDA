@@ -14,12 +14,6 @@ public class Class {
     private List<String> services; // lista de servicos associados a classe
 
     // construtor para inicializar os atributos da classe
-    public Class(String className, double price, int seatCapacity, List<String> services) {
-        this.className = className;
-        this.price = price;
-        this.seatCapacity = seatCapacity;
-        this.services = services;
-    }
     public Class(String className, double price, int seatCapacity, ArrayList<String> services) {
         setClassName(className);
         setPrice(price);
