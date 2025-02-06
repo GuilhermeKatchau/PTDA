@@ -20,7 +20,7 @@ public class GestaoServicosClasses extends JFrame {
     public GestaoServicosClasses() {
         setTitle("gestao de classes e servicos");
         setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // dividir a interface em classes e servicos
@@ -107,7 +107,7 @@ public class GestaoServicosClasses extends JFrame {
                 classList.add(novaClasse);
                 classListModel.addElement(nomeClasse);
 
-                // salvar a classe no banco de dados
+                // salvar a classe no base de dados
                 try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
                     String sql = "INSERT INTO class (nome, price, capacity, services) VALUES (?, ?, ?, ?)";
                     PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

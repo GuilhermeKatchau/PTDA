@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Main-Class: 
+Class-Path: pdfa-7.2.5.jar sign-7.2.5.jar barcodes-7.2.5.jar commons-7.2
+ .5.jar protobuf-java-3.19.4.jar mysql-connector-java-8.0.30.jar forms-7
+ .2.5.jar layout-7.2.5.jar kernel-7.2.5.jar styled-xml-parser-7.2.5.jar 
+ svg-7.2.5.jar bcpkix-jdk15on-1.70.jar slf4j-api-2.0.12.jar bcutil-jdk15
+ on-1.70.jar logback-core-1.4.14.jar hyph-7.2.5.jar font-asian-7.2.5.jar
+  bcprov-jdk15on-1.70.jar logback-classic-1.4.14.jar io-7.2.5.jar
+

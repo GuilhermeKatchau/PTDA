@@ -68,7 +68,7 @@ public class SkyBoundAdicionarAssento extends JFrame {
 
     // salva as informacoes do assento no banco de dados
     private void saveSeat(int idTicket, int idFlight, String namePassenger, int idSeat, double price, boolean occupied, Class classe) {
-        Main.saveSeatInfo(String.valueOf(idTicket), namePassenger, idSeat, price, occupied, classe, idFlight);
+        Main.saveSeatInfo(String.valueOf(idTicket), namePassenger, price, occupied, classe, idFlight);
     }
 
     // retorna o painel de assentos

@@ -144,7 +144,7 @@ public class SkyBoundGestaoVoos extends JFrame {
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) { // Clique unico
+                if (e.getClickCount() == 2) { // Clique duplo
                     int selectedRow = table.getSelectedRow(); // Obtem a linha selecionada
                     abrirGestaoTripulacao(selectedRow);
                 }

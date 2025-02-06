@@ -56,7 +56,7 @@ public class Main {
             int nextId = getNextIDPassenger(connection);
             int numTicket = getNextIDTicket(connection);
 
-            // obtem o proximo id do voo (exemplo, ajuste conforme necessario)
+            // obtem o proximo id do voo
             int idFlight = getNextIDFlight(connection);
 
             // insercao na tabela passenger
@@ -271,17 +271,16 @@ public class Main {
     }
 
     // metodo para salvar informacoes do assento
-    public static void saveSeatInfo(String idTicket, String name, int seatId, double price, boolean occupied, Class seatClass, int idFlight) {
+    public static void saveSeatInfo(String idTicket, String name, double price, boolean occupied, Class seatClass, int idFlight) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793")) {
-            String sql = "INSERT INTO seat (id_ticket, name_passenger, id_seat, price, occupied, class, id_flight) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO seat (id_ticket, name_passenger, price, occupied, class, id_flight) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, idTicket);
             stmt.setString(2, name);
-            stmt.setInt(3, seatId);
-            stmt.setDouble(4, price);
-            stmt.setBoolean(5, occupied);
-            stmt.setString(6, seatClass.getClassName());
-            stmt.setInt(7, idFlight);
+            stmt.setDouble(3, price);
+            stmt.setBoolean(4, occupied);
+            stmt.setString(5, seatClass.getClassName());
+            stmt.setInt(6, idFlight);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();

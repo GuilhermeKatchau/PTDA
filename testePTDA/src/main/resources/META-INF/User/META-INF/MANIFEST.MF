@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Main-Class: org.example.SkyBoundHomePage
+Class-Path: styled-xml-parser-7.2.5.jar svg-7.2.5.jar commons-7.2.5.jar 
+ logback-classic-1.4.14.jar pdfa-7.2.5.jar bcpkix-jdk15on-1.70.jar sign-
+ 7.2.5.jar io-7.2.5.jar bcutil-jdk15on-1.70.jar slf4j-api-2.0.12.jar pro
+ tobuf-java-3.19.4.jar forms-7.2.5.jar bcprov-jdk15on-1.70.jar mysql-con
+ nector-java-8.0.30.jar logback-core-1.4.14.jar barcodes-7.2.5.jar layou
+ t-7.2.5.jar font-asian-7.2.5.jar kernel-7.2.5.jar hyph-7.2.5.jar
+

@@ -23,7 +23,7 @@ public class PDFGenerator {
             Document document = new Document(pdf);
 
             // adiciona uma imagem ao pdf
-            String imagePath = "src/main/resources/skybound_logo.png"; // caminho da imagem
+            String imagePath = "C:\\Users\\HP\\Desktop\\University\\Projeto\\PTDA\\testePTDA\\src\\main\\resources\\skybound_logo.png"; // caminho da imagem
             ImageData imageData = ImageDataFactory.create(imagePath);
             Image image = new Image(imageData);
             image.setWidth(100); // define a largura da imagem
@@ -31,16 +31,16 @@ public class PDFGenerator {
             document.add(image);
 
             // adiciona conteudo ao pdf
-            document.add(new Paragraph("detalhes da compra do bilhete"));
+            document.add(new Paragraph("Detalhes da compra do bilhete"));
             document.add(new Paragraph(" ")); // espaco em branco
-            document.add(new Paragraph("origem: " + source));
-            document.add(new Paragraph("destino: " + destination));
-            document.add(new Paragraph("codigo do voo: " + flightCode));
-            document.add(new Paragraph("passageiro: " + passengerName));
-            document.add(new Paragraph("assento: " + seatNumber));
-            document.add(new Paragraph("preco: €" + price));
+            document.add(new Paragraph("Origem: " + source));
+            document.add(new Paragraph("Destino: " + destination));
+            document.add(new Paragraph("Codigo do Voo: " + flightCode));
+            document.add(new Paragraph("Passageiro: " + passengerName));
+            document.add(new Paragraph("Assento: " + seatNumber));
+            document.add(new Paragraph("Preco: €" + price));
             document.add(new Paragraph(" "));
-            document.add(new Paragraph("obrigado por escolher a nossa companhia aerea!"));
+            document.add(new Paragraph("Obrigado por escolher a nossa companhia aerea!"));
 
             // fecha o documento
             document.close();

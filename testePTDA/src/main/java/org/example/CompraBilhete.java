@@ -83,9 +83,20 @@ public class CompraBilhete extends JFrame {
         JLabel labelData = new JLabel("Data (dd/MM/yyyy):");
         JLabel labelNumPassengers = new JLabel("Numero de Passageiros:");
 
-        String[] locais = {"Lisboa", "Porto", "Madrid", "Londres", "Paris"};
-        JComboBox<String> comboOrigem = new JComboBox<>(locais);
-        JComboBox<String> comboDestino = new JComboBox<>(locais);
+        JComboBox<String> comboOrigem = new JComboBox<>();
+        JComboBox<String> comboDestino = new JComboBox<>();
+
+        // Buscar origens e destinos separadamente
+        List<String> origens = getOrigin();
+        List<String> destinos = getDestination();
+
+        for (String origem : origens) {
+            comboOrigem.addItem(origem);
+        }
+
+        for (String destino : destinos) {
+            comboDestino.addItem(destino);
+        }
 
         JFormattedTextField fieldData = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         fieldData.setValue(new Date());
@@ -124,6 +135,47 @@ public class CompraBilhete extends JFrame {
         panelDestinoOrigemData.add(btnProximo);
 
         tabbedPane.addTab("Destino e Data", panelDestinoOrigemData);
+    }
+
+    // Método para obter a origem do voo
+    private List<String> getOrigin() {
+        List<String> origens = new ArrayList<>();
+        // Seleciona origens sem contar duplicados
+        String sql = "SELECT DISTINCT source1 FROM flight";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793");
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                // Adiciona à lista enquanto existirem resultados na base de dados
+                origens.add(rs.getString("source1"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return origens;
+    }
+
+    // Método para obter o destino do voo
+    private List<String> getDestination() {
+        List<String> destinos = new ArrayList<>();
+        // Seleciona destinos sem contar duplicados
+        String sql = "SELECT DISTINCT destination FROM flight";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://estga-dev.ua.pt:3306/PTDA24_BD_05", "PTDA24_05", "Potm%793");
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                destinos.add(rs.getString("destination"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return destinos;
     }
 
     // atualiza a lista de voos disponiveis
@@ -524,7 +576,7 @@ public class CompraBilhete extends JFrame {
                 Main.SaveTicket(String.valueOf(ticketId), passenger.getId_Passenger(), passenger.getName(), seat.getId_Seat(), selectedDestination, selectedClass.getPrice(), selectedSource, refundable, idFlight);
 
                 // salva o assento no banco de dados
-                Main.saveSeatInfo(String.valueOf(ticketId), passenger.getName(), seat.getId_Seat(), seat.getPrice(), true, seat.getSeatClass(), idFlight);
+                Main.saveSeatInfo(String.valueOf(ticketId), passenger.getName(), seat.getPrice(), true, seat.getSeatClass(), idFlight);
 
                 // gera o PDF do bilhete
                 String fileName = "Bilhete_" + passenger.getName() + "_" + ticketId + ".pdf";

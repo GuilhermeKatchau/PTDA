@@ -23,7 +23,7 @@ public class Seat {
 
     // define o preco do assento
     public void setPrice(double price) {
-        if (price > 100 && price <= 1000000) {
+        if (price >= 100 && price <= 1000000) {
             this.price = price;
         } else {
             throw new IllegalArgumentException("preco invalido");
